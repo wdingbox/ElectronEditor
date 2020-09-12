@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+
+    <!-- Libs CSS -->
+    <link rel="stylesheet" href="../assets/fonts/feather/feather.min.css">
+    <link rel="stylesheet" href="../assets/libs/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="../assets/libs/quill/dist/quill.core.css">
+    <link rel="stylesheet" href="../assets/libs/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="../assets/libs/highlight.js/styles/vs2015.css">
+
+    <!-- Map -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+
+    <!-- Theme CSS -->
+
+    <link rel="stylesheet" href="../assets/css/theme.min.css">
+
+
+    <title>BungeeCoins</title>
+</head>
+
+<body class="d-flex align-items-center bg-auth border-top border-top-2 border-primary">
+
+    <!-- CONTENT
+    ================================================== -->
+    <div class="container">
+        <div id="email_value">...</div>
+        <div id="connectionStatus">...</div>
+        <div>
+            <a>Set network check period:</a>
+            <input type="number" min='1' step='1' id="checkPeriod" title="check period time in seconds." value="1"
+                style="width:50px;" value='1'></input>(seconds)
+        </div>
+        <hr />
+
+        <div>
+            <xinput type="checkbox" id="AutoStartup">
+                </xbutton>
+        </div>
+        <hr />
+        <div id="logout"></div>
+        <div id="exit"></div>
+        <pre id="testinfo">...</pre>
+        <hr />
+        <pre id="ssh_status">...</pre>
+        <hr />
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-5 col-xl-4 my-5">
+                <div class="d-flex align-items-center justify-content-center">
+                    <img src="../assets/img/bungee.png" class="mx-auto mb-4"
+                        style="width: 100px; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;"
+                        draggable="false">
+                </div>
+                <!-- Heading -->
+
+                <!-- Subheading -->
+                <p class="text-muted text-center mb-5">
+                    <b style="color: black;">BungeeCoins</b>
+                </p>
+
+
+
+
+            </div>
+        </div> <!-- / .row -->
+        <!-- Form -->
+
+    </div> <!-- / .container -->
+
+    <!-- Insert this line above script imports to prevent confliction with jq  -->
+    <script>
+        if (typeof module === 'object') { window.module = module; module = undefined; }
+    </script>
+    <!-- JAVASCRIPT BEGIN ================================================== -->
+    <!-- Libs JS -->
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script xsrc="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/libs/@shopify/draggable/lib/es5/draggable.bundle.legacy.js"></script>
+    <script src="../assets/libs/autosize/dist/autosize.min.js"></script>
+    <script src="../assets/libs/chart.js/dist/Chart.min.js"></script>
+    <script src="../assets/libs/dropzone/dist/min/dropzone.min.js"></script>
+    <script src="../assets/libs/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="../assets/libs/highlightjs/highlight.pack.min.js"></script>
+    <script xsrc="../assets/libs/jquery-mask-plugin/dist/jquery.mask.min.js"></script>
+    <script src="../assets/libs/list.js/dist/list.min.js"></script>
+    <script src="../assets/libs/quill/dist/quill.min.js"></script>
+    <script src="../assets/libs/select2/dist/js/select2.min.js"></script>
+    <script xsrc="../assets/libs/chart.js/Chart.extension.min.js"></script>
+
+    <!-- Map -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+
+    <!-- Theme JS -->
+    <script xsrc="../assets/js/theme.min.js"></script>
+
+    <!-- cognito-amazonaws -->
+    <script src="../assets/libs/aws_cognito/js/amazon-cognito-auth.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+    <script src="../assets/libs/aws_cognito/js/amazon-cognito-identity.min.js"></script>
+    <script src="../assets/libs/aws_cognito/js/config.js"></script>
+    <script src="../assets/libs/aws_cognito/js/sign_uti.js"></script>
+
+    <!-- JAVASCRIPT END ================================================== -->
+
+    <!-- Insert this line after script imports to prevent confliction with jq -->
+    <script>
+        if (window.module) module = window.module;
+    </script>
+
+
+    <!-- Test jq with nodejs -->
+    <script>
+        console.log(window.location)
+
+        $(function () {
+            var autologinuserObj = store_auto_launch.get("auto_login_user_obj")
+            if (autologinuserObj) {
+                var checkPeriod = autologinuserObj.iCheckPeriod
+                $("#checkPeriod").val(checkPeriod)
+            }
+
+
+            $("#checkPeriod").click(function () {
+                var val = $(this).val()
+                console.log(val)
+                ipcRenderer.send(Web2Main_IDS.SET_CHECKPERIOD, { iCheckPeriod: parseInt(val) }) // send to main.
+            })
+
+            //automatic start at login.
+            aws_cognito_uti.init(function (email) {
+                console.log("login ok: email=", email)
+                $("#email_value").text(email)
+                //ipcRenderer.send(Web2Main_IDS.LOGIN_OK, { email: email }) // send to main. 
+            });
+
+            //////////////////////////////////
+            $("#toggleOnOff").click(function () {
+
+            });
+            $("#logout").click(function () {
+                aws_cognito_uti.signOut();
+                //ui_uti.set_status("off", "red")
+                //nodeIntegration.stop();
+                ipcRenderer.send(Web2Main_IDS.LOGIN_OUT, "") // send to main. 
+                setTimeout(function () {
+                    //window.location.href = "sign-in.html";
+                }, 3)
+            })
+
+
+        });
+    </script>
+
+    <!-- Test ndjs -->
+    <script src="../renderer.js"></script>
+    <script src="../nodeIntegration.js"></script>
+
+    <!--- aws cognito codes -->
+
+    <script>
+
+    </script>
+</body>
+
+</html>

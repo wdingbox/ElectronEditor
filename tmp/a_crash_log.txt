@@ -1,0 +1,215 @@
+
+************
+ on del ProxyInfo {
+  idx: 1,
+  ip: 'ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com',
+  port: 9001,
+  bNew: 0
+} 
+********
+
+=/= disconnected ProxyInfo {
+  idx: 1,
+  ip: 'ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com',
+  port: 9001,
+  bNew: 0
+}
+ipc 3 idx= 1
+000 tray bound { x: -325, y: -88, width: 29, height: 22 }
+* cmd2 ps aux | grep ssh
+
+***********
+ on expired ProxyInfo {
+  idx: 1,
+  ip: 'ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com',
+  port: 9001,
+  bNew: 0
+} 
+********
+cmd1 errr= null 
+stdout=
+ Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 5.3.0-1030-aws x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Wed Aug 12 06:43:20 UTC 2020
+
+  System load:  0.0               Processes:           101
+  Usage of /:   30.8% of 7.69GB   Users logged in:     1
+  Memory usage: 31%               IP address for eth0: 172.31.37.239
+  Swap usage:   0%
+
+ * Are you ready for Kubernetes 1.19? It's nearly here! Try RC3 with
+   sudo snap install microk8s --channel=1.19/candidate --classic
+
+   https://microk8s.io/ has docs and details.
+
+ * Canonical Livepatch is available for installation.
+   - Reduce system reboots and improve kernel security. Activate at:
+     https://ubuntu.com/livepatch
+
+26 packages can be updated.
+0 updates are security updates.
+
+
+*** System restart required ***
+ stderr= Pseudo-terminal will not be allocated because stdin is not a terminal.
+
+SysTuneling
+*** startProbe: {"idx":0,"icommDelay":5,"email":"wdingsoft@gmail.com"} 54
+*** startProbe: {"idx":0,"icommDelay":5,"email":"wdingsoft@gmail.com"} 54
+=*= connected: {
+  idx: 0,
+  icommDelay: 5,
+  email: 'wdingsoft@gmail.com',
+  _svrDat: {
+    useID: 'wdingsoft@gmail.com^104.188.182.128^61176',
+    prxyInfo: {
+      idx: 1,
+      ip: 'ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com',
+      port: 9001,
+      bNew: 0
+    }
+  }
+}
+ipc 2 idx= 1
+000 tray bound { x: -325, y: -88, width: 29, height: 22 }
+* cmd1 ssh -R 9001:localhost:8001 ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i "ElectronTest.pem"
+* cmd2 ps aux | grep ssh
+* cmd2 ps aux | grep ssh
+=*= connected: {
+  idx: 0,
+  icommDelay: 5,
+  email: 'wdingsoft@gmail.com',
+  _svrDat: {
+    useID: 'wdingsoft@gmail.com^104.188.182.128^61176',
+    prxyInfo: {
+      idx: 1,
+      ip: 'ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com',
+      port: 9001,
+      bNew: 0
+    }
+  }
+}
+ipc 2 idx= 1
+* cmd1 ssh -R 9001:localhost:8001 ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i "ElectronTest.pem"
+* cmd2 ps aux | grep ssh
+* cmd2 ps aux | grep ssh
+cmd1 errr= Error: Command failed: ssh -R 9001:localhost:8001 ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i "ElectronTest.pem"
+
+    at ChildProcess.exithandler (child_process.js:308:12)
+    at ChildProcess.emit (events.js:210:5)
+    at maybeClose (internal/child_process.js:1021:16)
+    at Socket.<anonymous> (internal/child_process.js:430:11)
+    at Socket.emit (events.js:210:5)
+    at Pipe.<anonymous> (net.js:658:12) {
+  killed: true,
+  code: null,
+  signal: 'SIGINT',
+  cmd: 'ssh -R 9001:localhost:8001 ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i "ElectronTest.pem"'
+} 
+stdout=
+  stderr= 
+SysTuneling
+cmd2 errr= null 
+stdout:
+ weiding          49316   0.0  0.0  4343308   6908 s011  S+   Mon01PM   0:05.35 ssh ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i ElectronTest.pem
+weiding            880   0.0  0.0  4293280   4776   ??  S     4Aug20   0:00.09 /usr/bin/ssh-agent -l
+weiding           4910   0.0  0.0  4276984    852 s007  S+    3:48AM   0:00.00 grep ssh
+weiding           4908   0.0  0.0  4285760   1132 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+ stderr= 
+cmd2 errr= null 
+stdout:
+ weiding          49316   0.0  0.0  4343308   6908 s011  S+   Mon01PM   0:05.35 ssh ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i ElectronTest.pem
+weiding            880   0.0  0.0  4293280   4776   ??  S     4Aug20   0:00.09 /usr/bin/ssh-agent -l
+weiding           4914   0.0  0.0  4303608    896 s007  S+    3:48AM   0:00.00 grep ssh
+weiding           4911   0.0  0.0  4279616   1144 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+ stderr= 
+cmd2 errr= null 
+stdout:
+ weiding           4915   1.9  0.0  4289856   1176 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4908   1.6  0.0  4285760   1132 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4911   1.5  0.0  4279616   1144 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4914   1.0  0.0  4303608    896 s007  S+    3:48AM   0:00.00 grep ssh
+weiding           4910   0.7  0.0  4276984    852 s007  S+    3:48AM   0:00.00 grep ssh
+weiding            880   0.0  0.0  4293280   4776   ??  S     4Aug20   0:00.09 /usr/bin/ssh-agent -l
+weiding           4917   0.0  0.0  4286200    868 s007  S+    3:48AM   0:00.00 grep ssh
+weiding           4912   0.0  0.0        0      0 s007  Z+    3:48AM   0:00.00 (ssh)
+weiding          49316   0.0  0.0  4343308   6908 s011  S+   Mon01PM   0:05.35 ssh ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i ElectronTest.pem
+ stderr= 
+cmd2 errr= null 
+stdout:
+ weiding           4915   1.9  0.0  4289856   1176 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4908   1.6  0.0  4285760   1132 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4911   1.5  0.0  4279616   1144 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4914   1.0  0.0  4303608    896 s007  S+    3:48AM   0:00.00 grep ssh
+weiding           4917   1.0  0.0  4286200    868 s007  S+    3:48AM   0:00.00 grep ssh
+weiding           4918   0.9  0.0  4270400   1128 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4910   0.7  0.0  4276984    852 s007  S+    3:48AM   0:00.00 grep ssh
+weiding            880   0.0  0.0  4293280   4776   ??  S     4Aug20   0:00.09 /usr/bin/ssh-agent -l
+weiding           4921   0.0  0.0  4278008    856 s007  S+    3:48AM   0:00.00 grep ssh
+weiding           4912   0.0  0.0        0      0 s007  Z+    3:48AM   0:00.00 (ssh)
+weiding           4919   0.0  0.0  4270400   1044 s007  R+    3:48AM   0:00.01 ssh -R 9001:localhost:8001 ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i ElectronTest.pem
+weiding          49316   0.0  0.0  4343308   6908 s011  S+   Mon01PM   0:05.35 ssh ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i ElectronTest.pem
+ stderr= 
+cmd2 errr= null 
+stdout:
+ weiding           4915   1.9  0.0  4289856   1176 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4908   1.6  0.0  4285760   1132 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4911   1.5  0.0  4279616   1144 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4914   1.0  0.0  4303608    896 s007  S+    3:48AM   0:00.00 grep ssh
+weiding           4917   1.0  0.0  4286200    868 s007  S+    3:48AM   0:00.00 grep ssh
+weiding           4918   0.9  0.0  4270400   1128 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4910   0.7  0.0  4276984    852 s007  S+    3:48AM   0:00.00 grep ssh
+weiding          49316   0.0  0.0  4343308   6908 s011  S+   Mon01PM   0:05.35 ssh ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i ElectronTest.pem
+weiding            880   0.0  0.0  4293280   4776   ??  S     4Aug20   0:00.09 /usr/bin/ssh-agent -l
+weiding           4924   0.0  0.0  4278008    728 s007  R+    3:48AM   0:00.00 grep ssh
+weiding           4922   0.0  0.0  4278592   1132 s007  S+    3:48AM   0:00.01 /bin/sh -c ps aux | grep ssh
+weiding           4919   0.0  0.0  4280036   4464 s007  R+    3:48AM   0:00.02 ssh -R 9001:localhost:8001 ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com -i ElectronTest.pem
+ stderr= 
+
+
+
+
+
+************
+ on del ProxyInfo {
+  idx: 1,
+  ip: 'ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com',
+  port: 9001,
+  bNew: 0
+} 
+********
+
+=/= disconnected ProxyInfo {
+  idx: 1,
+  ip: 'ubuntu@ec2-54-146-65-28.compute-1.amazonaws.com',
+  port: 9001,
+  bNew: 0
+}
+ipc 3 idx= 1
+/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/node_modules/brotli/build/encode.js:3
+1<process.argv.length?process.argv[1].replace(/\\/g,"/"):"unknown-program");b.arguments=process.argv.slice(2);"undefined"!==typeof module&&(module.exports=b);process.on("uncaughtException",function(a){if(!(a instanceof y))throw a;});b.inspect=function(){return"[Emscripten Module object]"}}else if(x)b.print||(b.print=print),"undefined"!=typeof printErr&&(b.printErr=printErr),b.read="undefined"!=typeof read?read:function(){throw"no read() available (jsc?)";},b.readBinary=function(a){if("function"===
+                                                                                                                                                                                                                              ^
+
+TypeError: Error processing argument at index 0, conversion failure from /Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/assets/img/files/20x20/init.jpg
+    at Object.set_stat (/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/main_console_tray_win.mod.js:101:31)
+    at Object.set_connectStat (/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/main_console_tray_win.mod.js:251:29)
+    at Object.OnDisconnected (/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/main_console_tray_win.mod.js:29:12)
+    at NodeCache.<anonymous> (/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/assets/modules/UdpCacheClnSvrMgr.mod.js:264:30)
+    at NodeCache.emit (events.js:210:5)
+    at NodeCache.del (/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/node_modules/node-cache/lib/node_cache.js:503:18)
+    at NodeCache._check (/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/node_modules/node-cache/lib/node_cache.js:657:18)
+    at NodeCache.get (/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/node_modules/node-cache/lib/node_cache.js:366:46)
+    at Timeout.routine_check [as _onTimeout] (/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/bungee/BungeeMiningApp_wding/BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/app/assets/modules/UdpCacheClnSvrMgr.mod.js:309:53)
+    at listOnTimeout (internal/timers.js:531:17)
+    at processTimers (internal/timers.js:475:7)
+weiding15s-mbp:BungeeMiningApp_wding weiding$ 
+weiding15s-mbp:BungeeMiningApp_wding weiding$ 
+weiding15s-mbp:BungeeMiningApp_wding weiding$ 
+weiding15s-mbp:BungeeMiningApp_wding weiding$ 
+weiding15s-mbp:BungeeMiningApp_wding weiding$ 
+weiding15s-mbp:BungeeMiningApp_wding weiding$ 
+weiding15s-mbp:BungeeMiningApp_wding weiding$ 
