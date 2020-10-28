@@ -41,7 +41,7 @@ var template =
           win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
         }
         ////////
-        win_tray_uti.signal2web({ id: "ssh_status", msg: out })
+        //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
       },
     },
     {
