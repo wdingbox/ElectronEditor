@@ -23,25 +23,50 @@ const icon_pressed = path.join(__dirname, "assets/img/files/20x20/edit.png")
 //Tray Menu Template 
 var template =
   [
-    { idx: 9, type: "separator" },
-    {
-      idx: 10, id: "quit", label: 'Quit', toolTip: 'Terminate Mining-coin-app.', accelerator: 'CmdOrCtrl+Q',
-      click: () => {
-        app.exit();
-      },
-    },
+
     { idx: 10, type: "separator" },
     {
       idx: 11, id: "debug", label: 'Open DevTool', toolTip: 'open DevTool.', enabled: true,
       accelerator: 'Shift+CmdOrCtrl+C',
       click: () => {
         console.log("DevTool")
-        win_tray_uti.openWindow("./pages/debug_board_dev.html")
+        //win_tray_uti.openWindow("./pages/debug_board_dev.html")
+        win_tray_uti.openWindow("./_edit/explore/Work_htm.htm")
         if (win_tray_uti.mainWindow) {
           win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
         }
         ////////
         //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
+      },
+    },
+
+    {
+      idx: 10, id: "quit", label: 'Save', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
+      click: () => {
+        //app.exit();
+        //var ccc = win_tray_uti.mainWindow.webContents.getAllWebContents()
+        var wc = win_tray_uti.mainWindow.webContents.devToolsWebContents
+
+        var wc = win_tray_uti.mainWindow.webContents.hostWebContents
+        var wc = win_tray_uti.mainWindow.webContents.session
+
+        var wc = win_tray_uti.mainWindow.webContents.savePage('main____test.html', 'HTMLComplete').then(() => {
+          console.log('Page was saved successfully.')
+        }).catch(err => {
+          console.log(err)
+        })
+
+
+
+        console.log(wc)
+
+      },
+    },
+    { idx: 9, type: "separator" },
+    {
+      idx: 10, id: "quit", label: 'Quit', toolTip: 'Terminate Mining-coin-app.', accelerator: 'CmdOrCtrl+Q',
+      click: () => {
+        app.exit();
       },
     },
     {
@@ -141,12 +166,12 @@ var win_tray_uti = {
       //y: -1, //centered
       show: false,
       frame: true, //not dragable.
-      fullscreenable: false,
+      fullscreenable: true,
       alwaysOnTop: true,
       transparent: false, //frame opacity
-      resizable: false,
+      resizable: true,
       closable: true, //disable close button.
-      maximizable: false,
+      maximizable: true,
       frame: true,
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
@@ -154,8 +179,8 @@ var win_tray_uti = {
         //nodeIntegrationInWorker: true
       }
     })
-    
-    
+
+
     win_tray_uti.mainWindow.on("blur", () => {
       if (win_tray_uti.mainWindow.m_isAnimation) {
         return;
@@ -169,6 +194,7 @@ var win_tray_uti = {
       win_tray_uti.mainWindow = null
     });
 
+    //win_tray_uti.win.documentEdited(true)
 
     win_tray_uti.mainWindow.webContents.on('did-finish-load', () => {
       console.log("main window did-finish-load.")
@@ -178,7 +204,7 @@ var win_tray_uti = {
     })
 
   },
- 
+
 
   launch: function () {
     // main entry
