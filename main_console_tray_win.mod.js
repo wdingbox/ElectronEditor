@@ -17,21 +17,23 @@ var localPath2workPath = {
   "../../assets/ckeditor/samples/old/assets/sample.jpg": "./assets/ckeditor/samples/old/assets/sample.jpg",
   "../../assets/libs/jquery/dist/jquery-2_1_3.min.js": "./assets/libs/jquery/dist/jquery-2_1_3.min.js",
 }
-var ckeditor_tmp = "./page/ckeditor/_fullpage_ckeditor_temp.html"
-var ckeditor_nod = "./page/ckeditor/_fullpage_ckeditor_node.html"
+var ckeditor_tmp = "./pages/ckeditor/_fullpage_ckeditor_tmp.html"
+var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_abs.html"
 var tmp_txt = fs.readFileSync(ckeditor_tmp, "utf8")
+console.log(tmp_txt)
 for(var locpath in localPath2workPath){
   var wkpath = localPath2workPath[locpath]
   if(!fs.existsSync(wkpath)) {
     console.log("File Not exist:", wkpath)
   }
   var abspath = path.join(__dirname, wkpath)
-  console.log(locpath, abspath)
+  console.log("loc",locpath)
+  console.log("abs",abspath)
 
-  var reg = new RegExp(`"${locpath}"`,"g")
-  tmp_txt = tmp_txt.replace(reg, `"${wkpath}"`)
+  var reg = new RegExp(`${locpath}`,"g")
+  tmp_txt = tmp_txt.replace(reg, `${abspath}`)
 }
-var tmp_txt = fs.readFileSync(ckeditor_nod, "utf8")
+fs.writeFileSync(ckeditor_abs, tmp_txt, "utf8")
 
 //////////////////////////////////////////////////
 
