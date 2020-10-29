@@ -31,7 +31,7 @@ var template =
       click: () => {
         console.log("DevTool")
         //win_tray_uti.openWindow("./pages/debug_board_dev.html")
-        win_tray_uti.openWindow("./_edit/explore/Work_htm.htm")
+        win_tray_uti.openWindow("./_edit/_app/Work_htm.htm")
         if (win_tray_uti.mainWindow) {
           win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
         }
