@@ -163,19 +163,18 @@
         <script type="text/javascript">
 
             //<![CDATA[
-
             CKEDITOR.replace('editor1', {
                 fullPage: true,
                 extraPlugins: 'docprops',
                 on: {
-                    'instanceReady': function (evt) { evt.editor.execCommand('maximize'); },
+                    'instanceReady': function (evt) { evt.editor.execCommand('minimize'); },
                     'beforeCommandExec': function (evt) { intercept_beforeCommandExec(evt); }
                 }
             });
-
             //]]>
         </script>
     </form>
+    
     <div id="ajx_load_status">
 
     </div>
