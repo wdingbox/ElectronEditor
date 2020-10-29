@@ -31,7 +31,8 @@ var template =
       click: () => {
         console.log("DevTool")
         //win_tray_uti.openWindow("./pages/debug_board_dev.html")
-        win_tray_uti.openWindow("./_edit/_app/Work_htm.htm")
+        //win_tray_uti.openWindow("./_ckeditor/_app/index.html")
+        win_tray_uti.openWindow("./pages/ckeditor/_fullpage_ckeditor_node.html")
         if (win_tray_uti.mainWindow) {
           win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
         }
@@ -160,7 +161,7 @@ var win_tray_uti = {
     var x = win_tray_uti.tray.getBounds().x - 250;
     // Create the browser window.
     win_tray_uti.mainWindow = new BrowserWindow({
-      width: 650,
+      width: 850,
       height: 750,
       //x: -1, //centered
       //y: -1, //centered
