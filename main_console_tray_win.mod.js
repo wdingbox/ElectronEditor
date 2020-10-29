@@ -38,24 +38,13 @@ var template =
     },
 
     {
-      idx: 10, id: "quit", label: 'Save', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
+      idx: 10, id: "SAA", label: 'sample', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
       click: () => {
-        //app.exit();
-        //var ccc = win_tray_uti.mainWindow.webContents.getAllWebContents()
-        var wc = win_tray_uti.mainWindow.webContents.devToolsWebContents
-
-        var wc = win_tray_uti.mainWindow.webContents.hostWebContents
-        var wc = win_tray_uti.mainWindow.webContents.session
-
-        var wc = win_tray_uti.mainWindow.webContents.savePage('main____test.html', 'HTMLComplete').then(() => {
-          console.log('Page was saved successfully.')
-        }).catch(err => {
-          console.log(err)
-        })
-
-
-
-        console.log(wc)
+        var filename = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/bitbucket/wdingsoft/weid/htmdoc/proj1/TheMeaningOfSon/doc.html.ckeditor.htm"
+        win_tray_uti.openWindow(filename)
+        if (win_tray_uti.mainWindow) {
+          win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
+        }
 
       },
     },

@@ -43,11 +43,16 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 <body>
 	<img src="/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/ElectronEditor/assets/ckeditor/samples/old/assets/sample.jpg" width='20'></img>
+	<input type="file" id="fname"></input>
+	<select id="fname_histoory" size="3">
+
+	</select>
 	<h1 class="samples">
 		<a href="/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/ElectronEditor/assets/ckeditor/samples/old/index.html">CKEditor Samples</a> &raquo; Full Page Editing
 	</h1>
+	
 
-	<form action="./" method="get">
+	<form id="form1" action="./_fullpage_ckeditor_abs.html" method="get">
 		<label for="editor1">
 			CKEditor output the entire page including content outside of
 			<code>&lt;body&gt;</code> element, so content like meta and title can be changed:
