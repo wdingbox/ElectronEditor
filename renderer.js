@@ -29,7 +29,7 @@
 
 
 const ipcRenderer = require('electron').ipcRenderer;
-const { Web2Main_IDS } = require('../main_console_tray_win.mod');
+//const { Web2Main_IDS } = require('../main_console_tray_win.mod');
 
 const Main2Web_func = {
     connectionStatus: function (arg) {

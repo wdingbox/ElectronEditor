@@ -8,10 +8,27 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 <head>
 	<meta charset="utf-8">
 	<title>Full Page Editing &mdash; CKEditor Sample</title>
+
+
+	 <!-- Insert this line above script imports to prevent confliction with jq  -->
+	 <script>
+        if (typeof module === 'object') { window.module = module; module = undefined; }
+    </script>
+    <!-- JAVASCRIPT BEGIN ================================================== -->
+    <!-- JAVASCRIPT================================================== -->
 	<!-------------- ckeditor only--------------------->
+	<!-- =================     App   JAVASCRIPT START  ======================== -->
 	<script src="/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/ElectronEditor/assets/ckeditor/ckeditor.js"></script>
 	<script src="/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/ElectronEditor/assets/ckeditor/samples/old/sample.js"></script>
-    <link  href="/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/ElectronEditor/assets/ckeditor/samples/old/sample.css" rel="stylesheet" >
+	<link  href="/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/ElectronEditor/assets/ckeditor/samples/old/sample.css" rel="stylesheet" >
+	
+	<!-- =================     App   JAVASCRIPT END  ======================== -->
+	<!-- Insert this line after script imports to prevent confliction with jq -->
+	<!-------------------------------------------------------------------------->
+    <script>
+        if (window.module) module = window.module;
+	</script>
+	
     
 	<meta name="ckeditor-sample-required-plugins" content="sourcearea">
 	<meta name="ckeditor-sample-name" content="Full page support">
@@ -79,6 +96,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 		</p>
 
 	</div>
+
+	 <!-- Test ndjs -->
+	 <script src="/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/ElectronEditor/renderer.js"></script>
+	 <script src="/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/ElectronEditor/nodeIntegration.js"></script>
 </body>
 
 </html>

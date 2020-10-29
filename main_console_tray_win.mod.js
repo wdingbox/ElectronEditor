@@ -76,6 +76,43 @@ var template =
 ////////////////////////////////////////////////////////
 ///////////////////////
 
+
+
+
+function ckeditor_pathfile() { }
+ckeditor_pathfile.prototype.page_ckeditor_localPath2absPath = function () {
+  var localPath2workPath = {
+    "../../assets/ckeditor/ckeditor.js": "./assets/ckeditor/ckeditor.js",
+    "../../assets/ckeditor/samples/old/sample.js": "./assets/ckeditor/samples/old/sample.js",
+    "../../assets/ckeditor/samples/old/sample.css": "./assets/ckeditor/samples/old/sample.css",
+    "../../assets/ckeditor/samples/old/index.html": "./assets/ckeditor/samples/old/index.html",
+    "../../assets/ckeditor/samples/old/assets/sample.jpg": "./assets/ckeditor/samples/old/assets/sample.jpg",
+    "../../assets/libs/jquery/dist/jquery-2_1_3.min.js": "./assets/libs/jquery/dist/jquery-2_1_3.min.js",
+    "../renderer.js": "./renderer.js",
+    "../nodeIntegration.js": "./nodeIntegration.js"
+  }
+  var ckeditor_tmp = "./pages/ckeditor/_fullpage_ckeditor_tmp.html"
+  var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_abs.html"
+  var tmp_txt = fs.readFileSync(ckeditor_tmp, "utf8")
+  console.log(tmp_txt)
+  for (var locpath in localPath2workPath) {
+    var wkpath = localPath2workPath[locpath]
+    if (!fs.existsSync(wkpath)) {
+      console.log("File Not exist:", wkpath)
+    }
+    var abspath = path.join(__dirname, wkpath)
+    console.log("loc", locpath)
+    console.log("abs", abspath)
+
+    var reg = new RegExp(`${locpath}`, "g")
+    tmp_txt = tmp_txt.replace(reg, `${abspath}`)
+  }
+  fs.writeFileSync(ckeditor_abs, tmp_txt, "utf8")
+  return ckeditor_abs
+}
+var cke = new ckeditor_pathfile()
+cke.page_ckeditor_localPath2absPath()
+
 ///////////////////
 ///////////////////////
 var win_tray_uti = {
@@ -157,7 +194,7 @@ var win_tray_uti = {
     var x = win_tray_uti.tray.getBounds().x - 250;
     // Create the browser window.
     win_tray_uti.mainWindow = new BrowserWindow({
-      width: 850,
+      width: 1050,
       height: 750,
       //x: -1, //centered
       //y: -1, //centered
@@ -201,38 +238,9 @@ var win_tray_uti = {
     })
 
   },
-  page_ckeditor_localPath2absPath: function() {
-    var localPath2workPath = {
-      "../../assets/ckeditor/ckeditor.js": "./assets/ckeditor/ckeditor.js",
-      "../../assets/ckeditor/samples/old/sample.js": "./assets/ckeditor/samples/old/sample.js",
-      "../../assets/ckeditor/samples/old/sample.css": "./assets/ckeditor/samples/old/sample.css",
-      "../../assets/ckeditor/samples/old/index.html": "./assets/ckeditor/samples/old/index.html",
-      "../../assets/ckeditor/samples/old/assets/sample.jpg": "./assets/ckeditor/samples/old/assets/sample.jpg",
-      "../../assets/libs/jquery/dist/jquery-2_1_3.min.js": "./assets/libs/jquery/dist/jquery-2_1_3.min.js",
-    }
-    var ckeditor_tmp = "./pages/ckeditor/_fullpage_ckeditor_tmp.html"
-    var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_abs.html"
-    var tmp_txt = fs.readFileSync(ckeditor_tmp, "utf8")
-    console.log(tmp_txt)
-    for (var locpath in localPath2workPath) {
-      var wkpath = localPath2workPath[locpath]
-      if (!fs.existsSync(wkpath)) {
-        console.log("File Not exist:", wkpath)
-      }
-      var abspath = path.join(__dirname, wkpath)
-      console.log("loc", locpath)
-      console.log("abs", abspath)
-  
-      var reg = new RegExp(`${locpath}`, "g")
-      tmp_txt = tmp_txt.replace(reg, `${abspath}`)
-    }
-    fs.writeFileSync(ckeditor_abs, tmp_txt, "utf8")
-    return ckeditor_abs
-  },
 
   launch: function () {
     // main entry
-    this.page_ckeditor_localPath2absPath()
     this.createTray();
     this.createWindow();
   }

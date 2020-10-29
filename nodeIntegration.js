@@ -15,7 +15,7 @@ const store_auto_launch = new Store();
 // Importing dialog module using remote 
 const dialog = electron.remote.dialog;
 
-const { MASTER_SVR, SVR_API } = require("../config/config.mod") ;//path is based on page localtion.
+//const { MASTER_SVR, SVR_API } = require("../config/config.mod") ;//path is based on page localtion.
 
 // SVR API
 // const MingSvrApi = "http://ec2-54-146-65-28.compute-1.amazonaws.com:3000/get_http_proxy_info"
