@@ -10,9 +10,28 @@ const store_auto_launch = new Store();
 
 
 
+var localPath2workPath = {
+  "../../assets/ckeditor/ckeditor.js": "./assets/ckeditor/ckeditor.js",
+  "../../assets/ckeditor/samples/old/sample.js": "./assets/ckeditor/samples/old/sample.js",
+  "../../assets/ckeditor/samples/old/sample.css": "./assets/ckeditor/samples/old/sample.css",
+  "../../assets/ckeditor/samples/old/assets/sample.jpg": "./assets/ckeditor/samples/old/assets/sample.jpg",
+  "../../assets/libs/jquery/dist/jquery-2_1_3.min.js": "./assets/libs/jquery/dist/jquery-2_1_3.min.js",
+}
+var ckeditor_tmp = "./page/ckeditor/_fullpage_ckeditor_temp.html"
+var ckeditor_nod = "./page/ckeditor/_fullpage_ckeditor_node.html"
+var tmp_txt = fs.readFileSync(ckeditor_tmp, "utf8")
+for(var locpath in localPath2workPath){
+  var wkpath = localPath2workPath[locpath]
+  if(!fs.existsSync(wkpath)) {
+    console.log("File Not exist:", wkpath)
+  }
+  var abspath = path.join(__dirname, wkpath)
+  console.log(locpath, abspath)
 
-
-
+  var reg = new RegExp(`"${locpath}"`,"g")
+  tmp_txt = tmp_txt.replace(reg, `"${wkpath}"`)
+}
+var tmp_txt = fs.readFileSync(ckeditor_nod, "utf8")
 
 //////////////////////////////////////////////////
 
