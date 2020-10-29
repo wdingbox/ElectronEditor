@@ -21,6 +21,12 @@ const dialog = electron.remote.dialog;
 // const MingSvrApi = "http://ec2-54-146-65-28.compute-1.amazonaws.com:3000/get_http_proxy_info"
 
 
+function ckeditor_save2disk() {
+  var fname = "_text.htm";
+  var dat = CKEDITOR.instances.editor1.getData()
+  fs.writeFileSync(fname, dat, "utf8")
+  console.log("save2disk:",fname)
+}
 
 ////////////////////////////////////
 $("body").keydown(function (evt) {
@@ -31,6 +37,9 @@ $("body").keydown(function (evt) {
     ipcRenderer.send(Web2Main_IDS.OPEN_DBG_WIN, "openDebugger");
   }
   //renderer_uti.ipcSend("","")
+
+  ckeditor_save2disk()
+
 });
 //////////////////////////////////
 
