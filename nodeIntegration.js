@@ -53,7 +53,7 @@ function exchange_files_setup() {
 
   $("#fname_histoory").append(`<option>${files.path}</option>`)
 
-  var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_abs.html"
+  var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_independent_template.html"
   var suffix = "___fullpage_ckeditor.htm"
   var destfname = `${files.path}${suffix}`
 
