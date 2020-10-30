@@ -81,10 +81,24 @@ var express_http = {
         http.get("/uploadform", (req, res) => {
             res.writeHead(200, { 'Content-Type': 'text/html' });
             var sform = `
+            <htm><body>
             <form action="fileupload" method="post" enctype="multipart/form-data">
-            <input type="file" name="filetoupload"><br>
+            <input type="file" id="pname" name="filetoupload" onclick='f1()' onchange='f2()'><br>
+            <input type="text" id="fpath" name="path"><br>
+            <input type="text" id="fname" name="name"><br>
             <input type="submit">
-            </form> `
+            </form> 
+            <script>
+            function f1(){
+                document.getElementById("pname").value='';
+            }
+            function f2(){
+                var files = document.getElementById("pname").files[0];
+                console.log(files)
+                document.getElementById("fpath").value = files.size;
+            }
+            </script>
+            `
             console.log(sform)
             res.write(sform);
             return res.end();

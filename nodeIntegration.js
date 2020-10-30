@@ -6,14 +6,14 @@ const exec = require('child_process').exec;
 const child_process = require('child_process');
 const { assert } = require('console');
 
-const { utils } = require('anyproxy');
+//const { utils } = require('anyproxy');
 
-const Store = require('electron-store');
+//const Store = require('electron-store');
 //const { ipcRenderer } = require('electron');
-const store_auto_launch = new Store();
+//const store_auto_launch = new Store();
 
 // Importing dialog module using remote 
-const dialog = electron.remote.dialog;
+//const dialog = electron.remote.dialog;
 
 //const { MASTER_SVR, SVR_API } = require("../config/config.mod") ;//path is based on page localtion.
 

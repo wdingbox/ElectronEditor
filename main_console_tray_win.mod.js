@@ -22,7 +22,7 @@ var template =
 
     { idx: 10, type: "separator" },
     {
-      idx: 11, id: "debug", label: 'Open DevTool', toolTip: 'open DevTool.', enabled: true,
+      idx: 11, id: "debug", label: '_fullpage_ckeditor_abs', toolTip: 'open DevTool.', enabled: true,
       accelerator: 'Shift+CmdOrCtrl+C',
       click: () => {
         console.log("DevTool")
@@ -38,7 +38,7 @@ var template =
     },
 
     {
-      idx: 10, id: "SAA", label: 'sample', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
+      idx: 10, id: "SAA", label: 'doc.html.ckeditor.htm', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
       click: () => {
         var filename = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/bitbucket/wdingsoft/weid/htmdoc/proj1/TheMeaningOfSon/doc.html.ckeditor.htm"
         win_tray_uti.openWindow(filename)
@@ -48,6 +48,19 @@ var template =
 
       },
     },
+
+    {
+      idx: 10, id: "SAA", label: '_fullpage_ckeditor_tmp2', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
+      click: () => {
+        var filename = "./pages/ckeditor/_fullpage_ckeditor_tmp2.html"
+        win_tray_uti.openWindow(filename)
+        if (win_tray_uti.mainWindow) {
+          win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
+        }
+
+      },
+    },
+
     { idx: 9, type: "separator" },
     {
       idx: 10, id: "quit", label: 'Quit', toolTip: 'Terminate Mining-coin-app.', accelerator: 'CmdOrCtrl+Q',
