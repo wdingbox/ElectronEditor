@@ -170,7 +170,7 @@ var express_http = {
         // ./assets/ckeditor/ckeditor.js"
         // var dir = "./assets/ckeditor/"
         console.log("lib svr:", dir)
-        var filters = {
+        var ftypes = {
             '.ico': 'image/x-icon',
             '.html': 'text/html',
             '.js': 'text/javascript',
@@ -183,7 +183,6 @@ var express_http = {
             '.svg': 'image/svg+xml',
             '.pdf': 'application/pdf',
             '.doc': 'application/msword',
-            
             '.eot': 'appliaction/vnd.ms-fontobject',
             '.ttf': 'aplication/font-sfnt'
         }
@@ -191,14 +190,14 @@ var express_http = {
         Uti.GetFilesAryFromDir(dir, true, function (fname) {
             var ext = path.parse(fname).ext;
             //console.log("ext:",ext)
-            if (filters[ext]) {
+            if (ftypes[ext]) {
                 console.log("api:", fname)
                 http.use("/" + fname, async (req, res) => {
                     console.log('[post] resp save :', req.body, fname)
                     if(binaries.indexOf(ext)>=0){
-                        writebin(fname, filters[ext], res)
+                        writebin(fname, ftypes[ext], res)
                     }else{
-                        writetxt(fname, filters[ext], res)
+                        writetxt(fname, ftypes[ext], res)
                     }
                 })
                 return true
