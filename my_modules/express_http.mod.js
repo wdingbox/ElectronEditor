@@ -2,6 +2,7 @@
 const url = require('url');
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require("cors");
 
 var express_http = {
     start: function () {
@@ -10,10 +11,77 @@ var express_http = {
 
         expr.set('trust proxy', true) //:return client req.ip
         //expr.use(express.bodyParser())
-        expr.use(bodyParser.urlencoded({ extended: true, limit: '50mb'  })); //:return req.query; //Error: request entity too large
+        expr.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })); //:return req.query; //Error: request entity too large
         // Parse JSON bodies (as sent by API clients)
-        expr.use(bodyParser.json({ extended: true, limit: '50mb'  }));////Error: request entity too large
-                
+        expr.use(bodyParser.json({ extended: true, limit: '50mb' }));////Error: request entity too large
+
+
+
+        /* -------------------------------------------------------------------------- */
+        /*     https://github.com/troygoode/node-cors-server/blob/master/server.js    */
+        /* -------------------------------------------------------------------------- */
+
+        expr.get("/no-cors", (req, res) => {
+            console.info("GET /no-cors");
+            res.json({
+                text: "You should not see this via a CORS request."
+            });
+        });
+
+        /* -------------------------------------------------------------------------- */
+
+        expr.head("/simple-cors", cors(), (req, res) => {
+            console.info("HEAD /simple-cors");
+            res.sendStatus(204);
+        });
+        expr.get("/simple-cors", cors(), (req, res) => {
+            console.info("GET /simple-cors");
+            res.json({
+                text: "Simple CORS requests are working. [GET]"
+            });
+        });
+        expr.post("/simple-cors", cors(), (req, res) => {
+            console.info("POST /simple-cors");
+            res.json({
+                text: "Simple CORS requests are working. [POST]"
+            });
+        });
+
+        /* -------------------------------------------------------------------------- */
+
+        expr.options("/complex-cors", cors());
+        expr.delete("/complex-cors", cors(), (req, res) => {
+            console.info("DELETE /complex-cors");
+            res.json({
+                text: "Complex CORS requests are working. [DELETE]"
+            });
+        });
+
+        /* -------------------------------------------------------------------------- */
+
+        const issue2options = {
+            origin: true,
+            methods: ["POST"],
+            credentials: true,
+            maxAge: 3600
+        };
+        expr.options("/issue-2", cors(issue2options));
+        expr.post("/issue-2", cors(issue2options), (req, res) => {
+            console.info("POST /issue-2");
+            res.json({
+                text: "Issue #2 is fixed."
+            });
+        });
+
+        /* -------------------------------------------------------------------------- */
+        /* -------------------------------------------------------------------------- */
+
+
+
+
+
+
+
         var ItemKeyNames = ["firstname", "lastname"]
 
         expr.get('/', async (req, res) => {
@@ -42,14 +110,14 @@ var express_http = {
         })
 
 
-        expr.get('/save', async (req, res) => {
+        expr.get('/save', cors(issue2options), async (req, res) => {
             console.log('[get] resp save :', req.query)
             //console.log('resp save :', req)
             //res.send(data); 
             req.query.method_type = "get"
             res.status(200).send(req.query)
         })
-        expr.post('/save', async (req, res) => {
+        expr.post('/save', cors(issue2options), async (req, res) => {
             console.log('[post] resp save :', req.body)
             req.body.method_type = "post"
             res.status(200).send(req.body)
