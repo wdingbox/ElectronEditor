@@ -131,14 +131,17 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             });
         }
 
-        function load_page() {
-            //init_CKEditor()
-            $.get('doc.html', function (data) {
+        function load_page_by_parse_filename() {
+            console.log(window.location)
+            var ary = window.location.pathname.split("/")
+            var name = ary[ary.length-1]
+            var fname = name.replace("___fullpage_ckeditor.htm","")
+            console.log(fname)
+            $.get(fname, function (data) {
                 //alert(data);
                 CKEDITOR.instances.editor1.setData(data)
             });
         }
-        init_CKEditor()
     </script>
 </body>
 
@@ -146,6 +149,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 <script>
     $(function () {
-        load_page()
+        init_CKEditor()
+        load_page_by_parse_filename()
     })
 </script>
