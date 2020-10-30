@@ -9,75 +9,7 @@ var fs = require('fs');
 
 
 var express_http = {
-    filedownload: function (http) {
-        function download(http, url, dest, cbf){
-            console.log(__filename)
-            const file = fs.createWriteStream(__filename);
-            var url="file:///Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/bitbucket/wdingsoft/weid/htmdoc/proj1/TheMeaningOfSon/_fullpage_CKEditor.html.down"
-            const request = http.get(url, function (response) {
-                response.pipe(file);
-                file.on('finish', function () {
-                    file.close(cb);
-                });
-            });
-            // check for request error too
-            request.on('error', (err) => {
-                fs.unlink(dest);
-                return cb(err.message);
-            });
-        }
-
-        http.get("/download", (req, res) => {
-
-            download(http,url,dest,null)
-            res.write("--");
-            return res.end();
-        });
-    },
-    fileupload: function (http) {
-        http.get("/uploadform", (req, res) => {
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            var sform = `
-            <form action="fileupload" method="post" enctype="multipart/form-data">
-            <input type="file" name="filetoupload"><br>
-            <input type="submit">
-            </form> `
-            console.log(sform)
-            res.write(sform);
-            return res.end();
-        });
-
-        http.post("/fileupload", (req, res) => {
-            var form = new formidable.IncomingForm();
-            form.parse(req, function (err, fields, files) {
-                console.log(fields)
-                console.log(files)
-                var oldpath = files.filetoupload.path;
-                var newpath = '/tmp/' + files.filetoupload.name;
-                fs.rename(oldpath, newpath, function (err) {
-                    if (err) throw err;
-                    var msg = `File uploaded:${oldpath}\nTo:${newpath}`
-                    console.log(msg)
-                    res.write(msg);
-                    res.end();
-                });
-            });
-        });
-    },
-
-
-
-    start: function () {
-        const expr = express()
-        const HTTP_PORT = 7878
-
-        expr.set('trust proxy', true) //:return client req.ip
-        //expr.use(express.bodyParser())
-        expr.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })); //:return req.query; //Error: request entity too large
-        // Parse JSON bodies (as sent by API clients)
-        expr.use(bodyParser.json({ extended: true, limit: '50mb' }));////Error: request entity too large
-
-
+    cors_issues_fix_sample:function(expr){
 
         ////////////////////////////////////
         //  ToFix:
@@ -142,17 +74,59 @@ var express_http = {
         /* -------------------------------------------------------------------------- */
         /* -------------------------------------------------------------------------- */
 
+        return issue2options
+    },
+
+    fileupload: function (http) {
+        http.get("/uploadform", (req, res) => {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            var sform = `
+            <form action="fileupload" method="post" enctype="multipart/form-data">
+            <input type="file" name="filetoupload"><br>
+            <input type="submit">
+            </form> `
+            console.log(sform)
+            res.write(sform);
+            return res.end();
+        });
+
+        http.post("/fileupload", (req, res) => {
+            var form = new formidable.IncomingForm();
+            form.parse(req, function (err, fields, files) {
+                console.log(fields)
+                console.log(files)
+                var oldpath = files.filetoupload.path;
+                var newpath = '/tmp/' + files.filetoupload.name;
+                fs.rename(oldpath, newpath, function (err) {
+                    if (err) throw err;
+                    var msg = `File uploaded:${oldpath}\nTo:${newpath}`
+                    console.log(msg)
+                    res.write(msg);
+                    res.end();
+                });
+            });
+        });
+    },
 
 
+
+    start: function () {
+        const expr = express()
+        const HTTP_PORT = 7878
+
+        expr.set('trust proxy', true) //:return client req.ip
+        //expr.use(express.bodyParser())
+        expr.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })); //:return req.query; //Error: request entity too large
+        // Parse JSON bodies (as sent by API clients)
+        expr.use(bodyParser.json({ extended: true, limit: '50mb' }));////Error: request entity too large
+
+
+        
         this.fileupload(expr)
-        this.filedownload(expr)
 
-
-
-
-        var ItemKeyNames = ["firstname", "lastname"]
-
+        
         expr.get('/', async (req, res) => {
+            var ItemKeyNames = ["firstname", "lastname"]
             var url = `http://localhost:${HTTP_PORT}/save`
             var html = `
                  <html>
@@ -178,6 +152,7 @@ var express_http = {
         })
 
 
+        var issue2options = this.cors_issues_fix_sample(expr) 
         expr.get('/save', cors(issue2options), async (req, res) => {
             console.log('[get] resp save :', req.query)
             //console.log('resp save :', req)
