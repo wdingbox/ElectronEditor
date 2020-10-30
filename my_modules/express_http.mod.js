@@ -58,7 +58,7 @@ var express_http = {
 
         //  this is another way for http.
         expr.listen(HTTP_PORT, () => {
-            console.log(`\n\n http svr listening at http://localhost:7771`);
+            console.log(`\n\n http svr listening at http://localhost:${HTTP_PORT}\n\n`);
         })
     }
 }
