@@ -12,14 +12,17 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
     <!---- Insert this before scripts import; then restor back later -->
     <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
-    
+
     <!-------------- ckeditor only--------------------->
     <script src="https://wdingbox.github.io/ham12/jq/jquery-2_1_3.min.js"></script>
 
-    <script src="https://cdn.ckeditor.com/4.15.0/standard/ckeditor.js"></script>
+    <script ___src="https://cdn.ckeditor.com/4.15.0/standard/ckeditor.js"></script>
     <script _src="https://wdingbox.github.io/ham12/assets/ckeditor/ckeditor.js"></script>
+    <script src="http://localhost:7878/assets/ckeditor/ckeditor.js" note="selfseversite"></script>
+
+
     <script src="https://wdingbox.github.io/ham12/assets/ckeditor/samples/old/sample.js"></script>
-    <link  href="https://wdingbox.github.io/ham12/assets/ckeditor/samples/old/sample.css" rel="stylesheet">
+    <link href="https://wdingbox.github.io/ham12/assets/ckeditor/samples/old/sample.css" rel="stylesheet">
     <meta name="ckeditor-sample-required-plugins" content="sourcearea">
     <meta name="ckeditor-sample-name" content="Full page support">
     <meta name="ckeditor-sample-group" content="Plugins">
@@ -134,8 +137,8 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         function load_page_by_parse_filename() {
             console.log(window.location)
             var ary = window.location.pathname.split("/")
-            var name = ary[ary.length-1]
-            var fname = name.replace("___fullpage_ckeditor.htm","")
+            var name = ary[ary.length - 1]
+            var fname = name.replace("___fullpage_ckeditor.htm", "")
             console.log(fname)
             $.get(fname, function (data) {
                 //alert(data);

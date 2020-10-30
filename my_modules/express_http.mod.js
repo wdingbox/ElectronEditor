@@ -6,10 +6,39 @@ const cors = require("cors");
 
 var formidable = require('formidable');
 var fs = require('fs');
+const path = require('path');
 
+const { formatWithOptions } = require('util');
 
+var Uti = {
+    GetFilesAryFromDir: function (startPath, deep, cb) {//startPath, filter
+        function recursiveDir(startPath, deep, outFilesArr) {
+            var files = fs.readdirSync(startPath);
+            for (var i = 0; i < files.length; i++) {
+                var filename = path.join(startPath, files[i]);
+                //console.log(filename);
+                var stat = fs.lstatSync(filename);
+                if (stat.isDirectory()) {
+                    if (deep) {
+                        recursiveDir(filename, deep, outFilesArr); //recurse
+                    }
+                    continue;
+                }/////////////////////////
+                else if (cb) {
+                    //console.log("file:",filename)
+                    if (!cb(filename)) continue
+                }
+                outFilesArr.push(filename);
+            };
+        };/////////////////////////////////////
+
+        var outFilesArr = [];
+        recursiveDir(startPath, deep, outFilesArr);
+        return outFilesArr;
+    }
+}
 var express_http = {
-    cors_issues_fix_sample:function(expr){
+    cors_issues_fix_sample: function (expr) {
 
         ////////////////////////////////////
         //  ToFix:
@@ -122,6 +151,32 @@ var express_http = {
         });
     },
 
+    ckeditor_lib: function (http) {
+        function writefile(pathfile, contentType, res) {
+            var js = fs.readFileSync(pathfile, "utf8")
+            console.log("read:", pathfile)
+
+            res.writeHead(200, { 'Content-Type': contentType });
+            //res.status(200).send(js)
+            res.end(js, 'utf-8')
+        }
+        //./assets/ckeditor/ckeditor.js"
+        var dir = "./assets/ckeditor/"
+        console.log("lib svr:", dir)
+        var filters = { ".js": "text/javascript", ".json": "application/json", ".css": "text/css", ".jpg": "image/jpg", ".png": "image/png", ".wav": "audio/wav" }
+        Uti.GetFilesAryFromDir(dir, true, function (fname) {
+            var ext = path.parse(fname).ext;
+            //console.log("ext:",ext)
+            if (filters[ext]) {
+                console.log("api:", fname)
+                http.use("/" + fname, async (req, res) => {
+                    console.log('[post] resp save :', req.body, fname)
+                    writefile(fname, filters[ext], res)
+                })
+                return true
+            }
+        });
+    },
 
 
     start: function () {
@@ -135,10 +190,11 @@ var express_http = {
         expr.use(bodyParser.json({ extended: true, limit: '50mb' }));////Error: request entity too large
 
 
-        
-        this.fileupload(expr)
 
-        
+        this.fileupload(expr)
+        this.ckeditor_lib(expr)
+
+
         expr.get('/', async (req, res) => {
             var ItemKeyNames = ["firstname", "lastname"]
             var url = `http://localhost:${HTTP_PORT}/save`
@@ -166,7 +222,7 @@ var express_http = {
         })
 
 
-        var issue2options = this.cors_issues_fix_sample(expr) 
+        var issue2options = this.cors_issues_fix_sample(expr)
         expr.get('/save', cors(issue2options), async (req, res) => {
             console.log('[get] resp save :', req.query)
             //console.log('resp save :', req)
@@ -180,6 +236,9 @@ var express_http = {
             res.status(200).send(req.body)
             res.end("html")
         })
+
+
+
 
 
         //  this is another way for http.
