@@ -156,7 +156,6 @@ var express_http = {
             var content = fs.readFileSync(pathfile)
             //console.log("read:", pathfile)
             res.writeHead(200, { 'Content-Type': contentType });
-            //res.status(200).send(js)
             res.write(content, 'binary')
             res.end()
         }
@@ -164,8 +163,8 @@ var express_http = {
             var content = fs.readFileSync(pathfile, "utf8")
             //console.log("read:", pathfile)
             res.writeHead(200, { 'Content-Type': contentType });
-            //res.status(200).send(js)
-            res.end(content, 'utf-8')
+            res.write(content, 'utf-8')
+            res.end()
         }
         // ./assets/ckeditor/ckeditor.js"
         // var dir = "./assets/ckeditor/"
@@ -186,7 +185,7 @@ var express_http = {
             '.eot': 'appliaction/vnd.ms-fontobject',
             '.ttf': 'aplication/font-sfnt'
         }
-        var binaries=[".png",".jpg",".wav",".mp3",".svg",".pdf",".eot"]
+        var binaries = [".png", ".jpg", ".wav", ".mp3", ".svg", ".pdf", ".eot"]
         Uti.GetFilesAryFromDir(dir, true, function (fname) {
             var ext = path.parse(fname).ext;
             //console.log("ext:",ext)
@@ -194,9 +193,9 @@ var express_http = {
                 console.log("api:", fname)
                 http.use("/" + fname, async (req, res) => {
                     console.log('[post] resp save :', req.body, fname)
-                    if(binaries.indexOf(ext)>=0){
+                    if (binaries.indexOf(ext) >= 0) {
                         writebin(fname, ftypes[ext], res)
-                    }else{
+                    } else {
                         writetxt(fname, ftypes[ext], res)
                     }
                 })
