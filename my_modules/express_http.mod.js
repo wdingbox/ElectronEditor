@@ -27,6 +27,7 @@ var express_http = {
                              ${ItemKeyNames[1]}:<input type="text" name="${ItemKeyNames[1]}" value="Jair" />
                              <input type="submit" value="Submit" />
                          </form>
+                         <hr>
                          <p>[get] ${url}</p>
                          <form method="get" action="${url}">
                              ${ItemKeyNames[0]}:<input type="text" name="${ItemKeyNames[0]}" value="Mordencai" />
