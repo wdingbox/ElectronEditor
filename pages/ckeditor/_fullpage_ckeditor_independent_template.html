@@ -8,6 +8,11 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 <head>
     <meta charset="utf-8">
     <title>Full Page Editing &mdash; CKEditor Sample</title>
+
+
+    <!---- Insert this before scripts import; then restor back later -->
+    <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+    
     <!-------------- ckeditor only--------------------->
     <script src="https://wdingbox.github.io/ham12/jq/jquery-2_1_3.min.js"></script>
 
@@ -23,7 +28,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         content="Try the latest sample of CKEditor 4 and learn more about customizing your WYSIWYG editor with endless possibilities.">
     <!-------------------------------------------->
     <script ____src="./doc_files/jquery-2_1_3.min.js"></script>
- 
+
+    <!----- Insert this line after script imports -->
+    <script>if (window.module) module = window.module;</script>
+
 </head>
 
 <body>
@@ -136,7 +144,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 </html>
 
 <script>
-    //$(function () {
+    $(function () {
         //load_page()
-    //})
+    })
 </script>
