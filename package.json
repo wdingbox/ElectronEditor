@@ -24,8 +24,10 @@
   "dependencies": {
     "anyproxy": "^4.1.2",
     "auto-launch": "^5.0.5",
+    "body-parser": "^1.19.0",
     "electron-prompt": "^1.6.0",
     "electron-store": "^6.0.0",
+    "express": "*",
     "ngrok": "^3.2.7",
     "node-cache": "^5.1.2",
     "wget-improved": "^3.2.0"

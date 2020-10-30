@@ -1,20 +1,20 @@
 
 const url = require('url');
 const express = require('express')
-
+const bodyParser = require('body-parser')
 
 var express_http = {
     start: function () {
         const expr = express()
         const HTTP_PORT = 7878
+
         expr.set('trust proxy', true) //:return client req.ip
         //expr.use(express.bodyParser())
-        expr.use(express.urlencoded({ extended: true })); //:return req.query
+        expr.use(bodyParser.urlencoded({ extended: true, limit: '50mb'  })); //:return req.query; //Error: request entity too large
         // Parse JSON bodies (as sent by API clients)
-        expr.use(express.json());
+        expr.use(bodyParser.json({ extended: true, limit: '50mb'  }));////Error: request entity too large
+                
         var ItemKeyNames = ["firstname", "lastname"]
-
-
 
         expr.get('/', async (req, res) => {
             var url = `http://localhost:${HTTP_PORT}/save`
@@ -46,12 +46,12 @@ var express_http = {
             console.log('[get] resp save :', req.query)
             //console.log('resp save :', req)
             //res.send(data); 
-            req.query.method_type="get"
+            req.query.method_type = "get"
             res.status(200).send(req.query)
         })
         expr.post('/save', async (req, res) => {
             console.log('[post] resp save :', req.body)
-            req.body.method_type="post"
+            req.body.method_type = "post"
             res.status(200).send(req.body)
             res.end("html")
         })
