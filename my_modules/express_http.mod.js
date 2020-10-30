@@ -4,7 +4,69 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require("cors");
 
+var formidable = require('formidable');
+var fs = require('fs');
+
+
 var express_http = {
+    filedownload: function (http) {
+        function download(http, url, dest, cbf){
+            console.log(__filename)
+            const file = fs.createWriteStream(__filename);
+            var url="file:///Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/bitbucket/wdingsoft/weid/htmdoc/proj1/TheMeaningOfSon/_fullpage_CKEditor.html.down"
+            const request = http.get(url, function (response) {
+                response.pipe(file);
+                file.on('finish', function () {
+                    file.close(cb);
+                });
+            });
+            // check for request error too
+            request.on('error', (err) => {
+                fs.unlink(dest);
+                return cb(err.message);
+            });
+        }
+
+        http.get("/download", (req, res) => {
+
+            download(http,url,dest,null)
+            res.write("--");
+            return res.end();
+        });
+    },
+    fileupload: function (http) {
+        http.get("/uploadform", (req, res) => {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            var sform = `
+            <form action="fileupload" method="post" enctype="multipart/form-data">
+            <input type="file" name="filetoupload"><br>
+            <input type="submit">
+            </form> `
+            console.log(sform)
+            res.write(sform);
+            return res.end();
+        });
+
+        http.post("/fileupload", (req, res) => {
+            var form = new formidable.IncomingForm();
+            form.parse(req, function (err, fields, files) {
+                console.log(fields)
+                console.log(files)
+                var oldpath = files.filetoupload.path;
+                var newpath = '/tmp/' + files.filetoupload.name;
+                fs.rename(oldpath, newpath, function (err) {
+                    if (err) throw err;
+                    var msg = `File uploaded:${oldpath}\nTo:${newpath}`
+                    console.log(msg)
+                    res.write(msg);
+                    res.end();
+                });
+            });
+        });
+    },
+
+
+
     start: function () {
         const expr = express()
         const HTTP_PORT = 7878
@@ -82,6 +144,8 @@ var express_http = {
 
 
 
+        this.fileupload(expr)
+        this.filedownload(expr)
 
 
 
