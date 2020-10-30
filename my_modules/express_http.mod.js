@@ -6,7 +6,7 @@ const express = require('express')
 var express_http = {
     start: function () {
         const expr = express()
-        const HTTP_PORT = 7771
+        const HTTP_PORT = 7878
         expr.set('trust proxy', true) //:return client req.ip
         //expr.use(express.bodyParser())
         expr.use(express.urlencoded({ extended: true })); //:return req.query
@@ -42,14 +42,14 @@ var express_http = {
 
 
         expr.get('/save', async (req, res) => {
-            console.log('resp save :', req.query)
+            console.log('[get] resp save :', req.query)
             //console.log('resp save :', req)
             //res.send(data); 
             req.query.method_type="get"
             res.status(200).send(req.query)
         })
         expr.post('/save', async (req, res) => {
-            console.log('resp post save :', req.body)
+            console.log('[post] resp save :', req.body)
             req.body.method_type="post"
             res.status(200).send(req.body)
             res.end("html")
