@@ -4,12 +4,12 @@ const fs = require('fs')
 const path = require('path')
 
 
+
 const { win_tray_uti, } = require("./main_console_tray_win.mod")
+const { express_http, } = require("./my_modules/express_http.mod")
 
 
-
-
-
+express_http.start()
 
 
 
@@ -26,7 +26,7 @@ if (!gotTheLock) {
   console.log("Prevent multiple app to launch")
   //app.quit()
   //return
-} 
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
