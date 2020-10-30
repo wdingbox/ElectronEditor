@@ -100,7 +100,7 @@ ckeditor_pathfile.prototype.page_ckeditor_localPath2absPath = function () {
   return ckeditor_abs
 }
 var cke = new ckeditor_pathfile()
-cke.page_ckeditor_localPath2absPath()
+//cke.page_ckeditor_localPath2absPath()
 
 ///////////////////
 ///////////////////////

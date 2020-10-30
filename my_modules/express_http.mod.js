@@ -17,6 +17,10 @@ var express_http = {
 
 
 
+        ////////////////////////////////////
+        //  ToFix:
+        //  Access to XMLHttpRequest at 'file:///Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/ElectronEditor/pages/ckeditor/doc.html' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, chrome-untrusted, https.
+        //
         /* -------------------------------------------------------------------------- */
         /*     https://github.com/troygoode/node-cors-server/blob/master/server.js    */
         /* -------------------------------------------------------------------------- */
