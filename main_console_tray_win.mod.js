@@ -38,6 +38,18 @@ var template =
     },
 
     {
+      idx: 10, id: "SAA", label: 'setup_custom_ckeditor.htm', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
+      click: () => {
+        var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
+        win_tray_uti.openWindow(filename)
+        if (win_tray_uti.mainWindow) {
+          win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
+        }
+
+      },
+    },
+
+    {
       idx: 10, id: "SAA", label: 'doc.html.ckeditor.htm', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
       click: () => {
         var filename = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/bitbucket/wdingsoft/weid/htmdoc/proj1/TheMeaningOfSon/doc.html.ckeditor.htm"

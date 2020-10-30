@@ -45,28 +45,45 @@ $("body").keydown(function (evt) {
 });
 //////////////////////////////////
 
-$(function(){
-  $("input[type=file]").click(function () {
-    $(this).val("");
+function exchange_files_setup() {
+  //alert($(this).val());
+  var files = document.getElementById("fname").files[0];//.name; 
+  //alert(files.path)
+  console.log("files", files)
+
+  $("#fname_histoory").append(`<option>${files.path}</option>`)
+
+  var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_abs.html"
+  var suffix = "___fullpage_ckeditor.htm"
+  var destfname = `${files.path}${suffix}`
+
+  var svr_site_clientfile = `/tmp/backupfile.html`
+
+  $("#fname_histoory").append(`<option>${ckeditor_abs}</option>`)
+  $("#fname_histoory").append(`<option>${destfname}</option>`)
+  $("#fname_histoory").append(`<option>${svr_site_clientfile}</option>`)
+
+  fs.copyFile(ckeditor_abs, destfname, (err) => {
+    if (err) throw err;
+    console.log(ckeditor_abs, ' was copied to', destfname);
   });
 
-  $("input[type=file]").change(function () {
-    //alert($(this).val());
-    var files = document.getElementById("fname").files[0];//.name; 
-    alert(files.path)
-    console.log("files",files)
+  fs.copyFile(files.path, svr_site_clientfile, (err) => {
+    if (err) throw err;
+    console.log(files.path, ' was copied to', svr_site_clientfile);
+  });
 
-    $("#fname_histoory").append(`<option>${files.path}</option>`)
+  $("#form1").attr("action", destfname)
+  $("input[type='submit']").css("visibility", "visible")
+}
 
-    var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_abs.html"
-    var destfname = `${files.path}.ckeditor.htm`
-    fs.copyFile(ckeditor_abs, destfname, (err) => {
-      if (err) throw err;
-      console.log(ckeditor_abs, ' was copied to', destfname);
-    });
 
-    $("#form1").attr("action", destfname)
-    //window.open(destfname)
+$(function () {
+
+  $("input[type=file]").click(function () {
+    $(this).val("");
+  }).change(function () {
+    exchange_files_setup()
   });
 })
 
