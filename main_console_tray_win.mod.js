@@ -222,6 +222,10 @@ var win_tray_uti = {
       maximizable: true,
       frame: true,
       webPreferences: {
+        minimumFontSize: 18,
+        defaultFontSize: 24,
+        defaultMonospaceFontSize: 20, 
+        
         preload: path.join(__dirname, 'preload.js'),
         nodeIntegration: true, //allow client js and nodejs work together in nodeIntegration.js
         //nodeIntegrationInWorker: true
