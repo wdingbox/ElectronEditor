@@ -41,7 +41,7 @@ var template =
         //win_tray_uti.openWindow("./_ckeditor/_app/index.html")
         win_tray_uti.openWindow("./pages/ckeditor/_fullpage_ckeditor_abs.html")
         if (win_tray_uti.mainWindow) {
-          win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
+          win_tray_uti.mainWindow.webContents.webPreferences({"defaultFontSize" : 28})
         }
         ////////
         //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
