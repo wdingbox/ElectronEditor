@@ -115,33 +115,38 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                             $("#info").html("<font color='green'>no change</color>");
                             return
                         }
-                        
+
                         // get the editor content
                         var theData = ckEditor.getData();
                         //alert(theData);
                         $.post("http://localhost:7878/save",
                             {
-                                "fname": "ff",
+                                "pathname": get_custom_pathname().pathname,
                                 "htm": theData
                             },
                             function (result) {
-                                console.log(result);
-                            }).fail(function () {
-                                $("#info").html("<font color='red'>save erro</color>");
-                            }).done(function () {
                                 ckEditor.resetDirty()
-                                $("#info").html("<font color='green'>save success</color>");
+                                console.log(result);
+                                $("#info").html(`<font color='green'>saved success: ${result}</color>1`);
+                            }).fail(function () {
+                                $("#info").html("<font color='red'>save error</color>");
+                            }).done(function (ret) {
+                                $("#info").css("font-size", "33px");
                             });
                     }
                 });
             });
         }
 
+        function get_custom_pathname() {
+            var pathname = window.location.pathname.replace(/___fullpage_ckeditor\.htm$/, "")
+            var ary = pathname.split("/")
+            var name = ary[ary.length - 1]
+            return { name: name, pathname: pathname }
+        }
         function load_page_by_parse_filename() {
             console.log(window.location)
-            var ary = window.location.pathname.split("/")
-            var name = ary[ary.length - 1]
-            var fname = name.replace("___fullpage_ckeditor.htm", "")
+            var fname = get_custom_pathname().name
             console.log(fname)
             $.get(fname, function (data) {
                 //alert(data);

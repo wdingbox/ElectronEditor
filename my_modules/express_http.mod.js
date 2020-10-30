@@ -255,12 +255,15 @@ var express_http = {
             //res.send(data); 
             req.query.method_type = "get"
             res.status(200).send(req.query)
+            res.end()
         })
         expr.post('/save', cors(issue2options), async (req, res) => {
             console.log('[post] resp save :', req.body)
             req.body.method_type = "post"
-            res.status(200).send(req.body)
-            res.end("html")
+            fs.writeFileSync(req.body.pathname, req.body.htm, "utf8")
+            res.status(200).send("size:" + req.body.htm.length)
+            console.log("saved file size:", req.body.htm.length, req.body.pathname)
+            res.end()
         })
 
 
