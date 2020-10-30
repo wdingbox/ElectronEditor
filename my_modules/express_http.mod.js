@@ -151,19 +151,43 @@ var express_http = {
         });
     },
 
-    ckeditor_lib: function (http) {
-        function writefile(pathfile, contentType, res) {
-            var js = fs.readFileSync(pathfile, "utf8")
-            console.log("read:", pathfile)
-
+    access_lib: function (http, dir) {
+        function writebin(pathfile, contentType, res) {
+            var content = fs.readFileSync(pathfile)
+            //console.log("read:", pathfile)
             res.writeHead(200, { 'Content-Type': contentType });
             //res.status(200).send(js)
-            res.end(js, 'utf-8')
+            res.write(content, 'binary')
+            res.end()
         }
-        //./assets/ckeditor/ckeditor.js"
-        var dir = "./assets/ckeditor/"
+        function writetxt(pathfile, contentType, res) {
+            var content = fs.readFileSync(pathfile, "utf8")
+            //console.log("read:", pathfile)
+            res.writeHead(200, { 'Content-Type': contentType });
+            //res.status(200).send(js)
+            res.end(content, 'utf-8')
+        }
+        // ./assets/ckeditor/ckeditor.js"
+        // var dir = "./assets/ckeditor/"
         console.log("lib svr:", dir)
-        var filters = { ".js": "text/javascript", ".json": "application/json", ".css": "text/css", ".jpg": "image/jpg", ".png": "image/png", ".wav": "audio/wav" }
+        var filters = {
+            '.ico': 'image/x-icon',
+            '.html': 'text/html',
+            '.js': 'text/javascript',
+            '.json': 'application/json',
+            '.css': 'text/css',
+            '.png': 'image/png',
+            '.jpg': 'image/jpeg',
+            '.wav': 'audio/wav',
+            '.mp3': 'audio/mpeg',
+            '.svg': 'image/svg+xml',
+            '.pdf': 'application/pdf',
+            '.doc': 'application/msword',
+            
+            '.eot': 'appliaction/vnd.ms-fontobject',
+            '.ttf': 'aplication/font-sfnt'
+        }
+        var binaries=[".png",".jpg",".wav",".mp3",".svg",".pdf",".eot"]
         Uti.GetFilesAryFromDir(dir, true, function (fname) {
             var ext = path.parse(fname).ext;
             //console.log("ext:",ext)
@@ -171,7 +195,11 @@ var express_http = {
                 console.log("api:", fname)
                 http.use("/" + fname, async (req, res) => {
                     console.log('[post] resp save :', req.body, fname)
-                    writefile(fname, filters[ext], res)
+                    if(binaries.indexOf(ext)>=0){
+                        writebin(fname, filters[ext], res)
+                    }else{
+                        writetxt(fname, filters[ext], res)
+                    }
                 })
                 return true
             }
@@ -192,7 +220,7 @@ var express_http = {
 
 
         this.fileupload(expr)
-        this.ckeditor_lib(expr)
+        this.access_lib(expr, "./assets/ckeditor/")
 
 
         expr.get('/', async (req, res) => {
