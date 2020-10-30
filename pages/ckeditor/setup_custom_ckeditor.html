@@ -10,26 +10,26 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     <title>Full Page Editing &mdash; CKEditor Sample</title>
 
 
-	 <!-- Insert this line above script imports to prevent confliction with jq  -->
-	 <script>
+    <!-- Insert this line above script imports to prevent confliction with jq  -->
+    <script>
         if (typeof module === 'object') { window.module = module; module = undefined; }
     </script>
     <!-- JAVASCRIPT BEGIN ================================================== -->
     <!-- JAVASCRIPT================================================== -->
-	<!-------------- ckeditor only--------------------->
-	<!-- =================     App   JAVASCRIPT START  ======================== -->
-	<script src="../../assets/ckeditor/ckeditor.js"></script>
-	<script src="../../assets/ckeditor/samples/old/sample.js"></script>
-	<link  href="../../assets/ckeditor/samples/old/sample.css" rel="stylesheet" >
-	
-	<!-- =================     App   JAVASCRIPT END  ======================== -->
-	<!-- Insert this line after script imports to prevent confliction with jq -->
-	<!-------------------------------------------------------------------------->
+    <!-------------- ckeditor only--------------------->
+    <!-- =================     App   JAVASCRIPT START  ======================== -->
+    <script xxxxsrc="../../assets/ckeditor/ckeditor.js"></script>
+    <script xxxxsrc="../../assets/ckeditor/samples/old/sample.js"></script>
+    <link xxxhref="../../assets/ckeditor/samples/old/sample.css" rel="stylesheet">
+
+    <!-- =================     App   JAVASCRIPT END  ======================== -->
+    <!-- Insert this line after script imports to prevent confliction with jq -->
+    <!-------------------------------------------------------------------------->
     <script>
         if (window.module) module = window.module;
-	</script>
-    
-    
+    </script>
+
+
 
     <meta name="ckeditor-sample-required-plugins" content="sourcearea">
     <meta name="ckeditor-sample-name" content="Full page support">
@@ -49,14 +49,17 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 <body>
 
     <form id="form1" action="./_fullpage_ckeditor_abs.html" method="get">
-        <input type="file" id="fname"></input><br>
-        <br>
-        <input type="submit" style="visibility: hidden;"></input>
+        <input type="file" id="fname"></input>
+        <p>
+            <input type="submit" style="visibility: hidden;"></input>
+        </p>
     </form>
 
 
-    <select id="fname_histoory" size="10">
-    </select>
+    <p>
+        <select id="fname_histoory" size="10" style="width:100%;overflow-x:auto;">
+        </select>
+    </p>
 
     <!-- Test ndjs -->
     <script src="../../renderer.js"></script>

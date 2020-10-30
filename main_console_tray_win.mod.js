@@ -19,8 +19,19 @@ const icon_pressed = path.join(__dirname, "assets/img/files/20x20/edit.png")
 //Tray Menu Template 
 var template =
   [
+    {
+      idx: 10, id: "SCC", label: 'Setup a custom ckeditor', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
+      click: () => {
+        var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
+        win_tray_uti.openWindow(filename)
+        if (win_tray_uti.mainWindow) {
+          win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
+        }
 
-    { idx: 10, type: "separator" },
+      },
+    },
+
+  
     {
       idx: 11, id: "debug", label: '_fullpage_ckeditor_abs', toolTip: 'open DevTool.', enabled: true,
       accelerator: 'Shift+CmdOrCtrl+C',
@@ -37,17 +48,7 @@ var template =
       },
     },
 
-    {
-      idx: 10, id: "SAA", label: 'setup_custom_ckeditor.htm', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
-      click: () => {
-        var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
-        win_tray_uti.openWindow(filename)
-        if (win_tray_uti.mainWindow) {
-          win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
-        }
-
-      },
-    },
+ 
 
     {
       idx: 10, id: "SAA", label: 'doc.html.ckeditor.htm', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
@@ -222,10 +223,10 @@ var win_tray_uti = {
       maximizable: true,
       frame: true,
       webPreferences: {
-        minimumFontSize: 18,
-        defaultFontSize: 24,
-        defaultMonospaceFontSize: 20, 
-        
+        //minimumFontSize: 12,
+        //defaultFontSize: 12,
+        //defaultMonospaceFontSize: 12, 
+
         preload: path.join(__dirname, 'preload.js'),
         nodeIntegration: true, //allow client js and nodejs work together in nodeIntegration.js
         //nodeIntegrationInWorker: true

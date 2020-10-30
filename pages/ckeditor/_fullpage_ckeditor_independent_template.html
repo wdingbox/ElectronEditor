@@ -39,9 +39,9 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 </head>
 
 <body>
-    <img src="../../_ckeditor/_app/old/assets/sample.jpg" width='20'></img>
+
     <h1 class="samples">
-        <a href="../../samples/old/index.html">CKEditor Samples</a> &raquo; Full Page Editing
+        <a href="../../samples/old/index.html">CKEditor</a> &raquo; <a id="info">Full Page Editing</a>
     </h1>
 
     <form action="http://localhost:7878/save" method="post">
@@ -83,6 +83,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 fullPage: true,
                 allowedContent: true,
                 extraPlugins: 'wysiwygarea',
+                width: '100%',
 
                 on: {
                     focus: function () { },
@@ -100,7 +101,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
             });
 
-            //ckEditor.checkDirty()
+
 
             // wait until the editor has done initializing
             ckEditor.on("instanceReady", function () {
@@ -111,8 +112,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     exec: function () {
                         if (false === ckEditor.checkDirty()) {
                             console.log("checkDirty : false")
+                            $("#info").html("<font color='green'>no change</color>");
                             return
                         }
+                        
                         // get the editor content
                         var theData = ckEditor.getData();
                         //alert(theData);
@@ -124,10 +127,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                             function (result) {
                                 console.log(result);
                             }).fail(function () {
-                                ckEditor.resetDirty()
-                                alert("error");
+                                $("#info").html("<font color='red'>save erro</color>");
                             }).done(function () {
-                                alert("second success");
+                                ckEditor.resetDirty()
+                                $("#info").html("<font color='green'>save success</color>");
                             });
                     }
                 });
