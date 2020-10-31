@@ -261,7 +261,9 @@ var express_http = {
             console.log('[post] resp save :', req.body)
             req.body.method_type = "post"
             fs.writeFileSync(req.body.pathname, req.body.htm, "utf8")
-            res.status(200).send("size:" + req.body.htm.length)
+            req.body.len = req.body.htm.length
+
+            res.status(200).send(req.body)
             console.log("saved file size:", req.body.htm.length, req.body.pathname)
             res.end()
         })
