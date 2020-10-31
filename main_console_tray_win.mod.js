@@ -20,7 +20,7 @@ const icon_pressed = path.join(__dirname, "assets/img/files/20x20/edit.png")
 var template =
   [
     {
-      idx: 10, id: "SCC", label: 'Setup a custom ckeditor', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
+      idx: 10, id: "SCC", label: 'Edit Custom Html File', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
       click: (itm) => {
         console.log(itm)
         var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
@@ -31,10 +31,10 @@ var template =
 
       },
     },
-
+    { idx: 9, type: "separator" },
 
     {
-      idx: 11, id: "devTool", label: 'Open devTool', toolTip: 'open DevTool.', enabled: true,
+      idx: 11, id: "devTool", label: 'Open DevTool', toolTip: 'open DevTool.', enabled: true,
       accelerator: 'Shift+CmdOrCtrl+C',
       click: () => {
         console.log("DevTool")
@@ -50,7 +50,7 @@ var template =
         //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
       },
     },
-
+    { idx: 9, type: "separator" },
 
 
     {
@@ -81,8 +81,8 @@ var template =
       idx: 10, id: "Autolaunch", label: 'Autolaunch', toolTip: 'Autolaunch after reboot', type: 'checkbox', checked: true,
       click: (itm) => {
         console.log(itm)
-        var tmpitm = get_template_item_by_id(itm.id,function(item){
-          console.log("find item",item)
+        var tmpitm = get_template_item_by_id(itm.id, function (item) {
+          console.log("find item", item)
           item.checked = itm.checked
           AutoLauncher.set_auto_launch(itm.checked)
         })
@@ -115,7 +115,7 @@ function get_template_item_by_id(id, cb) {
       return template[i]
     }
   }
-  console.log("menu id is not correct:",id)
+  console.log("menu id is not correct:", id)
   return null
 }
 
@@ -286,15 +286,15 @@ var win_tray_uti = {
 
   launch: function () {
     // main entry
-    AutoLauncher.init("ElectronCkEditorAppPkg",function (bAutolaunch) {
-      get_template_item_by_id("Autolaunch",function(item){
+    AutoLauncher.init("ElectronCkEditorAppPkg", function (bAutolaunch) {
+      get_template_item_by_id("Autolaunch", function (item) {
         item.checked = bAutolaunch
       })
     })
     this.createTray();
     this.createWindow();
 
- 
+
   }
 }
 

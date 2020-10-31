@@ -45,31 +45,31 @@ $("body").keydown(function (evt) {
 });
 //////////////////////////////////
 const CKEsuffix = "___fullpage_ckeditor.htm"
-function EditorHistory () {
-  this.m_key="EditingHistory"
+function EditorHistory() {
+  this.m_key = "EditingHistory"
   var obj = electronStore.get(this.m_key)
-  if(!obj){
+  if (!obj) {
     electronStore.set(this.m_key, {})
   }
   this.popTRs()
-} 
-EditorHistory.prototype.set=function(key){
+}
+EditorHistory.prototype.set = function (key) {
   var obj = electronStore.get(this.m_key)
   obj[key] = (new Date()).toISOString()
   electronStore.set(this.m_key, obj)
 }
-EditorHistory.prototype.popTRs=function(){
+EditorHistory.prototype.popTRs = function () {
   var obj = electronStore.get(this.m_key)
-  console.log("histore",obj)
-  var trs=""
-  Object.keys(obj).forEach(function(key,i){
-    trs+=`<tr><td>${i}</td><td class='pfname'>${key}</td><td>${obj[key]}</td></tr>`
+  console.log("histore", obj)
+  var trs = ""
+  Object.keys(obj).forEach(function (key, i) {
+    trs += `<tr><td>${i}</td><td class='pfname'>${key}</td><td>${obj[key]}</td></tr>`
   })
-  $("#histbody").html(trs).find(".pfname").bind("click",function(){
-    $("#histbody").find(".pfname").css("background-color","")
-    var destfname = $(this).css("background-color","grey").text()
+  $("#histbody").html(trs).find(".pfname").bind("click", function () {
+    $("#histbody").find(".pfname").css("background-color", "")
+    var destfname = $(this).css("background-color", "grey").text() + CKEsuffix
     $("#destpath").text(destfname)
-    $("#form1").attr("action", destfname+CKEsuffix)
+    $("#form1").attr("action", destfname)
     $("input[type='submit']").css("visibility", "visible")
   })
   return trs;
@@ -111,7 +111,7 @@ function setup_editor_config() {
   $("#destpath").text(destfname)
   $("#form1").attr("action", destfname)
   $("input[type='submit']").css("visibility", "visible")
-  
+
 }
 
 

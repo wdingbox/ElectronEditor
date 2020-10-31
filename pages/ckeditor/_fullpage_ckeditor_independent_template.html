@@ -177,22 +177,8 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             ckEditor.setActiveEnterMode(imod);
             console.log("xEnter Mode:",imod)
             return;
-
-            if (ckEditor) {
-                ckEditor.destroy(true);
-                init_CKEditor()
-                load_page_by_parse_filename()
-                return
-            }
-
-            // Create the editor again, with the appropriate settings.
-            ckEditor = CKEDITOR.replace('editor1', {
-                extraPlugins: 'enterkey',
-                enterMode: Number(document.getElementById('xEnter').value),
-                shiftEnterMode: Number(document.getElementById('xShiftEnter').value)
-            });
         }
-        window.onload = changeEnter;
+        //window.onload = changeEnter;
 
         function MSG() {
             this.m_pre_len = 0
