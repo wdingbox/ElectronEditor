@@ -175,6 +175,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             // If we already have an editor, let's destroy it first.
             var imod = Number(document.getElementById('xEnter').value);
             ckEditor.setActiveEnterMode(imod);
+            console.log("xEnter Mode:",imod)
             return;
 
             if (ckEditor) {
