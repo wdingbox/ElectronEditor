@@ -26,7 +26,7 @@ var template =
         var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
         win_tray_uti.openWindow(filename)
         if (win_tray_uti.mainWindow) {
-          win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
+          //win_tray_uti.mainWindow.webContents.openDevTools({ mode: 'detach' })
         }
 
       },

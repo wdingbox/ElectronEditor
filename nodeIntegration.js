@@ -44,12 +44,46 @@ $("body").keydown(function (evt) {
 
 });
 //////////////////////////////////
+function EditorHistory () {
+  this.m_key="EditingHistory"
+  var obj = electronStore.get(this.m_key)
+  if(!obj){
+    electronStore.set(this.m_key, {})
+  }
+  this.popTRs()
+} 
+EditorHistory.prototype.set=function(key){
+  var obj = electronStore.get(this.m_key)
+  obj[key] = (new Date()).toISOString()
+  electronStore.set(this.m_key, obj)
+}
+EditorHistory.prototype.popTRs=function(){
+  var obj = electronStore.get(this.m_key)
+  console.log("histore",obj)
+  var trs=""
+  Object.keys(obj).forEach(function(key,i){
+    trs+=`<tr><td>${i}</td><td class='pfname'>${key}</td><td>${obj[key]}</td></tr>`
+  })
+  $("#histbody").html(trs).find(".pfname").bind("click",function(){
+    $("#histbody").find(".pfname").css("background-color","")
+    var destfname = $(this).css("background-color","grey").text()
+    $("#destpath").text(destfname)
+    $("#form1").attr("action", destfname)
+    $("input[type='submit']").css("visibility", "visible")
+  })
+  return trs;
+}
+var editorHistory = new EditorHistory()
 
-function exchange_files_setup() {
+
+function setup_editor_config() {
   //alert($(this).val());
   var files = document.getElementById("fname").files[0];//.name; 
   //alert(files.path)
   console.log("files", files)
+
+  editorHistory.set(files.path)
+  editorHistory.popTRs()
 
   $("#fname_histoory").append(`<option>${files.path}</option>`)
 
@@ -73,8 +107,10 @@ function exchange_files_setup() {
     console.log(files.path, ' was copied to', svr_site_clientfile);
   });
 
+  $("#destpath").text(destfname)
   $("#form1").attr("action", destfname)
   $("input[type='submit']").css("visibility", "visible")
+  
 }
 
 
@@ -83,7 +119,7 @@ $(function () {
   $("input[type=file]").click(function () {
     $(this).val("");
   }).change(function () {
-    exchange_files_setup()
+    setup_editor_config()
   });
 })
 

@@ -42,7 +42,11 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     <script src="../../assets/libs/jquery/dist/jquery-2_1_3.min.js"></script>
 
 
-
+<style>
+    td{
+        white-space: nowrap;
+    }
+</style>
 
 </head>
 
@@ -50,14 +54,29 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
     <form id="form1" action="./_fullpage_ckeditor_abs.html" method="get">
         <input type="file" id="fname"></input>
-        <p>
+        <p style="white-space: nowrap;">
             <input type="submit" style="visibility: hidden;"></input>
+            <label id='destpath' style="white-space: nowrap;"></label>
         </p>
     </form>
 
 
     <p>
-        <select id="fname_histoory" size="10" style="width:100%;overflow-x:auto;">
+    <table border='1'>
+        <caption>History</caption>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>pathfile</th>
+                <th>datetime</th>
+            </tr>
+        </thead>
+        <tbody id='histbody'>
+        </tbody>
+    </table>
+    </p>
+    <p>
+        <select id="fname_histoory" size="5" style="width:100%;overflow-x:auto;">
         </select>
     </p>
 
