@@ -44,7 +44,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 <body>
 
     <h1 class="samples">
-        <a href="../../samples/old/index.html">CKEditor</a> &raquo; <a id="info">Full Page Editing</a>
+        <a>CKEditor</a> &raquo; <a id="info">Full Page Editing</a>
     </h1>
 
     <form action="http://localhost:7878/save" method="post">
@@ -56,8 +56,26 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 			&lt;h1&gt;&lt;img align=&quot;right&quot; alt=&quot;Saturn V carrying Apollo 11&quot; src=&quot;../../_ckeditor/_app/old/assets/sample.jpg&quot;/&gt; Apollo 11&lt;/h1&gt; &lt;p&gt;&lt;b&gt;Apollo 11&lt;/b&gt; was the spaceflight that landed the first humans, Americans &lt;a href=&quot;http://en.wikipedia.org/wiki/Neil_Armstrong&quot; title=&quot;Neil Armstrong&quot;&gt;Neil Armstrong&lt;/a&gt; and &lt;a href=&quot;http://en.wikipedia.org/wiki/Buzz_Aldrin&quot; title=&quot;Buzz Aldrin&quot;&gt;Buzz Aldrin&lt;/a&gt;, on the Moon on July 20, 1969, at 20:18 UTC. Armstrong became the first to step onto the lunar surface 6 hours later on July 21 at 02:56 UTC.&lt;/p&gt; &lt;p&gt;
 		</textarea>
     </form>
+    <div style="float: left; margin-right: 20px">
+        When <em>Enter</em> is pressed:<br>
+        <select id="xEnter" onchange="changeEnter();">
+            <option value="1">Create a new &lt;P&gt; (recommended)</option>
+            <option selected="selected" value="3">Create a new &lt;DIV&gt;</option>
+            <option value="2">Break the line with a &lt;BR&gt;</option>
+        </select>
+    </div>
+    <div style="float: left">
+        When <em>Shift+Enter</em> is pressed:<br>
+        <select id="xShiftEnter" onchange="changeEnter();">
+            <option value="1">Create a new &lt;P&gt;</option>
+            <option value="3">Create a new &lt;DIV&gt;</option>
+            <option selected="selected" value="2">Break the line with a &lt;BR&gt; (recommended)</option>
+        </select>
+    </div>
+    <br><br>
     <p>
         <select id="log" size="10"></select>
+
     </p>
 
     <div id="footer">
@@ -77,15 +95,25 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 
 
-
-
     <script>
+        var ckEditor;
         function init_CKEditor() {
-            var ckEditor = CKEDITOR.replace('editor1', {
+            ckEditor = CKEDITOR.replace('editor1', {
                 fullPage: true,
                 allowedContent: true,
                 extraPlugins: 'wysiwygarea',
                 width: '100%',
+
+                wordcount: {
+                    'showWordCount': true,
+                    'showParagraphs': true,
+                    'showCharCount': true,
+                    'maxCharCount': 10000000
+                },
+
+                extraPlugins: 'enterkey',
+                enterMode: Number(document.getElementById('xEnter').value),
+                shiftEnterMode: Number(document.getElementById('xShiftEnter').value),
 
                 on: {
                     focus: function () { },
@@ -143,6 +171,27 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 });
             });
         }
+        function changeEnter() {
+            // If we already have an editor, let's destroy it first.
+            var imod = Number(document.getElementById('xEnter').value);
+            ckEditor.setActiveEnterMode(imod);
+            return;
+
+            if (ckEditor) {
+                ckEditor.destroy(true);
+                init_CKEditor()
+                load_page_by_parse_filename()
+                return
+            }
+
+            // Create the editor again, with the appropriate settings.
+            ckEditor = CKEDITOR.replace('editor1', {
+                extraPlugins: 'enterkey',
+                enterMode: Number(document.getElementById('xEnter').value),
+                shiftEnterMode: Number(document.getElementById('xShiftEnter').value)
+            });
+        }
+        window.onload = changeEnter;
 
         function MSG() {
             this.m_pre_len = 0
