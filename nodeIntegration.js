@@ -8,9 +8,9 @@ const { assert } = require('console');
 
 //const { utils } = require('anyproxy');
 
-//const Store = require('electron-store');
+const Store = require('electron-store');
 //const { ipcRenderer } = require('electron');
-const store_auto_launch = new Store();
+const electronStore = new Store();
 
 // Importing dialog module using remote 
 //const dialog = electron.remote.dialog;

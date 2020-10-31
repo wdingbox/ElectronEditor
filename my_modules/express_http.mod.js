@@ -151,7 +151,7 @@ var express_http = {
         });
     },
 
-    access_lib: function (http, dir) {
+    access_dir: function (http, dir) {
         function writebin(pathfile, contentType, res) {
             var content = fs.readFileSync(pathfile)
             //console.log("read:", pathfile)
@@ -218,7 +218,7 @@ var express_http = {
 
 
         this.fileupload(expr)
-        this.access_lib(expr, "./assets/ckeditor/")
+        this.access_dir(expr, "./assets/ckeditor/")
 
 
         expr.get('/', async (req, res) => {
