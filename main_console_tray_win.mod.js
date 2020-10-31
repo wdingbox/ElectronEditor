@@ -8,7 +8,7 @@ const Store = require('electron-store');
 const store_auto_launch = new Store();
 
 
-
+const { AutoLauncher } = require("./my_modules/AutoLauncher.mod")
 
 //////////////////////////////////////////////////
 
@@ -21,7 +21,8 @@ var template =
   [
     {
       idx: 10, id: "SCC", label: 'Setup a custom ckeditor', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
-      click: () => {
+      click: (itm) => {
+        console.log(itm)
         var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
         win_tray_uti.openWindow(filename)
         if (win_tray_uti.mainWindow) {
@@ -42,7 +43,7 @@ var template =
         //win_tray_uti.openWindow("./pages/ckeditor/_fullpage_ckeditor_abs.html")
         if (win_tray_uti.mainWindow && win_tray_uti.mainWindow.webContents) {
           win_tray_uti.mainWindow.webContents.openDevTools({ "defaultFontSize": 28 })
-        }else{
+        } else {
           console.log("DevTool opne Failed.")
         }
         ////////
@@ -76,6 +77,19 @@ var template =
       },
     },
 
+    {
+      idx: 10, id: "Autolaunch", label: 'Autolaunch', toolTip: 'Autolaunch after reboot', type: 'checkbox', checked: true,
+      click: (itm) => {
+        console.log(itm)
+        var tmpitm = get_template_item_by_id(itm.id,function(item){
+          console.log("find item",item)
+          item.checked = itm.checked
+          AutoLauncher.set_auto_launch(itm.checked)
+        })
+        win_tray_uti.updateTrayMenu();
+      },
+    },
+
     { idx: 9, type: "separator" },
     {
       idx: 10, id: "quit", label: 'Quit', toolTip: 'Terminate Mining-coin-app.', accelerator: 'CmdOrCtrl+Q',
@@ -86,14 +100,24 @@ var template =
     {
       idx: 12, id: "version", label: "0.0", toolTip: 'first trial version.', enabled: false,
       accelerator: 'CmdOrCtrl+D',
-      click: () => {
+      click: (itm) => {
+        console.log(itm)
       },
     }
   ];//// template
 ////////////////////////////////////////////////////////
 ///////////////////////
 
-
+function get_template_item_by_id(id, cb) {
+  for (var i = 0; i < template.length; i++) {
+    if (template[i].id === id) {
+      if (cb) cb(template[i])
+      return template[i]
+    }
+  }
+  console.log("menu id is not correct:",id)
+  return null
+}
 
 
 function ckeditor_pathfile() { }
@@ -262,8 +286,15 @@ var win_tray_uti = {
 
   launch: function () {
     // main entry
+    AutoLauncher.init("ElectronCkEditorAppPkg",function (bAutolaunch) {
+      get_template_item_by_id("Autolaunch",function(item){
+        item.checked = bAutolaunch
+      })
+    })
     this.createTray();
     this.createWindow();
+
+ 
   }
 }
 

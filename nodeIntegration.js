@@ -10,7 +10,7 @@ const { assert } = require('console');
 
 //const Store = require('electron-store');
 //const { ipcRenderer } = require('electron');
-//const store_auto_launch = new Store();
+const store_auto_launch = new Store();
 
 // Importing dialog module using remote 
 //const dialog = electron.remote.dialog;
