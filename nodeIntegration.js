@@ -44,6 +44,7 @@ $("body").keydown(function (evt) {
 
 });
 //////////////////////////////////
+const CKEsuffix = "___fullpage_ckeditor.htm"
 function EditorHistory () {
   this.m_key="EditingHistory"
   var obj = electronStore.get(this.m_key)
@@ -68,7 +69,7 @@ EditorHistory.prototype.popTRs=function(){
     $("#histbody").find(".pfname").css("background-color","")
     var destfname = $(this).css("background-color","grey").text()
     $("#destpath").text(destfname)
-    $("#form1").attr("action", destfname)
+    $("#form1").attr("action", destfname+CKEsuffix)
     $("input[type='submit']").css("visibility", "visible")
   })
   return trs;
@@ -88,8 +89,8 @@ function setup_editor_config() {
   $("#fname_histoory").append(`<option>${files.path}</option>`)
 
   var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_independent_template.html"
-  var suffix = "___fullpage_ckeditor.htm"
-  var destfname = `${files.path}${suffix}`
+  //var suffix = "___fullpage_ckeditor.htm"
+  var destfname = `${files.path}${CKEsuffix}`
 
   var svr_site_clientfile = `/tmp/backupfile.html`
 

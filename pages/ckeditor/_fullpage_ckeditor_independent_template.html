@@ -9,32 +9,35 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     <meta charset="utf-8">
     <title>Full Page Editing &mdash; CKEditor</title>
 
-
+    <meta name="ckeditor-sample-required-plugins" content="sourcearea">
+    </meta>
+    <meta name="ckeditor-sample-name" content="Full page support">
+    </meta>
+    <meta name="ckeditor-sample-group" content="Plugins">
+    </meta>
+    <meta name="ckeditor-sample-description"
+        content="CKEditor inserted with a JavaScript call and used to edit the whole page from &lt;html&gt; to &lt;/html&gt;.">
+    </meta>
+    <meta name="description"
+        content="Try the latest sample of CKEditor 4 and learn more about customizing your WYSIWYG editor with endless possibilities.">
+    </meta>
+    <!-------------------------------------------->
     <!---- Insert this before scripts import; then restor back later -->
     <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
 
-    <!-------------- ckeditor only--------------------->
+    <!-------------- jq --------------------->
+    <script ____src="./doc_files/jquery-2_1_3.min.js"></script>
     <script src="https://wdingbox.github.io/ham12/jq/jquery-2_1_3.min.js"></script>
-
+    <!-------------- ckeditor only--------------------->
     <script ___src="https://cdn.ckeditor.com/4.15.0/standard/ckeditor.js"></script>
-    <script _src="https://wdingbox.github.io/ham12/assets/ckeditor/ckeditor.js"></script>
+    <script ___src="https://wdingbox.github.io/ham12/assets/ckeditor/ckeditor.js"></script>
     <script src="http://localhost:7878/assets/ckeditor/ckeditor.js" note="selfseversite"></script>
-
-
     <script src="https://wdingbox.github.io/ham12/assets/ckeditor/samples/old/sample.js"></script>
     <link href="https://wdingbox.github.io/ham12/assets/ckeditor/samples/old/sample.css" rel="stylesheet">
-    <meta name="ckeditor-sample-required-plugins" content="sourcearea">
-    <meta name="ckeditor-sample-name" content="Full page support">
-    <meta name="ckeditor-sample-group" content="Plugins">
-    <meta name="ckeditor-sample-description"
-        content="CKEditor inserted with a JavaScript call and used to edit the whole page from &lt;html&gt; to &lt;/html&gt;.">
-    <meta name="description"
-        content="Try the latest sample of CKEditor 4 and learn more about customizing your WYSIWYG editor with endless possibilities.">
     <!-------------------------------------------->
-    <script ____src="./doc_files/jquery-2_1_3.min.js"></script>
-
     <!----- Insert this line after script imports -->
     <script>if (window.module) module = window.module;</script>
+    <!-------------------------------------------->
 
 </head>
 
@@ -126,8 +129,8 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                             },
                             function (result) {
                                 ckEditor.resetDirty()
-                                if(theData.length !== result.len){
-                                    alert(`fatal err save. data loss:${theData.length}-${result.len}=${theData.length-result.len}`)
+                                if (theData.length !== result.len) {
+                                    alert(`fatal err save. data loss:${theData.length}-${result.len}=${theData.length - result.len}`)
                                 }
                                 console.log("ret:", result.len);
                                 msg.pop(`OK Saved ${result.len}`, 'green');
