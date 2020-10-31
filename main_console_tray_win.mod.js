@@ -31,24 +31,26 @@ var template =
       },
     },
 
-  
+
     {
-      idx: 11, id: "debug", label: '_fullpage_ckeditor_abs', toolTip: 'open DevTool.', enabled: true,
+      idx: 11, id: "devTool", label: 'Open devTool', toolTip: 'open DevTool.', enabled: true,
       accelerator: 'Shift+CmdOrCtrl+C',
       click: () => {
         console.log("DevTool")
         //win_tray_uti.openWindow("./pages/debug_board_dev.html")
         //win_tray_uti.openWindow("./_ckeditor/_app/index.html")
-        win_tray_uti.openWindow("./pages/ckeditor/_fullpage_ckeditor_abs.html")
-        if (win_tray_uti.mainWindow) {
-          win_tray_uti.mainWindow.webContents.webPreferences({"defaultFontSize" : 28})
+        //win_tray_uti.openWindow("./pages/ckeditor/_fullpage_ckeditor_abs.html")
+        if (win_tray_uti.mainWindow && win_tray_uti.mainWindow.webContents) {
+          win_tray_uti.mainWindow.webContents.openDevTools({ "defaultFontSize": 28 })
+        }else{
+          console.log("DevTool opne Failed.")
         }
         ////////
         //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
       },
     },
 
- 
+
 
     {
       idx: 10, id: "SAA", label: 'doc.html.ckeditor.htm', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
@@ -183,7 +185,7 @@ var win_tray_uti = {
 
     console.log('HI, tray');
     win_tray_uti.tray.on("click", () => {
-
+      console.log('HI, tray click');
     })
   },
 
