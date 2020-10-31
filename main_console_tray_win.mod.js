@@ -216,7 +216,7 @@ var win_tray_uti = {
       show: false,
       frame: true, //not dragable.
       fullscreenable: true,
-      alwaysOnTop: true,
+      alwaysOnTop: false,
       transparent: false, //frame opacity
       resizable: true,
       closable: true, //disable close button.
