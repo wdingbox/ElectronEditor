@@ -127,7 +127,7 @@ function Main_Menu() {
   this.template =
     [
       {
-        idx: 10, id: "EditCustomHtmlFileOnsite", label: 'Edit Custom Html File Onsite', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
+        id: "EditCustomHtmlFileOnsite", label: 'Edit Custom Html File Onsite', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
         click: (itm) => {
           console.log(itm)
           var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
@@ -138,10 +138,10 @@ function Main_Menu() {
 
         },
       },
-      { idx: 9, type: "separator" },
+      { type: "separator" },
 
       {
-        idx: 11, id: "devTool", label: 'Open DevTool', toolTip: 'open DevTool.', enabled: true,
+        id: "devTool", label: 'Open DevTool', toolTip: 'open DevTool.', enabled: true,
         accelerator: 'Shift+CmdOrCtrl+C',
         click: () => {
           console.log("DevTool")
@@ -157,35 +157,35 @@ function Main_Menu() {
           //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
         },
       },
-      { idx: 9, type: "separator" },
+      { type: "separator" },
 
 
       {
-        idx: 10, id: "SAA", label: 'doc.html.ckeditor.htm', toolTip: '--=',
+        id: "SAA", label: 'doc.html.ckeditor.htm', toolTip: '--=',
         click: () => {
           var filename = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/bitbucket/wdingsoft/weid/htmdoc/proj1/TheMeaningOfSon/doc.html.ckeditor.htm"
           g_Window.openWindow(filename)
-          if (g_Window) {
-            g_Window.webContents.openDevTools({ mode: 'detach' })
+          if (g_Window.mainWindow) {
+            g_Window.mainWindow.webContents.openDevTools({ mode: 'detach' })
           }
 
         },
       },
 
       {
-        idx: 10, id: "SAA", label: '_fullpage_ckeditor_tmp2', toolTip: '--',
+        id: "SAA", label: '_fullpage_ckeditor_tmp2', toolTip: '--',
         click: () => {
           var filename = "./pages/ckeditor/_fullpage_ckeditor_tmp2.html"
           g_Window.openWindow(filename)
-          if (g_Window) {
-            g_Window.webContents.openDevTools({ mode: 'detach' })
+          if (g_Window.mainWindow) {
+            g_Window.mainWindow.webContents.openDevTools({ mode: 'detach' })
           }
 
         },
       },
 
       {
-        idx: 10, id: "Autolaunch", label: 'Autolaunch', toolTip: 'Autolaunch after reboot', type: 'checkbox', checked: true,
+        id: "Autolaunch", label: 'Autolaunch', toolTip: 'Autolaunch after reboot', type: 'checkbox', checked: true,
         click: (itm) => {
           console.log("itm.checked", itm.checked)
           var tmpitm = _THIS.get_template_item_by_id(itm.id, function (item) {
@@ -198,15 +198,15 @@ function Main_Menu() {
         },
       },
 
-      { idx: 9, type: "separator" },
+      { type: "separator" },
       {
-        idx: 10, id: "quit", label: 'Quit', toolTip: 'Terminate Mining-coin-app.', accelerator: 'CmdOrCtrl+Q',
+        id: "quit", label: 'Quit', toolTip: 'Terminate Mining-coin-app.', accelerator: 'CmdOrCtrl+Q',
         click: () => {
           app.exit();
         },
       },
       {
-        idx: 12, id: "version", label: "0.0", toolTip: 'first trial version.', enabled: false,
+        id: "version", label: "0.0", toolTip: 'first trial version.', enabled: false,
         accelerator: 'CmdOrCtrl+D',
         click: (itm) => {
           console.log(itm)
