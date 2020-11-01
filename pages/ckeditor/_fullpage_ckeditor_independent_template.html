@@ -27,18 +27,27 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
     <!-------------- jq --------------------->
     <script ____src="./doc_files/jquery-2_1_3.min.js"></script>
-    <script src="https://wdingbox.github.io/ham12/jq/jquery-2_1_3.min.js"></script>
+    <script ____src="https://wdingbox.github.io/ham12/jq/jquery-2_1_3.min.js"></script>
+    <script src="http://localhost:7878/assets/ckeditor/adapters/jq/jquery-2_1_3.min.js" note="selfseversite"></script>
     <!-------------- ckeditor only--------------------->
     <script ___src="https://cdn.ckeditor.com/4.15.0/standard/ckeditor.js"></script>
     <script ___src="https://wdingbox.github.io/ham12/assets/ckeditor/ckeditor.js"></script>
+
     <script src="http://localhost:7878/assets/ckeditor/ckeditor.js" note="selfseversite"></script>
-    <script src="https://wdingbox.github.io/ham12/assets/ckeditor/samples/old/sample.js"></script>
-    <link href="https://wdingbox.github.io/ham12/assets/ckeditor/samples/old/sample.css" rel="stylesheet">
+    <script src="http://localhost:7878/assets/ckeditor/samples/old/sample.js"></script>
+    <link  href="http://localhost:7878/assets/ckeditor/samples/old/sample.css" rel="stylesheet">
     <!-------------------------------------------->
     <!----- Insert this line after script imports -->
     <script>if (window.module) module = window.module;</script>
     <!-------------------------------------------->
-
+    <style>
+        .editor_state_max {
+            z-index: 999999;
+            position: absolute;
+            right: 20px;
+            background-color: antiquewhite;
+        }
+    </style>
 </head>
 
 <body>
@@ -134,10 +143,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 
             // wait until the editor has done initializing
-            ckEditor.on("instanceReady", function () {
+            ckEditor.on("instanceReady", function (evt) {
 
                 // overwrite the default save function
-                ckEditor.addCommand("save", {
+                evt.editor.addCommand("save", {
                     modes: { wysiwyg: 1, source: 1 },
                     exec: function () {
                         // get the editor content
@@ -158,7 +167,9 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                             function (result) {
                                 ckEditor.resetDirty()
                                 if (theData.length !== result.len) {
-                                    alert(`fatal err save. data loss:${theData.length}-${result.len}=${theData.length - result.len}`)
+                                    var ms = `fatal err save. data loss:${theData.length}-${result.len}=${theData.length - result.len}`
+                                    ckEditor.showNotification(ms, "warning");
+                                    alert(ms)
                                 }
                                 console.log("ret:", result.len);
                                 msg.pop(`OK Saved ${result.len}`, 'green');
@@ -169,13 +180,30 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                             });
                     }
                 });
+
+                evt.editor.on("maximize", function (e) {
+                    console.log("maximize", e)
+                    switch (e.data) {
+                        case 1: //convert to max
+                            //$("#info").addClass("editor_state_max")
+                            ckEditor.showNotification( 'Foo' );
+                            //$("body").append("<a class='editor_state_max'>--asfasf-</a>")
+                            break;
+                        case 2: //turn to norm
+                            break;
+                        default: alert("maximize data?")
+                    }
+                });
+
+                var notification1 = new CKEDITOR.plugins.notification(ckEditor, { message: 'notification Ready',type: 'info' });
+                notification1.update("opoopop");
             });
         }
         function changeEnter() {
             // If we already have an editor, let's destroy it first.
             var imod = Number(document.getElementById('xEnter').value);
             ckEditor.setActiveEnterMode(imod);
-            console.log("xEnter Mode:",imod)
+            console.log("xEnter Mode:", imod)
             return;
         }
         //window.onload = changeEnter;
@@ -198,6 +226,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             this.m_log += s + "; dlt=" + this.m_dlt
             $("#log").prepend(`<option>${this.m_log}</option>`)
             $("#info").html(this.m_log).css("color", clr)
+            ckEditor.showNotification(this.m_log,"info");//
             this.m_log = ""
         }
         var msg = new MSG()
