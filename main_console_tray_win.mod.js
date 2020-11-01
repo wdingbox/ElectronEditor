@@ -318,7 +318,7 @@ var win_tray_uti = {
     })
 
     g_Tray.setMenu(g_Menu.genMenu());
-    g_Window.createWindow();
+    //g_Window.createWindow();
 
 
   }
