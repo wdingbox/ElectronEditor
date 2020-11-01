@@ -138,6 +138,7 @@ function Main_Menu() {
 
         },
       },
+
       { type: "separator" },
 
       {
@@ -145,7 +146,6 @@ function Main_Menu() {
         accelerator: 'Shift+CmdOrCtrl+C',
         click: () => {
           console.log("DevTool")
-          //win_tray_uti.openWindow("./pages/debug_board_dev.html")
           //win_tray_uti.openWindow("./_ckeditor/_app/index.html")
           //win_tray_uti.openWindow("./pages/ckeditor/_fullpage_ckeditor_abs.html")
           if (g_Window.mainWindow && g_Window.mainWindow.webContents) {
@@ -157,8 +157,8 @@ function Main_Menu() {
           //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
         },
       },
-      { type: "separator" },
 
+      { type: "separator" },
 
       {
         id: "SAAtest", label: 'doc.html.ckeditor.htm', toolTip: '--=',
@@ -187,24 +187,21 @@ function Main_Menu() {
       {
         id: "Autolaunch", label: 'Autolaunch', toolTip: 'Autolaunch after reboot', type: 'checkbox', checked: true,
         click: (itm) => {
-          console.log("itm.checked", itm.checked)
-          var tmpitm = _THIS.get_template_item_by_id(itm.id, function (item) {
-            console.log("find item", item)
-            item.checked = itm.checked
+          _THIS.toggle_checked(itm,function(pBeforeClickedItem){
             AutoLauncher.set_auto_launch(itm.checked)
           })
-          _THIS.genMenu();
-          g_Tray.setMenu(_THIS.m_menu)
         },
       },
 
       { type: "separator" },
+
       {
         id: "quit", label: 'Quit', toolTip: 'Terminate Mining-coin-app.', accelerator: 'CmdOrCtrl+Q',
         click: () => {
           app.exit();
         },
       },
+
       {
         id: "version", label: "0.0", toolTip: 'first trial version.', enabled: false,
         accelerator: 'CmdOrCtrl+D',
@@ -215,6 +212,17 @@ function Main_Menu() {
     ];//// template
 
   this.check_id_unique()
+}
+
+Main_Menu.prototype.toggle_checked = function (itm, cbf) {
+  console.log("itm.checked", itm.checked)
+  var tmpitm = this.get_template_item_by_id(itm.id, function (item) {
+    console.log("found item before clicked:", item)
+    item.checked = itm.checked
+    //AutoLauncher.set_auto_launch(itm.checked)
+    if(cbf) cbf(item)
+  })
+  g_Tray.setMenu(this.genMenu())
 }
 Main_Menu.prototype.check_id_unique = function () {
   var idary = [], ret = true
