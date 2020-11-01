@@ -204,7 +204,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         function MSG() {
             this.m_dlt = 0
             this.m_pre_len = 0
-            this.m_log = ""
+            this.m_log = `[${(new Date()).toISOString()}] `
         }
         MSG.prototype.dlt = function (size) {
             this.m_dlt = size - this.m_pre_len
@@ -220,7 +220,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             this.m_log += s + "; dlt=" + this.m_dlt
             $("#histlog").prepend(`<option>${this.m_log}</option>`)
             if (ckEditor) ckEditor.showNotification(this.m_log, styp);//
-            this.m_log = ""
+            this.m_log = `[${(new Date()).toISOString()}] `
         }
         var g_msg = new MSG()
 
@@ -233,6 +233,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         function load_page_by_parse_filename() {
             console.log(window.location)
             var fname = get_custom_pathname().name
+            $("title").text(get_custom_pathname().pathname)
             console.log(fname)
             $.get(fname, function (data) {
                 //alert(data);
