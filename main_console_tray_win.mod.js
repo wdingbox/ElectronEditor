@@ -131,7 +131,7 @@ function Main_Menu() {
         click: (itm) => {
           console.log(itm)
           var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
-          win_tray_uti.openWindow(filename)
+          g_Window.openWindow(filename)
           if (g_Window) {
             //g_Window.webContents.openDevTools({ mode: 'detach' })
           }
@@ -164,7 +164,7 @@ function Main_Menu() {
         idx: 10, id: "SAA", label: 'doc.html.ckeditor.htm', toolTip: '--=',
         click: () => {
           var filename = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/bitbucket/wdingsoft/weid/htmdoc/proj1/TheMeaningOfSon/doc.html.ckeditor.htm"
-          win_tray_uti.openWindow(filename)
+          g_Window.openWindow(filename)
           if (g_Window) {
             g_Window.webContents.openDevTools({ mode: 'detach' })
           }
@@ -176,7 +176,7 @@ function Main_Menu() {
         idx: 10, id: "SAA", label: '_fullpage_ckeditor_tmp2', toolTip: '--',
         click: () => {
           var filename = "./pages/ckeditor/_fullpage_ckeditor_tmp2.html"
-          win_tray_uti.openWindow(filename)
+          g_Window.openWindow(filename)
           if (g_Window) {
             g_Window.webContents.openDevTools({ mode: 'detach' })
           }
