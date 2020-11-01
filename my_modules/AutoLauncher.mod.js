@@ -22,9 +22,11 @@ var AutoLauncher = {
     //const buildpath = 'BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/'
     const pathnam = process.cwd() + `/${pkgName}`; //path.join(__dirname, pkgName);
     if (!fs.existsSync(pathnam)) {
-      console.log("***\n*** autolaunch pathnam not exists:")
+      console.log("\n\n*********\n* autolaunch pathnam not exists:")
     }
-    console.log(pathnam, "\n")
+    console.log("* pkgName:", pkgName)
+    console.log("*", pathnam)
+    console.log("*********\n\n\n")
     AutoLauncher.minecraftAutoLauncher = new AutoLaunch({
       name: pkgName,
       path: pathnam,
@@ -34,8 +36,8 @@ var AutoLauncher = {
         console.log("minecraftAutoLauncher::isEnabled()then===", isEnabled)
         AutoLauncher.isEnabled = isEnabled;
 
-        if(cbfun){
-            cbfun(isEnabled)
+        if (cbfun) {
+          cbfun(isEnabled)
         }
       })
       .catch(function (err) {
@@ -97,6 +99,6 @@ AutoLauncher.set_auto_launch(itm.checked)
 -------------------*/
 
 module.exports = {
-    //For Client site.
-    AutoLauncher: AutoLauncher,
+  //For Client site.
+  AutoLauncher: AutoLauncher,
 }

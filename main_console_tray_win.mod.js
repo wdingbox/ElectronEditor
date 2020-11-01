@@ -161,7 +161,7 @@ function Main_Menu() {
 
 
       {
-        id: "SAA", label: 'doc.html.ckeditor.htm', toolTip: '--=',
+        id: "SAAtest", label: 'doc.html.ckeditor.htm', toolTip: '--=',
         click: () => {
           var filename = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/bitbucket/wdingsoft/weid/htmdoc/proj1/TheMeaningOfSon/doc.html.ckeditor.htm"
           g_Window.openWindow(filename)
@@ -213,8 +213,26 @@ function Main_Menu() {
         },
       }
     ];//// template
+
+  this.check_id_unique()
+}
+Main_Menu.prototype.check_id_unique = function () {
+  var idary = [], ret = true
+  for (var i = 0; i < this.template.length; i++) {
+    if ("separator" === this.template[i].type) continue
+    var id = this.template[i].id
+    if (idary.indexOf(id) >= 0) {
+      console.log("\n\n **** ERROR *****")
+      console.log(" Menu template has duplicated id:", id)
+      console.log(" **** ERROR *****\n\n\n")
+      ret = false
+    }
+    idary.push(id)
+  }
+  return ret
 }
 Main_Menu.prototype.get_template_item_by_id = function (id, cb) {
+  if (false == this.check_id_unique()) return
   for (var i = 0; i < this.template.length; i++) {
     if (this.template[i].id === id) {
       if (cb) cb(this.template[i])
@@ -260,8 +278,8 @@ var win_tray_uti = {
 
   signal2web: function (obj) {
     ///= console.log("console send:", obj)
-    if (!g_Window) return
-    g_Window.webContents.send("Main2Web", obj);
+    if (!g_Window.mainWindow) return
+    g_Window.mainWindow.webContents.send("Main2Web", obj);
   },
 
   launch: function () {
@@ -270,7 +288,7 @@ var win_tray_uti = {
     g_Window = new Main_Window()
     g_Tray = new Main_Tray()
 
-    // main entry
+    //// 
     AutoLauncher.init("ElectronCkEditorAppPkg", function (bAutolaunch) {
       g_Menu.get_template_item_by_id("Autolaunch", function (item) {
         item.checked = bAutolaunch
