@@ -19,10 +19,13 @@ const icon_pressed = path.join(__dirname, "assets/img/files/20x20/edit.png")
 
 
 
+var g_Tray = null
+var g_Window = null
+var g_Menu = null
 
 
 function Main_Window() {
-
+  this.mainWindow = null
 }
 Main_Window.prototype.createWindow = function () {
   if (this.mainWindow) return
@@ -53,27 +56,28 @@ Main_Window.prototype.createWindow = function () {
     }
   })
 
+  var _THIS = this
 
   this.mainWindow.on("blur", () => {
-    if (this.mainWindow.m_isAnimation) {
+    if (_THIS.mainWindow.m_isAnimation) {
       return;
     }
-    if (!this.mainWindow.webContents.isDevToolsOpened()) {
+    if (!_THIS.mainWindow.webContents.isDevToolsOpened()) {
       // win_tray_uti.mainWindow.hide();
     }
   });
   this.mainWindow.on("close", () => {
     console.log("win close")
-    this.mainWindow = null
+    _THIS.mainWindow = null
   });
 
   //win_tray_uti.win.documentEdited(true)
 
   this.mainWindow.webContents.on('did-finish-load', () => {
     console.log("main window did-finish-load.")
-    if (!this.mainWindow.webContents) return "webConents null"
+    if (!_THIS.mainWindow.webContents) return "webConents null"
     //ipcRenderer.send("test","msg")
-    this.mainWindow.webContents.send('test', __dirname + '\\')
+    _THIS.mainWindow.webContents.send('test', __dirname + '\\')
   })
 }
 Main_Window.prototype.openWindow = function (filename, bforceReload) {
@@ -93,7 +97,7 @@ Main_Window.prototype.openWindow = function (filename, bforceReload) {
   this.m_loadfile = filename
   this.mainWindow.show()
 }
-var g_Window = null
+
 
 
 ////////////////////////
@@ -113,12 +117,14 @@ function Main_Tray() {
   console.log('HI, tray');
   this.tray.on("click", () => {
     console.log('HI, tray click');
+
+    g_Menu.set_enabled_by_id("OpenDevTool", !!g_Window.mainWindow)
   })
 }
 Main_Tray.prototype.setMenu = function (menu) {
   this.tray.setContextMenu(menu)
 }
-var g_Tray = null
+
 
 
 //Tray Menu Template 
@@ -142,16 +148,16 @@ function Main_Menu() {
       { type: "separator" },
 
       {
-        id: "devTool", label: 'Open DevTool', toolTip: 'open DevTool.', enabled: true,
+        id: "OpenDevTool", label: 'Open DevTool', toolTip: 'open DevTool.', enabled: false,
         accelerator: 'Shift+CmdOrCtrl+C',
-        click: () => {
+        click: (itm) => {
           console.log("DevTool")
           //win_tray_uti.openWindow("./_ckeditor/_app/index.html")
-          //win_tray_uti.openWindow("./pages/ckeditor/_fullpage_ckeditor_abs.html")
           if (g_Window.mainWindow && g_Window.mainWindow.webContents) {
+            console.log("to open DevTool")
             g_Window.mainWindow.webContents.openDevTools({ "defaultFontSize": 28 })
           } else {
-            console.log("DevTool opne Failed.")
+            console.log("DevTool cannot opne: no window")
           }
           ////////
           //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
@@ -187,7 +193,7 @@ function Main_Menu() {
       {
         id: "Autolaunch", label: 'Autolaunch', toolTip: 'Autolaunch after reboot', type: 'checkbox', checked: true,
         click: (itm) => {
-          _THIS.toggle_checked(itm,function(pBeforeClickedItem){
+          _THIS.toggle_checked(itm, function (pBeforeClickedItem) {
             AutoLauncher.set_auto_launch(itm.checked)
           })
         },
@@ -213,14 +219,22 @@ function Main_Menu() {
 
   this.check_id_unique()
 }
-
+Main_Menu.prototype.set_enabled_by_id = function (id, bEnabled, cbf) {
+  console.log("set_enabled_by_id: id, bEnabled:", id, bEnabled)
+  var tmpitm = this.get_template_item_by_id(id, function (pItem) {
+    console.log("found item before clicked:", pItem)
+    pItem.enabled = bEnabled
+    if (cbf) cbf(pItem)
+  })
+  g_Tray.setMenu(this.genMenu())
+}
 Main_Menu.prototype.toggle_checked = function (itm, cbf) {
   console.log("itm.checked", itm.checked)
   var tmpitm = this.get_template_item_by_id(itm.id, function (item) {
     console.log("found item before clicked:", item)
     item.checked = itm.checked
     //AutoLauncher.set_auto_launch(itm.checked)
-    if(cbf) cbf(item)
+    if (cbf) cbf(item)
   })
   g_Tray.setMenu(this.genMenu())
 }
@@ -273,7 +287,7 @@ Main_Menu.prototype.genMenu = function () {
 }
 Main_Menu.prototype.onclick = function (id, cb) {
 }
-var g_Menu = null
+
 
 
 
