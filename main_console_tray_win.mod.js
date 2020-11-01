@@ -145,6 +145,18 @@ function Main_Menu() {
         },
       },
 
+      {
+        id: "Samples", label: 'Samples', toolTip: 'Samples',
+        click: () => {
+          var filename = "./assets/ckeditor/samples/old/index.html"
+          g_Window.openWindow(filename)
+          if (g_Window.mainWindow) {
+            g_Window.mainWindow.webContents.openDevTools({ mode: 'attach' })
+          }
+
+        },
+      },
+
       { type: "separator" },
 
       {
@@ -155,7 +167,7 @@ function Main_Menu() {
           //win_tray_uti.openWindow("./_ckeditor/_app/index.html")
           if (g_Window.mainWindow && g_Window.mainWindow.webContents) {
             console.log("to open DevTool")
-            g_Window.mainWindow.webContents.openDevTools({ "defaultFontSize": 28 })
+            g_Window.mainWindow.webContents.openDevTools({ mode: 'detach', "defaultFontSize": 28 })
           } else {
             console.log("DevTool cannot opne: no window")
           }
@@ -165,30 +177,6 @@ function Main_Menu() {
       },
 
       { type: "separator" },
-
-      {
-        id: "SAAtest", label: 'doc.html.ckeditor.htm', toolTip: '--=',
-        click: () => {
-          var filename = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/bitbucket/wdingsoft/weid/htmdoc/proj1/TheMeaningOfSon/doc.html.ckeditor.htm"
-          g_Window.openWindow(filename)
-          if (g_Window.mainWindow) {
-            g_Window.mainWindow.webContents.openDevTools({ mode: 'detach' })
-          }
-
-        },
-      },
-
-      {
-        id: "SAA", label: '_fullpage_ckeditor_tmp2', toolTip: '--',
-        click: () => {
-          var filename = "./pages/ckeditor/_fullpage_ckeditor_tmp2.html"
-          g_Window.openWindow(filename)
-          if (g_Window.mainWindow) {
-            g_Window.mainWindow.webContents.openDevTools({ mode: 'detach' })
-          }
-
-        },
-      },
 
       {
         id: "Autolaunch", label: 'Autolaunch', toolTip: 'Autolaunch after reboot', type: 'checkbox', checked: true,
