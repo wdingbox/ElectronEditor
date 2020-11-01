@@ -7,7 +7,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 <head>
     <meta charset="utf-8">
-    <title>Full Page Editing &mdash; CKEditor</title>
+    <title>Full Page Onsite HTML Visual Editing</title>
 
     <meta name="ckeditor-sample-required-plugins" content="sourcearea">
     </meta>
@@ -35,7 +35,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
     <script src="http://localhost:7878/assets/ckeditor/ckeditor.js" note="selfseversite"></script>
     <script src="http://localhost:7878/assets/ckeditor/samples/old/sample.js"></script>
-    <link  href="http://localhost:7878/assets/ckeditor/samples/old/sample.css" rel="stylesheet">
+    <link href="http://localhost:7878/assets/ckeditor/samples/old/sample.css" rel="stylesheet">
     <!-------------------------------------------->
     <!----- Insert this line after script imports -->
     <script>if (window.module) module = window.module;</script>
@@ -51,10 +51,6 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 </head>
 
 <body>
-
-    <h1 class="samples">
-        <a>CKEditor</a> &raquo; <a id="info">Full Page Editing</a>
-    </h1>
 
     <form action="http://localhost:7878/save" method="post">
         <label for="editor1">
@@ -83,7 +79,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     </div>
     <br><br>
     <p>
-        <select id="log" size="10"></select>
+        <select id="histlog" size="10"></select>
 
     </p>
 
@@ -153,11 +149,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                         var theData = ckEditor.getData();
                         if (false === ckEditor.checkDirty()) {
                             console.log("checkDirty : false")
-                            //$("#info").html("<font color='green'>no change</color>");
-                            msg.dlt(theData.length).pop("no change.");
+                            g_msg.dlt(theData.length).pop("no change; no saving");
                             return
                         }
-                        msg.put(`to save len:${theData.length}`).dlt(theData.length);
+                        g_msg.put(`to save len:${theData.length}`).dlt(theData.length);
                         //alert(theData);
                         $.post("http://localhost:7878/save",
                             {
@@ -168,13 +163,12 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                                 ckEditor.resetDirty()
                                 if (theData.length !== result.len) {
                                     var ms = `fatal err save. data loss:${theData.length}-${result.len}=${theData.length - result.len}`
-                                    ckEditor.showNotification(ms, "warning");
-                                    alert(ms)
+                                    return g_msg.pop(ms, 'warning');
                                 }
                                 console.log("ret:", result.len);
-                                msg.pop(`OK Saved ${result.len}`, 'green');
+                                g_msg.pop(`OK Saved ${result.len}`);
                             }).fail(function (er) {
-                                msg.pop(`*** saved failed:${er}`, "red")
+                                g_msg.pop(`*** saved failed:${er}`, "warning")
                             }).done(function (ret) {
                                 console.log("done:", ret)
                             });
@@ -185,17 +179,16 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     console.log("maximize", e)
                     switch (e.data) {
                         case 1: //convert to max
-                            //$("#info").addClass("editor_state_max")
-                            ckEditor.showNotification( 'Foo' );
-                            //$("body").append("<a class='editor_state_max'>--asfasf-</a>")
+                            ckEditor.showNotification('maximize');
                             break;
                         case 2: //turn to norm
+                            ckEditor.showNotification('mainimize');
                             break;
                         default: alert("maximize data?")
                     }
                 });
 
-                var notification1 = new CKEDITOR.plugins.notification(ckEditor, { message: 'notification Ready',type: 'info' });
+                var notification1 = new CKEDITOR.plugins.notification(ckEditor, { message: 'notification Ready', type: 'info' });
                 notification1.update("opoopop");
             });
         }
@@ -209,6 +202,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         //window.onload = changeEnter;
 
         function MSG() {
+            this.m_dlt = 0
             this.m_pre_len = 0
             this.m_log = ""
         }
@@ -221,15 +215,14 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             this.m_log += s + "; ";
             return this
         }
-        MSG.prototype.pop = function (s, clr) {
-            if (!clr) clr = "black"
+        MSG.prototype.pop = function (s, styp) {
+            if (!styp) styp = "info"
             this.m_log += s + "; dlt=" + this.m_dlt
-            $("#log").prepend(`<option>${this.m_log}</option>`)
-            $("#info").html(this.m_log).css("color", clr)
-            ckEditor.showNotification(this.m_log,"info");//
+            $("#histlog").prepend(`<option>${this.m_log}</option>`)
+            if (ckEditor) ckEditor.showNotification(this.m_log, styp);//
             this.m_log = ""
         }
-        var msg = new MSG()
+        var g_msg = new MSG()
 
         function get_custom_pathname() {
             var pathname = window.location.pathname.replace(/___fullpage_ckeditor\.htm$/, "")
@@ -243,8 +236,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             console.log(fname)
             $.get(fname, function (data) {
                 //alert(data);
-                msg.put("initial load file").dlt(data.length).pop("", "")
-                CKEDITOR.instances.editor1.setData(data)
+                setTimeout(()=>{
+                    CKEDITOR.instances.editor1.setData(data)
+                    g_msg.put(`initial load file size ${data.length}`).pop("loaded")
+                },1000)
             });
         }
     </script>
