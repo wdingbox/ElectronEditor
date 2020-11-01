@@ -68,7 +68,7 @@ EditorHistory.prototype.popTRs = function () {
   $("#histbody").html(trs).find(".pfname").bind("click", function () {
     $("#histbody").find(".pfname").css("background-color", "")
     var destfname = $(this).css("background-color", "grey").text() + CKEsuffix
-    $("#destpath").text(destfname)
+    $("#destpath").text(destfname).attr("href",destfname)
     $("#form1").attr("action", destfname)
     $("input[type='submit']").css("visibility", "visible")
   })
@@ -108,7 +108,7 @@ function setup_editor_config() {
     console.log(files.path, ' was copied to', svr_site_clientfile);
   });
 
-  $("#destpath").text(destfname)
+  $("#destpath").text(destfname).attr("href",destfname)
   $("#form1").attr("action", destfname)
   $("input[type='submit']").css("visibility", "visible")
 
