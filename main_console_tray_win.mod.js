@@ -148,8 +148,8 @@ function Main_Menu() {
           //win_tray_uti.openWindow("./pages/debug_board_dev.html")
           //win_tray_uti.openWindow("./_ckeditor/_app/index.html")
           //win_tray_uti.openWindow("./pages/ckeditor/_fullpage_ckeditor_abs.html")
-          if (g_Window && g_Window.webContents) {
-            g_Window.webContents.openDevTools({ "defaultFontSize": 28 })
+          if (g_Window.mainWindow && g_Window.mainWindow.webContents) {
+            g_Window.mainWindow.webContents.openDevTools({ "defaultFontSize": 28 })
           } else {
             console.log("DevTool opne Failed.")
           }
@@ -257,7 +257,7 @@ var g_Menu = null
 ///////////////////
 ///////////////////////
 var win_tray_uti = {
- 
+
   signal2web: function (obj) {
     ///= console.log("console send:", obj)
     if (!g_Window) return
@@ -276,7 +276,7 @@ var win_tray_uti = {
         item.checked = bAutolaunch
       })
     })
-    
+
     g_Tray.setMenu(g_Menu.genMenu());
     g_Window.createWindow();
 
