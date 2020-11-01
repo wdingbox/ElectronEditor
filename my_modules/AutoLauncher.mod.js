@@ -19,17 +19,21 @@ var AutoLauncher = {
   init: function (pkgName, cbfun) {
     if (AutoLauncher.minecraftAutoLauncher) return;
     //const pkgName = 'BungeeMiningAppPkg' //////==>from package.json {script:build}
-    //const buildpath = 'BungeeMiningAppPkg-darwin-x64/BungeeMiningAppPkg.app/Contents/Resources/'
-    const pathnam = process.cwd() + `/${pkgName}`; //path.join(__dirname, pkgName);
-    if (!fs.existsSync(pathnam)) {
-      console.log("\n\n*********\n* autolaunch pathnam not exists:")
-    }
+   
+    //var buildpath = `/ElectronCkEditorAppPkg-darwin-x64/ElectronCkEditorAppPkg.app/Contents/MacOS/ElectronCkEditorAppPkg`
+    var buildpath=`/${pkgName}-darwin-x64/${pkgName}.app/Contents/MacOS/` ;;//Path without filename.
+    const pathnam = process.cwd() + `/${buildpath}`; //path.join(__dirname, pkgName);
+
+    console.log("\n\n* buildpath:", buildpath)
     console.log("* pkgName:", pkgName)
-    console.log("*", pathnam)
-    console.log("*********\n\n\n")
+    console.log("* pathnam:", pathnam)
+    if (!fs.existsSync(pathnam)) {
+      console.log("\n\n*********\n* autolaunch pathnam not exists.")
+      console.log("*********\n\n\n")
+    }
     AutoLauncher.minecraftAutoLauncher = new AutoLaunch({
-      name: pkgName,
-      path: pathnam,
+      name: pkgName, // filename only.
+      path: pathnam, // fullpath only. no filename.
     });
     AutoLauncher.minecraftAutoLauncher.isEnabled()
       .then(function (isEnabled) {
