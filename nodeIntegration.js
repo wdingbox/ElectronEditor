@@ -57,6 +57,7 @@ EditorHistory.prototype.set = function (key) {
   var obj = electronStore.get(this.m_key)
   obj[key] = (new Date()).toISOString()
   electronStore.set(this.m_key, obj)
+  this.popTRs()
 }
 EditorHistory.prototype.popTRs = function () {
   var obj = electronStore.get(this.m_key)
@@ -86,14 +87,14 @@ function setup_editor_config() {
   editorHistory.set(files.path)
   editorHistory.popTRs()
 
-  $("#fname_histoory").append(`<option>${files.path}</option>`)
-
+  
   var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_independent_template.html"
   //var suffix = "___fullpage_ckeditor.htm"
   var destfname = `${files.path}${CKEsuffix}`
-
-  var svr_site_clientfile = `/tmp/backupfile.html`
-
+  
+  var svr_site_clientfile = `/tmp/backupfile.html` //for backup
+  
+  $("#fname_histoory").append(`<option>${files.path}</option>`)
   $("#fname_histoory").append(`<option>${ckeditor_abs}</option>`)
   $("#fname_histoory").append(`<option>${destfname}</option>`)
   $("#fname_histoory").append(`<option>${svr_site_clientfile}</option>`)
@@ -113,6 +114,45 @@ function setup_editor_config() {
   $("input[type='submit']").css("visibility", "visible")
 
 }
+function setup_maverick_editor() {
+  //alert($(this).val());
+  var files = document.getElementById("fname").files[0];//.name; 
+  console.log("files", files)
+
+  editorHistory.set(files.path)
+
+
+  const maverick = "___maverick.editor.html"
+  //var suffix = "___fullpage_ckeditor.htm"
+  var svr_bkup = `/tmp/backupfile.html`
+  var src = `./pages/ckeditor/${maverick}`
+  var regx = new RegExp(`/${files.name}$`)
+  var destpath = files.path.replace(regx,"")
+  var destfname = `${destpath}/${maverick}`
+  
+  
+  $("#fname_histoory").append(`<option>${files.path}</option>`)
+  $("#fname_histoory").append(`<option>${src}</option>`)
+  $("#fname_histoory").append(`<option>${destfname}</option>`)
+  $("#fname_histoory").append(`<option>${svr_bkup}</option>`)
+
+  console.log("copyFile:\n",src,'\n',destfname)
+  fs.copyFile(src, destfname, (err) => {
+    if (err) throw err;
+    console.log(src, ' was copied to', destfname);
+  });
+
+  fs.copyFile(files.path, svr_bkup, (err) => {
+    if (err) throw err;
+    console.log(files.path, ' was copied to', svr_bkup);
+  });
+
+  var url = `${destfname}?fname=${files.name}`
+  $("#destpath").text(url).attr("href",url)
+  $("#form1").attr("action", url)
+  $("input[type='submit']").css("visibility", "visible")
+
+}
 
 
 $(function () {
@@ -120,7 +160,8 @@ $(function () {
   $("input[type=file]").click(function () {
     $(this).val("");
   }).change(function () {
-    setup_editor_config()
+    //setup_editor_config()
+    setup_maverick_editor()
   });
 })
 

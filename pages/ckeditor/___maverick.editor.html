@@ -58,7 +58,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             <code>&lt;body&gt;</code> element, so content like meta and title can be changed:
         </label>
         <textarea cols="80" id="editor1" name="editor1" rows="10">
-			&lt;h1&gt;&lt;img align=&quot;right&quot; alt=&quot;Saturn V carrying Apollo 11&quot; src=&quot;../../_ckeditor/_app/old/assets/sample.jpg&quot;/&gt; Apollo 11&lt;/h1&gt; &lt;p&gt;&lt;b&gt;Apollo 11&lt;/b&gt; was the spaceflight that landed the first humans, Americans &lt;a href=&quot;http://en.wikipedia.org/wiki/Neil_Armstrong&quot; title=&quot;Neil Armstrong&quot;&gt;Neil Armstrong&lt;/a&gt; and &lt;a href=&quot;http://en.wikipedia.org/wiki/Buzz_Aldrin&quot; title=&quot;Buzz Aldrin&quot;&gt;Buzz Aldrin&lt;/a&gt;, on the Moon on July 20, 1969, at 20:18 UTC. Armstrong became the first to step onto the lunar surface 6 hours later on July 21 at 02:56 UTC.&lt;/p&gt; &lt;p&gt;
+			loading insite file ...
 		</textarea>
     </form>
     <div style="float: left; margin-right: 20px">
@@ -111,7 +111,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
                 enterMode: CKEDITOR.ENTER_DIV, //default mode. 
 
-                wordcount: {
+                wordcount: {//not working.
                     'showWordCount': true,
                     'showParagraphs': true,
                     'showCharCount': true,
@@ -147,36 +147,11 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 evt.editor.addCommand("save", {
                     modes: { wysiwyg: 1, source: 1 },
                     exec: function () {
-                        // get the editor content
-                        var theData = ckEditor.getData();
-                        if (false === ckEditor.checkDirty()) {
-                            console.log("checkDirty : false")
-                            g_msg.dlt(theData.length).pop("no change; no saving");
-                            return
-                        }
-                        g_msg.put(`to save len:${theData.length}`).dlt(theData.length);
-                        //alert(theData);
-                        $.post("http://localhost:7878/save",
-                            {
-                                "pathname": get_custom_pathname().pathname,
-                                "htm": theData
-                            },
-                            function (result) {
-                                ckEditor.resetDirty()
-                                if (theData.length !== result.len) {
-                                    var ms = `fatal err save. data loss:${theData.length}-${result.len}=${theData.length - result.len}`
-                                    return g_msg.pop(ms, 'warning');
-                                }
-                                console.log("ret:", result.len);
-                                g_msg.pop(`OK Saved ${result.len}`);
-                            }).fail(function (er) {
-                                g_msg.pop(`*** saved failed:${er}`, "warning")
-                            }).done(function (ret) {
-                                console.log("done:", ret)
-                            });
+                        __save()
                     }
                 });
 
+                // maximize / mainimize
                 evt.editor.on("maximize", function (e) {
                     console.log("maximize", e)
                     switch (e.data) {
@@ -190,8 +165,16 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     }
                 });
 
-                var notification1 = new CKEDITOR.plugins.notification(ckEditor, { message: 'notification Ready', type: 'info' });
-                notification1.update("opoopop");
+                // for github cmd.
+                evt.editor.addCommand("preview", {
+                    modes: { wysiwyg: 1, source: 1 },
+                    exec: function () {
+                        __save()
+                        return false //disable popup.
+                    }
+                });
+
+             
             });
         }
         function changeEnter() {
@@ -201,48 +184,100 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             console.log("xEnter Mode:", imod)
             return;
         }
-        //window.onload = changeEnter;
+        ////////window.onload = changeEnter;
 
-        function MSG() {
-            this.m_dlt = 0
-            this.m_pre_len = 0
-            this.m_log = `[${(new Date()).toISOString()}] `
+        function _MSG() {
+            this.m_len = 0
+            this.m_sChangeLen = ""
         }
-        MSG.prototype.dlt = function (size) {
-            this.m_dlt = size - this.m_pre_len
-            this.m_pre_len = size
+        _MSG.prototype.dlt = function (len) {
+            var dlt = len - this.m_len
+            this.m_sChangeLen = `len change: ${en}-${this.m_len}=${dlt}`
+            this.m_len = len
             return this
         }
-        MSG.prototype.put = function (s) {
-            this.m_log += s + "; ";
-            return this
-        }
-        MSG.prototype.pop = function (s, styp) {
+        _MSG.prototype.pop = function (s, styp) {
             if (!styp) styp = "info"
-            this.m_log += s + "; dlt=" + this.m_dlt
-            $("#histlog").prepend(`<option>${this.m_log}</option>`)
-            if (ckEditor) ckEditor.showNotification(this.m_log, styp);//
-            this.m_log = `[${(new Date()).toISOString()}] `
+            s = `[${(new Date()).toISOString()}] ${s} ${this.m_sChangeLen} `
+            $("#histlog").prepend(`<option>${s}</option>`)
+            if (ckEditor) ckEditor.showNotification(s, styp);//
+            this.m_sChangeLen = ""
+            return this
         }
-        var g_msg = new MSG()
+        var g_msg = new _MSG()
 
-        function get_custom_pathname() {
-            var pathname = window.location.pathname.replace(/___fullpage_ckeditor\.htm$/, "")
-            var ary = pathname.split("/")
-            var name = ary[ary.length - 1]
-            return { name: name, pathname: pathname }
+        function __git_cmd() {
+            //alert(theData);
+            $.post("http://localhost:7878/git_cmd",
+                {
+                    "pathname": get_custom_pathname().root,
+                    "cmd_script": ""
+                },
+                function (result) {
+                    var dataloss = theData.length - result.len
+                    var ms = `data loss:${theData.length}-${result.len}=${theData.length - result.len}`
+                    if (dataloss != 0) {
+                        alert(ms)
+                        return g_msg.pop('ERROR:' + ms, 'warning');
+                    }
+                    console.log("ret:", result.len);
+                    g_msg.pop(`Save OK. ${ms}`);
+                    ckEditor.resetDirty()
+                }).fail(function (er) {
+                    g_msg.pop(`*** saved failed:${er}`, "warning")
+                }).done(function (ret) {
+                    console.log("done:", ret)
+                });
         }
-        function load_page_by_parse_filename() {
+        function __save() {
+            // get the editor content
+            var theData = ckEditor.getData();
+            if (false === ckEditor.checkDirty()) {
+                console.log("checkDirty : false")
+                g_msg.pop(` no change; no saving; len:${theData.length}`);
+                return
+            }
+            g_msg.dlt(theData.length).pop(` to save.`);
+            //alert(theData);
+            $.post("http://localhost:7878/save",
+                {
+                    "pathname": get_custom_pathname().pathname,
+                    "htm": theData
+                },
+                function (result) {
+                    var dataloss = theData.length - result.len
+                    var ms = `data loss:${theData.length}-${result.len}=${theData.length - result.len}`
+                    if (dataloss != 0) {
+                        alert(ms)
+                        return g_msg.pop('ERROR:' + ms, 'warning');
+                    }
+                    console.log("ret:", result.len);
+                    g_msg.pop(`Save OK. ${ms}`);
+                    ckEditor.resetDirty()
+                }).fail(function (er) {
+                    g_msg.pop(`*** saved failed:${er}`, "warning")
+                }).done(function (ret) {
+                    console.log("done:", ret)
+                });
+        }
+        function get_custom_pathname() {
+            var regex = new RegExp("/___maverick.editor.html$")
+            var root = window.location.pathname.replace(regex, "")
+            var name = window.location.search.replace("?fname=", "")
+            var pathname = root + "/" + name
+            return { name: name, pathname: pathname, root: root }
+        }
+        function load_page_by_parse_window_location() {
             console.log(window.location)
             var fname = get_custom_pathname().name
             $("title").text(get_custom_pathname().pathname)
             console.log(fname)
             $.get(fname, function (data) {
                 //alert(data);
-                setTimeout(()=>{
+                setTimeout(() => {
                     CKEDITOR.instances.editor1.setData(data)
-                    g_msg.put(`initial load file size ${data.length}`).pop("loaded")
-                },1000)
+                    g_msg.pop(`initial load file: ${fname}, size:${data.length}(B)`).m_len = data.length
+                }, 1000)
             });
         }
     </script>
@@ -253,6 +288,6 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 <script>
     $(function () {
         init_CKEditor()
-        load_page_by_parse_filename()
+        load_page_by_parse_window_location()
     })
 </script>
