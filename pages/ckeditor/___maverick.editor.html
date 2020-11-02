@@ -77,12 +77,14 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             <option selected="selected" value="2">Break the line with a &lt;BR&gt; (recommended)</option>
         </select>
     </div>
+   
     <br><br>
     <p>
         <select id="histlog" size="10"></select>
-
     </p>
-
+    <p>
+        <textarea id="output">output</textarea>
+        </p>
     <div id="footer">
         <hr>
         <p>
@@ -215,7 +217,8 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 },
                 function (result) {
                     console.log("git cmd result:", result);
-                    g_msg.pop(`Save OK. ${result.output}`);
+                    g_msg.pop(`Cmd for git.`);
+                    $("#output").val(result.output)
                 }).fail(function (er) {
                     g_msg.pop(`*** saved failed:${er}`, "warning")
                 }).done(function (ret) {
