@@ -69,7 +69,7 @@ EditorHistory.prototype.popTRs = function () {
   $("#histbody").html(trs).find(".pfname").bind("click", function () {
     $("#histbody").find(".pfname").css("background-color", "")
     var destfname = $(this).css("background-color", "grey").text() + CKEsuffix
-    $("#destpath").text(destfname).attr("href",destfname)
+    $("#destpath").text(destfname).attr("href", destfname)
     $("#form1").attr("action", destfname)
     $("input[type='submit']").css("visibility", "visible")
   })
@@ -78,42 +78,35 @@ EditorHistory.prototype.popTRs = function () {
 var editorHistory = new EditorHistory()
 
 
-function setup_editor_config() {
-  //alert($(this).val());
-  var files = document.getElementById("fname").files[0];//.name; 
-  //alert(files.path)
-  console.log("files", files)
+function get_custom_cmd_sh(rootpath) {
+  return `#!/bin/bash
 
-  editorHistory.set(files.path)
-  editorHistory.popTRs()
+# goto customer folder.
+cd ${rootpath}
 
-  
-  var ckeditor_abs = "./pages/ckeditor/_fullpage_ckeditor_independent_template.html"
-  //var suffix = "___fullpage_ckeditor.htm"
-  var destfname = `${files.path}${CKEsuffix}`
-  
-  var svr_site_clientfile = `/tmp/backupfile.html` //for backup
-  
-  $("#fname_histoory").append(`<option>${files.path}</option>`)
-  $("#fname_histoory").append(`<option>${ckeditor_abs}</option>`)
-  $("#fname_histoory").append(`<option>${destfname}</option>`)
-  $("#fname_histoory").append(`<option>${svr_site_clientfile}</option>`)
+#################################################################
+echo "================= git diff --ignore-space-at-eol -b -w --ignore-blank-lines --color-words=. ================================"
+git diff --ignore-space-at-eol -b -w --ignore-blank-lines --color-words=.
 
-  fs.copyFile(ckeditor_abs, destfname, (err) => {
-    if (err) throw err;
-    console.log(ckeditor_abs, ' was copied to', destfname);
-  });
 
-  fs.copyFile(files.path, svr_site_clientfile, (err) => {
-    if (err) throw err;
-    console.log(files.path, ' was copied to', svr_site_clientfile);
-  });
 
-  $("#destpath").text(destfname).attr("href",destfname)
-  $("#form1").attr("action", destfname)
-  $("input[type='submit']").css("visibility", "visible")
 
-}
+
+################################################################
+echo "================= git status ================================"
+git status
+
+################################################################
+echo "================= git branch ================================"
+git branch
+
+
+#################################################################
+echo "================= ls -al ================================"
+ls -al
+`}
+
+
 function setup_maverick_editor() {
   //alert($(this).val());
   var files = document.getElementById("fname").files[0];//.name; 
@@ -122,21 +115,23 @@ function setup_maverick_editor() {
   editorHistory.set(files.path)
 
 
-  const maverick = "___maverick.editor.html"
+  const maverick_htm = "___maverick.editor.html"
+  const maverick_sh = "___maverick.git_cmd.sh"
   //var suffix = "___fullpage_ckeditor.htm"
   var svr_bkup = `/tmp/backupfile.html`
-  var src = `./pages/ckeditor/${maverick}`
+  var src = `./pages/ckeditor/${maverick_htm}`
   var regx = new RegExp(`/${files.name}$`)
-  var destpath = files.path.replace(regx,"")
-  var destfname = `${destpath}/${maverick}`
-  
-  
+  var destpath = files.path.replace(regx, "")
+  var destfname = `${destpath}/${maverick_htm}`
+  var destcshname = `./tmp/${maverick_sh}`
+
+
   $("#fname_histoory").append(`<option>${files.path}</option>`)
   $("#fname_histoory").append(`<option>${src}</option>`)
   $("#fname_histoory").append(`<option>${destfname}</option>`)
   $("#fname_histoory").append(`<option>${svr_bkup}</option>`)
 
-  console.log("copyFile:\n",src,'\n',destfname)
+  console.log("copyFile:\n", src, '\n', destfname)
   fs.copyFile(src, destfname, (err) => {
     if (err) throw err;
     console.log(src, ' was copied to', destfname);
@@ -147,8 +142,15 @@ function setup_maverick_editor() {
     console.log(files.path, ' was copied to', svr_bkup);
   });
 
+  var txt = get_custom_cmd_sh(destpath)
+  fs.writeFileSync(destcshname, txt, "utf8",function(er){
+    if(er) console.log("sh cmd:",er )
+    console.log("sh cmd:",destcshname,"\n",txt )
+  })
+
+
   var url = `${destfname}?fname=${files.name}`
-  $("#destpath").text(url).attr("href",url)
+  $("#destpath").text(url).attr("href", url)
   $("#form1").attr("action", url)
   $("input[type='submit']").css("visibility", "visible")
 

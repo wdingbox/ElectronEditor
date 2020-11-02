@@ -133,7 +133,7 @@ function Main_Menu() {
   this.template =
     [
       {
-        id: "EditCustomHtmlFileOnsite", label: 'Edit Custom Html File Onsite', toolTip: 'Save', accelerator: 'CmdOrCtrl+S',
+        id: "EditCustomHtmlFileOnsite", label: 'Choose File', toolTip: 'Choose a HTML File to edit.', accelerator: 'CmdOrCtrl+S',
         click: (itm) => {
           console.log(itm)
           var filename = "./pages/ckeditor/setup_custom_ckeditor.html"

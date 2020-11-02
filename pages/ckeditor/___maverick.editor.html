@@ -169,7 +169,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 evt.editor.addCommand("preview", {
                     modes: { wysiwyg: 1, source: 1 },
                     exec: function () {
-                        __save()
+                        __git_cmd()
                         return false //disable popup.
                     }
                 });
@@ -214,15 +214,8 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     "cmd_script": ""
                 },
                 function (result) {
-                    var dataloss = theData.length - result.len
-                    var ms = `data loss:${theData.length}-${result.len}=${theData.length - result.len}`
-                    if (dataloss != 0) {
-                        alert(ms)
-                        return g_msg.pop('ERROR:' + ms, 'warning');
-                    }
-                    console.log("ret:", result.len);
-                    g_msg.pop(`Save OK. ${ms}`);
-                    ckEditor.resetDirty()
+                    console.log("git cmd result:", result);
+                    g_msg.pop(`Save OK. ${result.output}`);
                 }).fail(function (er) {
                     g_msg.pop(`*** saved failed:${er}`, "warning")
                 }).done(function (ret) {
