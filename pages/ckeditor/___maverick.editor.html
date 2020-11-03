@@ -98,14 +98,22 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         <button id="idbtn_exec_cmd" onclick="__exec_ui_cmd();">exec cmd</button>
         <select id="gen_sh_cmd" onchange="gen_ui_sh_cmd();">
             <option>default</option>
-            <option>ls</option>
-            <option>pwd</option>
+            <optgroup label="git">
             <option>git branch</option>
             <option>git log</option>
+            <option>git pull</option>
+            <option>git push</option>
             <option>git status</option>
             <option>git diff</option>
             <option>git diff --ignore-space-at-eol -b -w --ignore-blank-lines --color-words=.</option>
+        </optgroup>
+         <optgroup label="cmd">
+            <option>ls</option>
+            <option>pwd</option>
             <option>open ___maverick.editor.html</option>
+            <option>open -a Terminal ~/Documents</option>
+            <option>open -a Terminal .</option>
+        </optgroup>
         </select>
         <button id="idbtn_exec_cmd" title="white-space: nowrap;" onclick="$('#output').toggleClass('white_space_nowrap');">toggle wrap</button><br>
         <textarea id="output" cols="165" rows="50" title="output of shell cmd.">&lt;span style="color:#e74c3c;"&gt;output&lt;/span&gt;</textarea>
@@ -337,16 +345,16 @@ ${scmd}
         }
         function load_page_by_parse_window_location() {
             console.log(window.location)
-            var fname = get_custom_pathname().name
-            $("title").text(get_custom_pathname().pathname)
+            var ret = get_custom_pathname()
+            $("title").text(ret.pathname)
             gen_git_cmd_default()
-            $("#gen_sh_cmd").append(`<option>open ${fname}</option>`)
-            console.log(fname)
-            $.get(fname, function (data) {
+            $("#gen_sh_cmd").append(`<option>open ${ret.name}</option>`)
+            console.log(ret.name)
+            $.get(ret.name, function (data) {
                 //alert(data);
                 setTimeout(() => {
                     CKEDITOR.instances.editor1.setData(data)
-                    g_msg.pop(`initial load file: ${fname}, size:${data.length}(B)`).m_len = data.length
+                    g_msg.pop(`initial load file: ${ret.name}, size:${data.length}(B)`).m_len = data.length
                 }, 1000)
             });
         }

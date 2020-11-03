@@ -44,7 +44,6 @@ $("body").keydown(function (evt) {
 
 });
 //////////////////////////////////
-const CKEsuffix = "___fullpage_ckeditor.htm"
 function EditorHistory() {
   this.m_key = "EditingHistory"
   var obj = electronStore.get(this.m_key)
@@ -68,9 +67,14 @@ EditorHistory.prototype.popTRs = function () {
   })
   $("#histbody").html(trs).find(".pfname").bind("click", function () {
     $("#histbody").find(".pfname").css("background-color", "")
-    var destfname = $(this).css("background-color", "grey").text() + CKEsuffix
-    $("#destpath").text(destfname).attr("href", destfname)
-    $("#form1").attr("action", destfname)
+    var destfname = $(this).css("background-color", "grey").text()
+    var ipos = 1 + destfname.lastIndexOf("/")
+    const editor_url = "___maverick.editor.html?fname="
+    var url = destfname.substr(0, ipos) + editor_url + destfname.substr(ipos)
+    console.log(url)
+
+    $("#destpath").text(url).attr("href", url)
+    $("#form1").attr("action", url)
     $("input[type='submit']").css("visibility", "visible")
   })
   return trs;
@@ -143,9 +147,9 @@ function setup_maverick_editor() {
   });
 
   var txt = get_custom_cmd_sh(destpath)
-  fs.writeFileSync(destcshname, txt, "utf8",function(er){
-    if(er) console.log("sh cmd:",er )
-    console.log("sh cmd:",destcshname,"\n",txt )
+  fs.writeFileSync(destcshname, txt, "utf8", function (er) {
+    if (er) console.log("sh cmd:", er)
+    console.log("sh cmd:", destcshname, "\n", txt)
   })
 
 
