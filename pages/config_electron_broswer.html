@@ -61,37 +61,39 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 <th>#</th>
                 <th>Name</th>
                 <th>Value</th>
+                <th>Shortcut</th>
             </tr>
         </thead>
         <tbody id=''>
             <tr>
-                <th>1</th>
-                <th>ZoomFactor</th>
-                <th><input type="number" min='0.0' max='10.0' step='0.1' id="ZoomFactor" title="." value="1.0"
-                        style="width:50px;"></input></th>
+                <td>1</td>
+                <td>ZoomFactor</td>
+                <td><input type="number" min='-10.0' max='10.0' step='0.1' id="ZoomFactor" title="." value="0.0"
+                        style="width:50px;"></input></td>
+                        <td>Alt+CommandOrControl+I / O</td>
             </tr>
             <tr>
-                <th>2</th>
-                <th>ZoomLevel</th>
-                <th><input type="number" min='0.0' max='10.0' step='0.1' id="ZoomLevel" title="." value="1.0"
-                        style="width:50px;"></input></th>
+                <td>2</td>
+                <td>ZoomLevel</td>
+                <td><input type="number" min='0.0' max='10.0' step='0.1' id="ZoomLevel" title="." value="1.0"
+                        style="width:50px;"></input></td>
             </tr>
             <tr>
-                <th>3</th>
-                <th>findInPage</th>
-                <th>
+                <td>3</td>
+                <td>findInPage</td>
+                <td>
                     <input type="text" value="1.0" style="width:50px;" id="findInPage"></input>
                     <input type="checkbox" id="findInPage_forward">forward</input>.
                     <input type="checkbox" id="findInPage_findNext">findNext</input>.
                     <input type="checkbox" id="findInPage_matchCase">matchCase.</input>
-                </th>
+                </td>
             </tr>
         </tbody>
     </table>
 
     <p>
-        <select id="fname_histoory" size="5" style="width:100%;overflow-x:auto;">
-        </select>
+        <a href="http://localhost:7878/assets/ckeditor/samples/old/index.html">./assets/ckeditor/samples/old/index.html
+        </a>
     </p>
 
     <!-- Test ndjs -->
@@ -106,13 +108,13 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             var val = $(this).val()
             console.log(val)
             console.log(Web2Main_IDs)
-            ipcRenderer.send(Web2Main_IDs.ZoomFactor, { val: parseFloat(val) }) // send to main.
+            ipcRenderer.send(Web2Main_IDs.webContents_ZoomFactor, { val: parseFloat(val) }) // send to main.
         })
         $("#ZoomLevel").click(function () {
             var val = $(this).val()
             console.log(val)
             console.log(Web2Main_IDs)
-            ipcRenderer.send(Web2Main_IDs.ZoomLevel, { val: parseFloat(val) }) // send to main.
+            ipcRenderer.send(Web2Main_IDs.webContents_ZoomLevel, { val: parseFloat(val) }) // send to main.
         })
         $("#findInPage").click(function () {
             var obj = { val: "", opt: {} }
@@ -122,7 +124,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             obj.opt.matchCase = document.getElementById("findInPage_matchCase").checked
             console.log(obj)
             console.log(Web2Main_IDs)
-            ipcRenderer.send(Web2Main_IDs.findInPage, obj) // send to main.
+            ipcRenderer.send(Web2Main_IDs.webContents_findInPage, obj) // send to main.
         })
 
     })

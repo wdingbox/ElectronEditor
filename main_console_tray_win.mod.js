@@ -2,7 +2,7 @@
 //const {app, BrowserWindow} = require('electron')
 const fs = require('fs')
 const path = require('path')
-const { app, BrowserWindow, Tray, Menu, ipcMain, screen, ipcRenderer } = require('electron')
+const { app, BrowserWindow, Tray, Menu, ipcMain, globalShortcut, screen, ipcRenderer } = require('electron')
 
 
 const Store = require('electron-store');
@@ -148,94 +148,6 @@ function Main_Menu() {
       },
 
       {
-        id: "Configuration", label: 'Configuration', toolTip: 'Configuration',
-        click: () => {
-          var filename = "./pages/config_electron_broswer.html"
-          g_Window.openWindow(filename, true)
-        },
-      },
-
-      {
-        id: "Samples", label: 'Samples', toolTip: 'Samples',
-        click: () => {
-          var filename = "./assets/ckeditor/samples/old/index.html"
-          g_Window.openWindow(filename)
-          if (g_Window.mainWindow) {
-            g_Window.mainWindow.webContents.openDevTools({ mode: 'attach' })
-          }
-
-        },
-      },
-
-      { type: "separator" },
-
-      {
-        id: "goBack", label: 'goBack', toolTip: 'goBack',
-        click: () => {
-          console.log(g_Window.mainWindow.webContents)
-          //g_Window.mainWindow.webContents.setZoomFactor(5.0)
-          g_Window.mainWindow.webContents.goBack()
-        },
-      },
-      {
-        id: "goForward", label: 'goForward', toolTip: 'goForward',
-        click: () => {
-          console.log(g_Window.mainWindow.webContents)
-          g_Window.mainWindow.webContents.goForward()
-        },
-      },
-
-      { type: "separator" },
-
-      {
-        id: "setZoomFactor", label: 'setZoomFactor', toolTip: 'setZoomFactor',
-        click: () => {
-          console.log(g_Window.mainWindow.webContents)
-          g_Window.mainWindow.webContents.setZoomFactor(5.0)
-        },
-      },
-      {
-        id: "setZoomFactor1", label: 'setZoomFactor', toolTip: 'goForward',
-        click: () => {
-          console.log(g_Window.mainWindow.webContents)
-          g_Window.mainWindow.webContents.setZoomFactor(1.0)
-        },
-      },
-
-      {
-        id: "findInPage", label: 'findInPage', toolTip: 'setZoomFactor',
-        click: () => {
-          console.log(g_Window.mainWindow.webContents)
-          g_Window.mainWindow.webContents.findInPage("the", { findNext: false })
-        },
-      },
-      {
-        id: "printToPDF", label: 'printToPDF', toolTip: 'printToPDF',
-        click: () => {
-          console.log(g_Window.mainWindow.webContents)
-          g_Window.mainWindow.webContents.setZoomFactor(1.0)
-
-
-          //win.webContents.on('did-finish-load', () => {
-          // Use default printing options
-          g_Window.mainWindow.webContents.printToPDF({}).then(data => {
-            const pdfPath = "/tmp/aaa.pgf";//path.join(os.homedir(), 'Desktop', 'temp.pdf')
-            fs.writeFile(pdfPath, data, (error) => {
-              if (error) throw error
-              console.log(`Wrote PDF successfully to ${pdfPath}`)
-            })
-          }).catch(error => {
-            console.log(`Failed to write PDF to ${pdfPath}: `, error)
-          })
-          //})
-
-        },
-      },
-
-
-      { type: "separator" },
-
-      {
         id: "OpenDevTool", label: 'Open DevTool', toolTip: 'open DevTool.', enabled: false,
         accelerator: 'Shift+CmdOrCtrl+C',
         click: (itm) => {
@@ -255,6 +167,54 @@ function Main_Menu() {
       { type: "separator" },
 
       {
+        id: "SubMenuBroswer", label: 'Broswer', toolTip: 'Broswer',
+        submenu: [
+          {
+            id: "goBackward", label: 'goBackward', toolTip: 'goBackward',
+            click: () => {
+              Webcontent2MainConsole.Web2Main_func.webContents_goBack(null, { val: -0.1 })
+            },
+          },
+          
+          {
+            id: "goForward", label: 'goForward', toolTip: 'goForward',
+            click: () => {
+              Webcontent2MainConsole.Web2Main_func.webContents_goForward(null, { val: -0.1 })
+            },
+          },
+         
+          { type: "separator" },
+
+          {
+            id: "ZoomIn", label: 'ZoomIn', toolTip: 'ZoomIn',
+            click: () => {
+
+              Webcontent2MainConsole.Web2Main_func.webContents_ZoomFactor(null, { val: 0.1 })
+            },
+          },
+
+          {
+            id: "ZoomOut", label: 'ZoomOut', toolTip: 'ZoomOut',
+            click: () => {
+              Webcontent2MainConsole.Web2Main_func.webContents_ZoomFactor(null, { val: -0.1 })
+            },
+          },
+
+          { type: "separator" },
+
+          {
+            id: "webContents_printToPDF", label: 'printToPDF', toolTip: 'webContents_printToPDF',
+            click: () => {
+              Webcontent2MainConsole.Web2Main_func.webContents_printToPDF(null, { val: -0.1 })
+            },
+          },
+
+        ]
+      },
+     
+
+
+      {
         id: "Autolaunch", label: 'Autolaunch', toolTip: 'Autolaunch after reboot', type: 'checkbox', checked: true,
         click: (itm) => {
           _THIS.toggle_checked(itm, function (pBeforeClickedItem) {
@@ -271,6 +231,16 @@ function Main_Menu() {
           app.exit();
         },
       },
+
+      {
+        id: "MenuItem_Help", label: 'Help', toolTip: 'Help',
+        click: () => {
+          var filename = "./pages/config_electron_broswer.html"
+          g_Window.openWindow(filename, true)
+        },
+      },
+
+
 
       {
         id: "version", label: "0.0", toolTip: 'first trial version.', enabled: false,
@@ -383,27 +353,54 @@ var Webcontent2MainConsole = {
   ////////////////////
   Web2Main_IDs: {},
   Web2Main_func: {
-    ZoomFactor: (evt, arg) => {
+    webContents_ZoomFactor: (evt, arg) => {
       console.log(arg) // prints "ping"
       if (!g_Window.mainWindow) return
-      console.log("val=", arg.val) // prints "ping"
+      arg.val = g_Window.mainWindow.webContents.getZoomFactor() + arg.val
       g_Window.mainWindow.webContents.setZoomFactor(arg.val)
-
+      console.log("changed val=", arg.val)
     },
-    ZoomLevel: (evt, arg) => {
+    webContents_ZoomLevel: (evt, arg) => {
       console.log(arg) // prints "ping"
       if (!g_Window.mainWindow) return
       console.log("val=", arg.val) // prints "ping"
       g_Window.mainWindow.webContents.setZoomLevel(arg.val)
 
     },
-    findInPage: (evt, arg) => {
+    webContents_findInPage: (evt, arg) => {
       console.log(arg) // prints "ping"
       if (!g_Window.mainWindow) return
       console.log("val=", arg.val) // prints "ping"
       g_Window.mainWindow.webContents.findInPage(arg.val, arg.opt)
 
     },
+    webContents_goBack: (evt, arg) => {
+      console.log(arg)
+      if (!g_Window.mainWindow) return
+      g_Window.mainWindow.webContents.goBack()
+    },
+    webContents_goForward: (evt, arg) => {
+      console.log(arg)
+      if (!g_Window.mainWindow) return
+      g_Window.mainWindow.webContents.goForward()
+    },
+    webContents_printToPDF: (evt, arg) => {
+      console.log(arg)
+      if (!g_Window.mainWindow) return
+      g_Window.mainWindow.webContents.printToPDF({}).then(data => {
+        const pdfPath = "/tmp/aaa.pgf";//path.join(os.homedir(), 'Desktop', 'temp.pdf')
+        fs.writeFile(pdfPath, data, (error) => {
+          if (error) throw error
+          console.log(`Wrote PDF successfully to ${pdfPath}`)
+        })
+      }).catch(error => {
+        console.log(`Failed to write PDF to ${pdfPath}: `, error)
+      })
+    },
+
+
+
+
     LOGIN_OK: function (evt, arg) {
       win_tray_uti.m_loadfile = "./pages/settings_session.html" //From sign-in page. 
       if (httpsReq.isRunning()) {
@@ -446,10 +443,26 @@ var win_tray_uti = {
   },
 
   launch: function () {
+    Webcontent2MainConsole.init_ipc();
 
     g_Menu = new Main_Menu()
     g_Window = new Main_Window()
     g_Tray = new Main_Tray()
+
+
+
+    app.whenReady().then(() => {
+      globalShortcut.register('Alt+CommandOrControl+I', () => {
+        console.log('Electron loves global shortcuts!')
+        Webcontent2MainConsole.Web2Main_func.ZoomFactor(null, { val: 0.1 })
+      })
+      globalShortcut.register('Alt+CommandOrControl+O', () => {
+        console.log('Electron loves global shortcuts! Alt+CommandOrControl+O: ZoomFactor')
+        Webcontent2MainConsole.Web2Main_func.ZoomFactor(null, { val: -0.1 })
+      })
+    })
+
+
 
     //// 
     AutoLauncher.init("ElectronCkEditorAppPkg", function (bAutolaunch) {
@@ -461,7 +474,7 @@ var win_tray_uti = {
     g_Tray.setMenu(g_Menu.genMenu());
     //g_Window.createWindow();
 
-    Webcontent2MainConsole.init_ipc();
+
 
 
   }
