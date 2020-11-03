@@ -47,6 +47,14 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             right: 20px;
             background-color: antiquewhite;
         }
+        #input, #output, #idbtn_exec_cmd{
+            background-color: black;
+            color:white;
+            overflow:auto
+        }
+        .white_space_nowrap{
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -77,14 +85,36 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             <option selected="selected" value="2">Break the line with a &lt;BR&gt; (recommended)</option>
         </select>
     </div>
-   
+
     <br><br>
     <p>
         <select id="histlog" size="10"></select>
     </p>
+
+
+
     <p>
-        <textarea id="output">output</textarea>
-        </p>
+        <textarea id="input" cols="165" rows="10" title="shell cmd"><div><span style="color:#e74c3c;">cmd</span></div></textarea><br>
+        <button id="idbtn_exec_cmd" onclick="__exec_ui_cmd();">exec cmd</button>
+        <select id="gen_sh_cmd" onchange="gen_ui_sh_cmd();">
+            <option>default</option>
+            <option>ls</option>
+            <option>pwd</option>
+            <option>git branch</option>
+            <option>git log</option>
+            <option>git status</option>
+            <option>git diff</option>
+            <option>git diff --ignore-space-at-eol -b -w --ignore-blank-lines --color-words=.</option>
+            <option>open ___maverick.editor.html</option>
+        </select>
+        <button id="idbtn_exec_cmd" title="white-space: nowrap;" onclick="$('#output').toggleClass('white_space_nowrap');">toggle wrap</button><br>
+        <textarea id="output" cols="165" rows="50" title="output of shell cmd.">&lt;span style="color:#e74c3c;"&gt;output&lt;/span&gt;</textarea>
+    </p>
+
+
+
+
+
     <div id="footer">
         <hr>
         <p>
@@ -167,16 +197,18 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     }
                 });
 
-                // for github cmd.
+                // open chrome broswer.
                 evt.editor.addCommand("preview", {
                     modes: { wysiwyg: 1, source: 1 },
                     exec: function () {
-                        __git_cmd()
+                        var ret = get_custom_pathname()
+                        gen_insite_sh_cmd("open "+ret.name)
+                        __exec_ui_cmd()
                         return false //disable popup.
                     }
                 });
 
-             
+
             });
         }
         function changeEnter() {
@@ -208,12 +240,52 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         }
         var g_msg = new _MSG()
 
-        function __git_cmd() {
+
+
+        function gen_git_cmd_default() {
+            var ret = get_custom_pathname()
+            var git_cmd_txt = `#!/bin/bash
+######################
+# goto customer folder.
+cd ${ret.root}
+git add ${ret.name}
+git commit -m "changed."
+git status
+######################`;
+            $("#input").val(git_cmd_txt)
+            return git_cmd_txt;
+        }
+        function gen_insite_sh_cmd(scmd) {
+            var ret = get_custom_pathname()
+            var cmd_txt = `#!/bin/bash
+######################
+# goto customer folder.
+cd ${ret.root}
+#
+echo ${scmd}
+${scmd}
+######################`;
+            $("#input").val(cmd_txt)
+            return cmd_txt;
+        }
+        function gen_ui_sh_cmd(){
+            var val = $("#gen_sh_cmd").val()
+            switch(val){
+                case "default":return gen_git_cmd_default();
+                default: return gen_insite_sh_cmd(val)
+            }
+
+        }
+
+
+        function __exec_ui_cmd() {
             //alert(theData);
+            var shcmd = $("#input").val()
+            console.log("git cmd:", shcmd)
             $.post("http://localhost:7878/git_cmd",
                 {
                     "pathname": get_custom_pathname().root,
-                    "cmd_script": ""
+                    "sh_script": shcmd
                 },
                 function (result) {
                     console.log("git cmd result:", result);
@@ -267,6 +339,8 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             console.log(window.location)
             var fname = get_custom_pathname().name
             $("title").text(get_custom_pathname().pathname)
+            gen_git_cmd_default()
+            $("#gen_sh_cmd").append(`<option>open ${fname}</option>`)
             console.log(fname)
             $.get(fname, function (data) {
                 //alert(data);
@@ -285,5 +359,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     $(function () {
         init_CKEditor()
         load_page_by_parse_window_location()
+
+        
     })
 </script>

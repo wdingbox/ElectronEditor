@@ -281,9 +281,10 @@ var express_http = {
         expr.post('/git_cmd', cors(issue2options), async (req, res) => {
             console.log('[post] resp save :', req.body)
             req.body.method_type = "post"
-            //fs.writeFileSync(req.body.pathname, req.body.htm, "utf8")
-
+            
             req.body.cmd = "./tmp/___maverick.git_cmd.sh"
+            fs.writeFileSync(req.body.cmd, req.body.sh_script, "utf8")
+
             req.body.output = await SystemCmd.run_git_cmd(req.body.cmd)
 
             console.log("git cmd is done.",req.body.cmd)
