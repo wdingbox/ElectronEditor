@@ -86,6 +86,8 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     <input type="checkbox" id="findInPage_forward">forward</input>.
                     <input type="checkbox" id="findInPage_findNext">findNext</input>.
                     <input type="checkbox" id="findInPage_matchCase">matchCase.</input>
+                    <input type="checkbox" id="findInPage_wordStart">wordStart.</input>
+                    <input type="checkbox" id="findInPage_medialCapitalAsWordStart">medialCapitalAsWordStart.</input>
                 </td>
             </tr>
         </tbody>
@@ -122,9 +124,12 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             obj.opt.forward = document.getElementById("findInPage_forward").checked
             obj.opt.findNext = document.getElementById("findInPage_findNext").checked
             obj.opt.matchCase = document.getElementById("findInPage_matchCase").checked
+            obj.opt.wordStart = document.getElementById("findInPage_wordStart").checked
+            obj.opt.medialCapitalAsWordStart = document.getElementById("findInPage_medialCapitalAsWordStart").checked
             console.log(obj)
             console.log(Web2Main_IDs)
             ipcRenderer.send(Web2Main_IDs.webContents_findInPage, obj) // send to main.
+            electronStore.set("findInPage_opt",obj)
         })
 
     })

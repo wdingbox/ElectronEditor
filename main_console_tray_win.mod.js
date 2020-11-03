@@ -2,12 +2,12 @@
 //const {app, BrowserWindow} = require('electron')
 const fs = require('fs')
 const path = require('path')
-const { app, BrowserWindow, Tray, Menu, ipcMain, globalShortcut, screen, ipcRenderer } = require('electron')
+const { app, BrowserWindow, Tray, Menu, ipcMain, globalShortcut, dialog, screen, ipcRenderer } = require('electron')
 
 
 const Store = require('electron-store');
 const store_auto_launch = new Store();
-
+const electronStore = new Store();
 
 const { AutoLauncher } = require("./my_modules/AutoLauncher.mod")
 
@@ -29,10 +29,8 @@ function Main_Window() {
   this.mainWindow = null
 }
 Main_Window.prototype.createWindow = function () {
-  if (this.mainWindow) return
-  //var x = win_tray_uti.tray.getBounds().x - 250;
-  // Create the browser window.
-  this.mainWindow = new BrowserWindow({
+  // Create a browser window.
+  var win = new BrowserWindow({
     width: 1050,
     height: 750,
     //x: -1, //centered
@@ -58,43 +56,41 @@ Main_Window.prototype.createWindow = function () {
     }
   })
 
-  var _THIS = this
-
-  this.mainWindow.on("blur", () => {
-    if (_THIS.mainWindow.m_isAnimation) {
+  win.on("blur", () => {
+    if (win.m_isAnimation) {
       return;
     }
-    if (!_THIS.mainWindow.webContents.isDevToolsOpened()) {
+    if (!win.webContents.isDevToolsOpened()) {
       // win_tray_uti.mainWindow.hide();
     }
   });
-  this.mainWindow.on("close", () => {
+  win.on("close", () => {
     console.log("win close")
-    _THIS.mainWindow = null
+    win = null
   });
 
   //win_tray_uti.win.documentEdited(true)
 
-  this.mainWindow.webContents.on('did-finish-load', () => {
+  win.webContents.on('did-finish-load', () => {
     console.log("main window did-finish-load.")
-    if (!_THIS.mainWindow.webContents) return "webConents null"
+    if (!win.webContents) return "webConents null"
     //ipcRenderer.send("test","msg")
-    _THIS.mainWindow.webContents.send('test', __dirname + '\\')
+    win.send('test', __dirname + '\\')
   })
+  return win;
 }
+
 Main_Window.prototype.openWindow = function (filename, bforceReload) {
   if (bforceReload) this.m_loadfile = bforceReload
   if (this.mainWindow) {
-    if (this.m_loadfile === filename) {
-      this.mainWindow.show()
-    } else {
+    if (this.m_loadfile !== filename) {
       this.mainWindow.loadFile(filename)
       this.m_loadfile = filename
-      this.mainWindow.show()
     }
+    this.mainWindow.show()
     return
   }
-  this.createWindow()
+  this.mainWindow = this.createWindow()
   this.mainWindow.loadFile(filename)
   this.m_loadfile = filename
   this.mainWindow.show()
@@ -118,9 +114,10 @@ function Main_Tray() {
 
   console.log('HI, tray');
   this.tray.on("click", () => {
-    console.log('HI, tray click');
+    console.log('HI, tray click, check menu item enabled');
 
     g_Menu.set_enabled_by_id("OpenDevTool", !!g_Window.mainWindow)
+    g_Menu.set_enabled_by_id("SubMenuBroswer", !!g_Window.mainWindow)
   })
 }
 Main_Tray.prototype.setMenu = function (menu) {
@@ -135,7 +132,7 @@ function Main_Menu() {
   this.template =
     [
       {
-        id: "EditCustomHtmlFileOnsite", label: 'Choose File', toolTip: 'Choose a HTML File to edit.', accelerator: 'CmdOrCtrl+S',
+        id: "EditCustomHtmlFileOnsite", label: 'Select a Html File', toolTip: 'Select a HTML File to edit.', accelerator: 'CmdOrCtrl+S',
         click: (itm) => {
           console.log(itm)
           var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
@@ -175,14 +172,14 @@ function Main_Menu() {
               Webcontent2MainConsole.Web2Main_func.webContents_goBack(null, { val: -0.1 })
             },
           },
-          
+
           {
             id: "goForward", label: 'goForward', toolTip: 'goForward',
             click: () => {
               Webcontent2MainConsole.Web2Main_func.webContents_goForward(null, { val: -0.1 })
             },
           },
-         
+
           { type: "separator" },
 
           {
@@ -203,6 +200,15 @@ function Main_Menu() {
           { type: "separator" },
 
           {
+            id: "submenu_findInPage", label: 'find next in page', toolTip: 'find next in page', accelerator: 'CmdOrCtrl+F',
+            click: () => {
+              console.log('Electron loves global shortcuts! CommandOrControl+F: findInPage')
+              var arg = electronStore.get("findInPage_opt")
+              Webcontent2MainConsole.Web2Main_func.webContents_findInPage(null, arg)
+            },
+          },
+
+          {
             id: "webContents_printToPDF", label: 'printToPDF', toolTip: 'webContents_printToPDF',
             click: () => {
               Webcontent2MainConsole.Web2Main_func.webContents_printToPDF(null, { val: -0.1 })
@@ -211,7 +217,7 @@ function Main_Menu() {
 
         ]
       },
-     
+
 
 
       {
@@ -236,7 +242,9 @@ function Main_Menu() {
         id: "MenuItem_Help", label: 'Help', toolTip: 'Help',
         click: () => {
           var filename = "./pages/config_electron_broswer.html"
-          g_Window.openWindow(filename, true)
+          var win = g_Window.createWindow()
+          win.loadFile(filename)
+          win.show()
         },
       },
 
@@ -354,26 +362,19 @@ var Webcontent2MainConsole = {
   Web2Main_IDs: {},
   Web2Main_func: {
     webContents_ZoomFactor: (evt, arg) => {
-      console.log(arg) // prints "ping"
+      console.log(arg)
       if (!g_Window.mainWindow) return
       arg.val = g_Window.mainWindow.webContents.getZoomFactor() + arg.val
       g_Window.mainWindow.webContents.setZoomFactor(arg.val)
       console.log("changed val=", arg.val)
     },
     webContents_ZoomLevel: (evt, arg) => {
-      console.log(arg) // prints "ping"
+      console.log(arg)
       if (!g_Window.mainWindow) return
-      console.log("val=", arg.val) // prints "ping"
+      console.log("val=", arg.val)
       g_Window.mainWindow.webContents.setZoomLevel(arg.val)
-
     },
-    webContents_findInPage: (evt, arg) => {
-      console.log(arg) // prints "ping"
-      if (!g_Window.mainWindow) return
-      console.log("val=", arg.val) // prints "ping"
-      g_Window.mainWindow.webContents.findInPage(arg.val, arg.opt)
 
-    },
     webContents_goBack: (evt, arg) => {
       console.log(arg)
       if (!g_Window.mainWindow) return
@@ -396,6 +397,12 @@ var Webcontent2MainConsole = {
       }).catch(error => {
         console.log(`Failed to write PDF to ${pdfPath}: `, error)
       })
+    },
+    webContents_findInPage: (evt, arg) => {
+      console.log(arg)
+      if (!g_Window.mainWindow) return
+      console.log("val=", arg.val)
+      g_Window.mainWindow.webContents.findInPage(arg.val, arg.opt)
     },
 
 
@@ -454,11 +461,18 @@ var win_tray_uti = {
     app.whenReady().then(() => {
       globalShortcut.register('Alt+CommandOrControl+I', () => {
         console.log('Electron loves global shortcuts!')
-        Webcontent2MainConsole.Web2Main_func.ZoomFactor(null, { val: 0.1 })
+        Webcontent2MainConsole.Web2Main_func.webContents_ZoomFactor(null, { val: 0.1 })
       })
       globalShortcut.register('Alt+CommandOrControl+O', () => {
         console.log('Electron loves global shortcuts! Alt+CommandOrControl+O: ZoomFactor')
-        Webcontent2MainConsole.Web2Main_func.ZoomFactor(null, { val: -0.1 })
+        Webcontent2MainConsole.Web2Main_func.webContents_ZoomFactor(null, { val: -0.1 })
+      })
+
+      globalShortcut.register('Alt+CommandOrControl+F', () => {
+        console.log('Electron loves global shortcuts! Alt+CommandOrControl+F: webContents_findInPage')
+        var arg = electronStore.get("findInPage_opt")
+        var ret = Webcontent2MainConsole.Web2Main_func.webContents_findInPage(null, arg)
+        console.log("findinpage ret:", ret)
       })
     })
 

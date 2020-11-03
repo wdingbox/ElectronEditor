@@ -6,11 +6,12 @@ const exec = require('child_process').exec;
 const child_process = require('child_process');
 const { assert } = require('console');
 
-//const { utils } = require('anyproxy');
+
 
 const Store = require('electron-store');
-//const { ipcRenderer } = require('electron');
 const electronStore = new Store();
+
+//const { ipcRenderer } = require('electron');
 
 // Importing dialog module using remote 
 //const dialog = electron.remote.dialog;
