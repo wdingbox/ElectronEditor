@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2003-2020, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Full Page Editing &mdash; CKEditor Sample</title>
+
+
+    <!-- Insert this line above script imports to prevent confliction with jq  -->
+    <script>
+        if (typeof module === 'object') { window.module = module; module = undefined; }
+    </script>
+    <!-- JAVASCRIPT BEGIN ================================================== -->
+    <script src="http://localhost:7878/assets/ckeditor/adapters/jq/jquery-2_1_3.min.js" note="selfseversite"></script>
+
+    <!-- JAVASCRIPT================================================== -->
+    <!-------------- ckeditor only--------------------->
+    <!-- =================     App   JAVASCRIPT START  ======================== -->
+    <script xxxxsrc="../../.js"></script>
+    <script xxxxsrc="../../.js"></script>
+    <link xxxhref="../../.css" rel="stylesheet">
+
+    <!-- =================     App   JAVASCRIPT END  ======================== -->
+    <!-- Insert this line after script imports to prevent confliction with jq -->
+    <!-------------------------------------------------------------------------->
+    <script>
+        if (window.module) module = window.module;
+    </script>
+
+
+
+    <meta name="ckeditor-sample-required-plugins" content="sourcearea">
+    <meta name="ckeditor-sample-name" content="Full page support">
+    <meta name="ckeditor-sample-group" content="Plugins">
+    <meta name="ckeditor-sample-description"
+        content="CKEditor inserted with a JavaScript call and used to edit the whole page from &lt;html&gt; to &lt;/html&gt;.">
+    <meta name="description"
+        content="Try the latest sample of CKEditor 4 and learn more about customizing your WYSIWYG editor with endless possibilities.">
+    <!-------------------------------------------->
+    <script xxxxsrc="../../assets/libs/jquery/dist/jquery-2_1_3.min.js"></script>
+
+
+    <style>
+        td {
+            white-space: nowrap;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <table border='1'>
+        <caption>WebContent Config</caption>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody id=''>
+            <tr>
+                <th>1</th>
+                <th>ZoomFactor</th>
+                <th><input type="number" min='0.0' max='10.0' step='0.1' id="ZoomFactor" title="." value="1.0"
+                        style="width:50px;"></input></th>
+            </tr>
+            <tr>
+                <th>2</th>
+                <th>ZoomLevel</th>
+                <th><input type="number" min='0.0' max='10.0' step='0.1' id="ZoomLevel" title="." value="1.0"
+                        style="width:50px;"></input></th>
+            </tr>
+            <tr>
+                <th>3</th>
+                <th>findInPage</th>
+                <th>
+                    <input type="text" value="1.0" style="width:50px;" id="findInPage"></input>
+                    <input type="checkbox" id="findInPage_forward">forward</input>.
+                    <input type="checkbox" id="findInPage_findNext">findNext</input>.
+                    <input type="checkbox" id="findInPage_matchCase">matchCase.</input>
+                </th>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        <select id="fname_histoory" size="5" style="width:100%;overflow-x:auto;">
+        </select>
+    </p>
+
+    <!-- Test ndjs -->
+    <script src="../renderer.js"></script>
+    <script src="../nodeIntegration.js"></script>
+</body>
+
+</html>
+<script>
+    $(() => {
+        $("#ZoomFactor").click(function () {
+            var val = $(this).val()
+            console.log(val)
+            console.log(Web2Main_IDs)
+            ipcRenderer.send(Web2Main_IDs.ZoomFactor, { val: parseFloat(val) }) // send to main.
+        })
+        $("#ZoomLevel").click(function () {
+            var val = $(this).val()
+            console.log(val)
+            console.log(Web2Main_IDs)
+            ipcRenderer.send(Web2Main_IDs.ZoomLevel, { val: parseFloat(val) }) // send to main.
+        })
+        $("#findInPage").click(function () {
+            var obj = { val: "", opt: {} }
+            obj.val = $(this).val()
+            obj.opt.forward = document.getElementById("findInPage_forward").checked
+            obj.opt.findNext = document.getElementById("findInPage_findNext").checked
+            obj.opt.matchCase = document.getElementById("findInPage_matchCase").checked
+            console.log(obj)
+            console.log(Web2Main_IDs)
+            ipcRenderer.send(Web2Main_IDs.findInPage, obj) // send to main.
+        })
+
+    })
+
+</script>

@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const { app, BrowserWindow, Tray, Menu, ipcMain, screen, ipcRenderer } = require('electron')
 
+
 const Store = require('electron-store');
 const store_auto_launch = new Store();
 
@@ -46,6 +47,7 @@ Main_Window.prototype.createWindow = function () {
     maximizable: true,
     frame: true,
     webPreferences: {
+      enablePreferredSizeMode: true,
       //minimumFontSize: 12,
       //defaultFontSize: 12,
       //defaultMonospaceFontSize: 12, 
@@ -146,6 +148,14 @@ function Main_Menu() {
       },
 
       {
+        id: "Configuration", label: 'Configuration', toolTip: 'Configuration',
+        click: () => {
+          var filename = "./pages/config_electron_broswer.html"
+          g_Window.openWindow(filename, true)
+        },
+      },
+
+      {
         id: "Samples", label: 'Samples', toolTip: 'Samples',
         click: () => {
           var filename = "./assets/ckeditor/samples/old/index.html"
@@ -156,6 +166,72 @@ function Main_Menu() {
 
         },
       },
+
+      { type: "separator" },
+
+      {
+        id: "goBack", label: 'goBack', toolTip: 'goBack',
+        click: () => {
+          console.log(g_Window.mainWindow.webContents)
+          //g_Window.mainWindow.webContents.setZoomFactor(5.0)
+          g_Window.mainWindow.webContents.goBack()
+        },
+      },
+      {
+        id: "goForward", label: 'goForward', toolTip: 'goForward',
+        click: () => {
+          console.log(g_Window.mainWindow.webContents)
+          g_Window.mainWindow.webContents.goForward()
+        },
+      },
+
+      { type: "separator" },
+
+      {
+        id: "setZoomFactor", label: 'setZoomFactor', toolTip: 'setZoomFactor',
+        click: () => {
+          console.log(g_Window.mainWindow.webContents)
+          g_Window.mainWindow.webContents.setZoomFactor(5.0)
+        },
+      },
+      {
+        id: "setZoomFactor1", label: 'setZoomFactor', toolTip: 'goForward',
+        click: () => {
+          console.log(g_Window.mainWindow.webContents)
+          g_Window.mainWindow.webContents.setZoomFactor(1.0)
+        },
+      },
+
+      {
+        id: "findInPage", label: 'findInPage', toolTip: 'setZoomFactor',
+        click: () => {
+          console.log(g_Window.mainWindow.webContents)
+          g_Window.mainWindow.webContents.findInPage("the", { findNext: false })
+        },
+      },
+      {
+        id: "printToPDF", label: 'printToPDF', toolTip: 'printToPDF',
+        click: () => {
+          console.log(g_Window.mainWindow.webContents)
+          g_Window.mainWindow.webContents.setZoomFactor(1.0)
+
+
+          //win.webContents.on('did-finish-load', () => {
+          // Use default printing options
+          g_Window.mainWindow.webContents.printToPDF({}).then(data => {
+            const pdfPath = "/tmp/aaa.pgf";//path.join(os.homedir(), 'Desktop', 'temp.pdf')
+            fs.writeFile(pdfPath, data, (error) => {
+              if (error) throw error
+              console.log(`Wrote PDF successfully to ${pdfPath}`)
+            })
+          }).catch(error => {
+            console.log(`Failed to write PDF to ${pdfPath}: `, error)
+          })
+          //})
+
+        },
+      },
+
 
       { type: "separator" },
 
@@ -278,7 +354,84 @@ Main_Menu.prototype.onclick = function (id, cb) {
 
 
 
+var Webcontent2MainConsole = {
+  init_IDs: function () {
+    let _THIS = this;
+    Object.keys(_THIS.Web2Main_func).forEach(function (id) {
+      //console.log("id:", id)
+      if (_THIS.Web2Main_func[id]) {
+        _THIS.Web2Main_IDs[id] = id;
+      } else {
+        console.log("ERROR id not define:", id)
+      }
+    });
+    console.log(_THIS.Web2Main_IDs)
+  },
+  init_ipc: function () {
+    let _THIS = this;
+    Object.keys(_THIS.Web2Main_func).forEach(function (id) {
+      //console.log("id:", id)
+      if (_THIS.Web2Main_func[id]) {
+        _THIS.Web2Main_IDs[id] = id;
+        ipcMain.on(id, _THIS.Web2Main_func[id]);
+      } else {
+        console.log("ERROR id not define:", id)
+      }
+    });
+    console.log(_THIS.Web2Main_IDs)
+  },
+  ////////////////////
+  Web2Main_IDs: {},
+  Web2Main_func: {
+    ZoomFactor: (evt, arg) => {
+      console.log(arg) // prints "ping"
+      if (!g_Window.mainWindow) return
+      console.log("val=", arg.val) // prints "ping"
+      g_Window.mainWindow.webContents.setZoomFactor(arg.val)
 
+    },
+    ZoomLevel: (evt, arg) => {
+      console.log(arg) // prints "ping"
+      if (!g_Window.mainWindow) return
+      console.log("val=", arg.val) // prints "ping"
+      g_Window.mainWindow.webContents.setZoomLevel(arg.val)
+
+    },
+    findInPage: (evt, arg) => {
+      console.log(arg) // prints "ping"
+      if (!g_Window.mainWindow) return
+      console.log("val=", arg.val) // prints "ping"
+      g_Window.mainWindow.webContents.findInPage(arg.val, arg.opt)
+
+    },
+    LOGIN_OK: function (evt, arg) {
+      win_tray_uti.m_loadfile = "./pages/settings_session.html" //From sign-in page. 
+      if (httpsReq.isRunning()) {
+        console.log("udpCacheClnt isRunning")
+        return
+      }
+      console.log("LOGIN_OK", arg)
+      var cln = httpsReq.set_client(arg)
+      store_auto_launch.set("auto_login_user_obj", cln)
+      menu_uti.set_login_mode(arg.email); //-> httpsReq.start()
+    },
+    SET_CHECKPERIOD: function (evt, arg) {
+      console.log("SET_CHECKPERIOD", arg)
+      //store_auto_launch.set("lauto_ogin_user_obj", arg) //no email info.
+      var cln = httpsReq.set_client(arg)
+      store_auto_launch.set("auto_login_user_obj", cln) //no email info.
+      console.log("SET_CHECKPERIOD", arg, cln)
+      if (httpsReq.isRunning()) {
+        httpsReq.stop()
+      }
+      httpsReq.start()
+    },
+    LOGIN_OUT: function (evt, email) {
+      //template[id2idx.login].click(template[id2idx.login])
+    }
+  }
+}
+Webcontent2MainConsole.init_IDs()
 
 
 
@@ -308,6 +461,8 @@ var win_tray_uti = {
     g_Tray.setMenu(g_Menu.genMenu());
     //g_Window.createWindow();
 
+    Webcontent2MainConsole.init_ipc();
+
 
   }
 }
@@ -324,4 +479,5 @@ var win_tray_uti = {
 
 module.exports = {
   win_tray_uti: win_tray_uti,
+  Web2Main_IDs: Webcontent2MainConsole.Web2Main_IDs
 }
