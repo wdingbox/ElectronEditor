@@ -76,8 +76,7 @@ Main_Window.prototype.createWindow = function (arg) {
   });
   win.on("close", () => {
     console.log("win close", arg)
-    console.log("win arg.onclose", arg.onclose)
-    if (undefined !== arg.onclose) {
+    if (arg && undefined !== arg.onclose) {
       arg.onclose()
     }
   });
@@ -215,7 +214,7 @@ function Main_Menu() {
       { type: "separator" },
 
       {
-        id: "MenuItem_findInPage", label: 'Search', toolTip: 'find text in page', accelerator: 'CmdOrCtrl+F',
+        id: "MenuItem_findInPage", label: 'Search String', toolTip: 'find text in page', accelerator: 'CmdOrCtrl+F',
         click: () => {
           var win = g_Window.openFindInPageDialog()
         },
@@ -290,13 +289,7 @@ function Main_Menu() {
 
       { type: "separator" },
 
-      {
-        id: "quit", label: 'Quit', toolTip: 'Terminate Mining-coin-app.', accelerator: 'CmdOrCtrl+Q',
-        click: () => {
-          app.exit();
-        },
-      },
-
+      
       {
         id: "MenuItem_Help", label: 'Help', toolTip: 'Help',
         click: () => {
@@ -304,6 +297,12 @@ function Main_Menu() {
         },
       },
 
+      {
+        id: "quit", label: 'Quit', toolTip: 'Terminate Mining-coin-app.', accelerator: 'CmdOrCtrl+Q',
+        click: () => {
+          app.exit();
+        },
+      },
 
 
       {
