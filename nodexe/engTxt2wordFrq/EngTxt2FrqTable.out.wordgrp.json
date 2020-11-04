@@ -1,0 +1,123 @@
+{
+    "species": {
+        "tot": 1490,
+        "species": 1490
+    },
+    "same": {
+        "tot": 807,
+        "same": 778,
+        "identical": 19,
+        "identically": 10
+    },
+    "varieties": {
+        "tot": 477,
+        "varieties": 396,
+        "variety": 81
+    },
+    "selection": {
+        "tot": 426,
+        "selection": 383,
+        "select": 8,
+        "selects": 2,
+        "selecting": 11,
+        "selected": 22
+    },
+    "forms": {
+        "tot": 1011,
+        "forms": 397,
+        "form": 106,
+        "formations": 90,
+        "formation": 80,
+        "formed": 88,
+        "forming": 11,
+        "structure": 214,
+        "structures": 25
+    },
+    "natural": {
+        "tot": 639,
+        "natural": 361,
+        "nature": 253,
+        "naturally": 25
+    },
+    "plants": {
+        "tot": 365,
+        "plants": 297,
+        "plant": 68
+    },
+    "life": {
+        "tot": 298,
+        "life": 298
+    },
+    "animals": {
+        "tot": 364,
+        "animals": 280,
+        "animal": 84
+    },
+    "different": {
+        "tot": 648,
+        "different": 282,
+        "differently": 12,
+        "difference": 96,
+        "differences": 131,
+        "differ": 96,
+        "differs": 16,
+        "differed": 14,
+        "differentiation": 1
+    },
+    "case": {
+        "tot": 281,
+        "case": 281
+    },
+    "distinct": {
+        "tot": 285,
+        "distinct": 255,
+        "distinction": 22,
+        "distinctness": 2,
+        "distincter": 1,
+        "distinctly": 3
+    },
+    "new": {
+        "tot": 244,
+        "new": 244
+    },
+    "conditions": {
+        "tot": 262,
+        "conditions": 211,
+        "condition": 51
+    },
+    "genera": {
+        "tot": 357,
+        "genera": 210,
+        "genus": 147
+    },
+    "groups": {
+        "tot": 276,
+        "groups": 173,
+        "group": 103
+    },
+    "characters": {
+        "tot": 334,
+        "characters": 170,
+        "character": 136,
+        "characteristic": 16,
+        "characteristics": 2,
+        "characterised": 5
+    },
+    "birds": {
+        "tot": 286,
+        "birds": 143
+    },
+    "modification": {
+        "tot": 549,
+        "modification": 161,
+        "modified": 153,
+        "modifications": 55,
+        "modify": 17,
+        "modifying": 10
+    },
+    "variation": {
+        "tot": 173,
+        "variation": 89,
+        "variations": 84
+    }
+}
