@@ -70,7 +70,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 <td>ZoomFactor</td>
                 <td><input type="number" min='-10.0' max='10.0' step='0.1' id="ZoomFactor" title="." value="0.0"
                         style="width:50px;"></input></td>
-                        <td>Alt+CommandOrControl+I / O</td>
+                <td>Alt+CommandOrControl+I / O</td>
             </tr>
             <tr>
                 <td>2</td>
@@ -89,6 +89,13 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     <input type="checkbox" id="findInPage_wordStart">wordStart.</input>
                     <input type="checkbox" id="findInPage_medialCapitalAsWordStart">medialCapitalAsWordStart.</input>
                 </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>open devTool</td>
+                <td></td>
+                <td>AltOrCmd+C</td>
             </tr>
         </tbody>
     </table>
@@ -129,7 +136,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             console.log(obj)
             console.log(Web2Main_IDs)
             ipcRenderer.send(Web2Main_IDs.webContents_findInPage, obj) // send to main.
-            electronStore.set("findInPage_opt",obj)
+            electronStore.set("findInPage_opt", obj)
         })
 
     })

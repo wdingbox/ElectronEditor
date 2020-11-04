@@ -161,6 +161,38 @@ Main_Window.prototype.openFocusedWindowDevTool = function () {
   }
   return
 }
+Main_Window.prototype.IncFocusedWindowZoomFactor = function (dlt) {
+  const window = require('electron').BrowserWindow;
+  let focusedWindow = window.getFocusedWindow();
+  if (focusedWindow && focusedWindow.webContents) {
+    var dlt = focusedWindow.webContents.getZoomFactor() + dlt
+    focusedWindow.webContents.setZoomFactor(dlt)
+  }
+  else {
+    console.log("cannot zoom.", dlt)
+  }
+  return
+}
+Main_Window.prototype.GoBackFocusedWindow = function () {
+  const window = require('electron').BrowserWindow;
+  let focusedWindow = window.getFocusedWindow();
+  if (focusedWindow && focusedWindow.webContents) {
+    focusedWindow.webContents.goBack()
+  }
+  else {
+    console.log("cannot.", dlt)
+  }
+}
+Main_Window.prototype.GoForwardFocusedWindow = function () {
+  const window = require('electron').BrowserWindow;
+  let focusedWindow = window.getFocusedWindow();
+  if (focusedWindow && focusedWindow.webContents) {
+    focusedWindow.webContents.goForward()
+  }
+  else {
+    console.log("cannot.", dlt)
+  }
+}
 
 
 ////////////////////////
@@ -235,14 +267,14 @@ function Main_Menu() {
           {
             id: "goBackward", label: 'goBackward', toolTip: 'goBackward',
             click: () => {
-              Webcontent2MainConsole.Web2Main_func.webContents_goBack(null, { val: -0.1 })
+              g_Window.GoBackFocusedWindow()
             },
           },
 
           {
             id: "goForward", label: 'goForward', toolTip: 'goForward',
             click: () => {
-              Webcontent2MainConsole.Web2Main_func.webContents_goForward(null, { val: -0.1 })
+              g_Window.GoForwardFocusedWindow()
             },
           },
 
@@ -251,15 +283,14 @@ function Main_Menu() {
           {
             id: "ZoomIn", label: 'ZoomIn', toolTip: 'ZoomIn',
             click: () => {
-
-              Webcontent2MainConsole.Web2Main_func.webContents_ZoomFactor(null, { val: 0.1 })
+              g_Window.IncFocusedWindowZoomFactor(0.1)
             },
           },
 
           {
             id: "ZoomOut", label: 'ZoomOut', toolTip: 'ZoomOut',
             click: () => {
-              Webcontent2MainConsole.Web2Main_func.webContents_ZoomFactor(null, { val: -0.1 })
+              g_Window.IncFocusedWindowZoomFactor(-0.1)
             },
           },
 
@@ -289,7 +320,7 @@ function Main_Menu() {
 
       { type: "separator" },
 
-      
+
       {
         id: "MenuItem_Help", label: 'Help', toolTip: 'Help',
         click: () => {
@@ -374,12 +405,7 @@ Main_Menu.prototype.genMenu = function () {
     //win_thistray_uti.tray.g_menu_show = 0;
   });
 
-  //this.tray.setContextMenu(win_tray_uti.trayMenu)
-  // if (bShow) {
-  //   //win_tray_uti.tray.focus();
-  //   console.log("tray bound", rec);
-  //   //win_tray_uti.trayMenu.popup({ x: 1, y: 1 });//ISSUES Incorrect.
-  // }
+
   return this.m_menu;
 }
 Main_Menu.prototype.onclick = function (id, cb) {
@@ -418,10 +444,11 @@ var Webcontent2MainConsole = {
   Web2Main_func: {
     webContents_ZoomFactor: (evt, arg) => {
       console.log(arg)
-      if (!g_Window.mainWindow) return
-      arg.val = g_Window.mainWindow.webContents.getZoomFactor() + arg.val
-      g_Window.mainWindow.webContents.setZoomFactor(arg.val)
-      console.log("changed val=", arg.val)
+      g_Window.IncFocusedWindowZoomFactor(arg.val)
+      // if (!g_Window.mainWindow) return
+      // arg.val = g_Window.mainWindow.webContents.getZoomFactor() + arg.val
+      // g_Window.mainWindow.webContents.setZoomFactor(arg.val)
+      // console.log("changed val=", arg.val)
     },
     webContents_ZoomLevel: (evt, arg) => {
       console.log(arg)
@@ -431,20 +458,16 @@ var Webcontent2MainConsole = {
     },
 
     webContents_goBack: (evt, arg) => {
-      console.log(arg)
-      if (!g_Window.mainWindow) return
-      g_Window.mainWindow.webContents.goBack()
+      g_Window.GoBackFocusedWindow()
     },
     webContents_goForward: (evt, arg) => {
-      console.log(arg)
-      if (!g_Window.mainWindow) return
-      g_Window.mainWindow.webContents.goForward()
+      g_Window.GoForwareFocusedWindow()
     },
     webContents_printToPDF: (evt, arg) => {
       console.log(arg)
       if (!g_Window.mainWindow) return
       g_Window.mainWindow.webContents.printToPDF({}).then(data => {
-        const pdfPath = "/tmp/aaa.pgf";//path.join(os.homedir(), 'Desktop', 'temp.pdf')
+        const pdfPath = "/tmp/htm.pgf";//path.join(os.homedir(), 'Desktop', 'temp.pdf')
         fs.writeFile(pdfPath, data, (error) => {
           if (error) throw error
           console.log(`Wrote PDF successfully to ${pdfPath}`)
@@ -468,35 +491,6 @@ var Webcontent2MainConsole = {
         //if (result.finalUpdate) webContents.stopFindInPage('clearSelection')
       })
     },
-
-
-
-
-    LOGIN_OK: function (evt, arg) {
-      win_tray_uti.m_loadfile = "./pages/settings_session.html" //From sign-in page. 
-      if (httpsReq.isRunning()) {
-        console.log("udpCacheClnt isRunning")
-        return
-      }
-      console.log("LOGIN_OK", arg)
-      var cln = httpsReq.set_client(arg)
-      store_auto_launch.set("auto_login_user_obj", cln)
-      menu_uti.set_login_mode(arg.email); //-> httpsReq.start()
-    },
-    SET_CHECKPERIOD: function (evt, arg) {
-      console.log("SET_CHECKPERIOD", arg)
-      //store_auto_launch.set("lauto_ogin_user_obj", arg) //no email info.
-      var cln = httpsReq.set_client(arg)
-      store_auto_launch.set("auto_login_user_obj", cln) //no email info.
-      console.log("SET_CHECKPERIOD", arg, cln)
-      if (httpsReq.isRunning()) {
-        httpsReq.stop()
-      }
-      httpsReq.start()
-    },
-    LOGIN_OUT: function (evt, email) {
-      //template[id2idx.login].click(template[id2idx.login])
-    }
   }
 }
 Webcontent2MainConsole.init_IDs()
@@ -507,11 +501,6 @@ Webcontent2MainConsole.init_IDs()
 ///////////////////////
 var win_tray_uti = {
 
-  signal2web: function (obj) {
-    ///= console.log("console send:", obj)
-    if (!g_Window.mainWindow) return
-    g_Window.mainWindow.webContents.send("Main2Web", obj);
-  },
 
   launch: function () {
     Webcontent2MainConsole.init_ipc();
@@ -525,11 +514,11 @@ var win_tray_uti = {
     app.whenReady().then(() => {
       globalShortcut.register('Alt+CommandOrControl+I', () => {
         console.log('Electron loves global shortcuts!')
-        Webcontent2MainConsole.Web2Main_func.webContents_ZoomFactor(null, { val: 0.1 })
+        g_Window.IncFocusedWindowZoomFactor(0.1)
       })
       globalShortcut.register('Alt+CommandOrControl+O', () => {
         console.log('Electron loves global shortcuts! Alt+CommandOrControl+O: ZoomFactor')
-        Webcontent2MainConsole.Web2Main_func.webContents_ZoomFactor(null, { val: -0.1 })
+        g_Window.IncFocusedWindowZoomFactor(-0.1)
       })
 
       globalShortcut.register('Alt+CommandOrControl+C', () => {
@@ -549,8 +538,6 @@ var win_tray_uti = {
 
     g_Tray.setMenu(g_Menu.genMenu());
     //g_Window.createWindow();
-
-
 
 
   }
