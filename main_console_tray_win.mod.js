@@ -123,7 +123,7 @@ Main_Window.prototype.openFindInPageDialog = function () {
 
   var _THIS = this
   var arg = {
-    width: 300, height: 200,
+    width: 300, height: 300,
     show: true,
     frame: true, //not dragable.
     fullscreenable: false,
@@ -136,8 +136,10 @@ Main_Window.prototype.openFindInPageDialog = function () {
     onclose: function () {
       console.log("close findinpage.")
       if (_THIS.mainWindow && _THIS.mainWindow.webContents) {
-        console.log("stopFindInPage")
-        _THIS.mainWindow.webContents.stopFindInPage('clearSelection')
+        var obj = electronStore_findInPage.get("findInPage_input")
+        var action = obj.stopFindInPage_action
+        console.log("stopFindInPage", obj)
+        _THIS.mainWindow.webContents.stopFindInPage(action); //'clearSelection')
       }
       _THIS.m_findInPageWin = null
     }
@@ -213,7 +215,7 @@ function Main_Menu() {
       { type: "separator" },
 
       {
-        id: "MenuItem_findInPage", label: 'Find In Page', toolTip: 'find text in page', accelerator: 'CmdOrCtrl+F',
+        id: "MenuItem_findInPage", label: 'Search', toolTip: 'find text in page', accelerator: 'CmdOrCtrl+F',
         click: () => {
           var win = g_Window.openFindInPageDialog()
         },
