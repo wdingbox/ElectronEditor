@@ -22,19 +22,17 @@
     <script src='https://wdingbox.github.io/assetjs/libs/jq/jquery-2_1_3.min.js'></script>
     <script src='https://wdingbox.github.io/assetjs/libs/table/table_indexer.js'></script>
     <script src='https://wdingbox.github.io/assetjs/libs/table/table_sorter.js'></script>
-    
+
     <script language="javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!--------->
-    <script language="javascript" src="./EngTxt2FrqTable.out.wordfrqMerged.json"></script>
+    <script language="javascript" src="./tmp/EngTxt2FrqTable.out.wordfrqMerged.json"></script>
     <style>
     </style>
 
 
     <script language="javascript">
-        if ("undefined" === typeof wdfrq) {
-            alert("wdfrq not defined.");
-        }
-        console.log(window.location, wdfrq);
+       
+        console.log(window.location);
 
         function gen_table(wdfrq) {
             var tbs = "<table id='tb' border='1'><thead><tr><th>#</th><th>word</th><th>frq</th></tr></thead><tbody>";
@@ -45,15 +43,18 @@
             return tbs;
         }
 
+        function ajx_load() {
+            var fname = "./tmp/EngTxt2FrqTable.out.wordfrqMerged.json"
+            $.getJSON(fname, function (data) {
+                console.log(data);
+                $("body").append(gen_table(data))
+                table_sort();
+            });
+        }
+
         $(document).ready(function () {
 
-            $("body").append(gen_table(wdfrq))
-            //table_sort("tb")
-
-
-
-            table_sort();
-            //table_col_index();
+            ajx_load()
 
 
         });/////////////

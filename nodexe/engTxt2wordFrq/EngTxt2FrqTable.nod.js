@@ -2,6 +2,7 @@
 //var request = require("request");
 const fs = require('fs');
 var path = require('path');
+var cheerio = require("cheerio")
 ////var Uti = require("./Uti.module").Uti;
 
 
@@ -13,9 +14,26 @@ var path = require('path');
 
 
 ///////////////////////////////////////////
+var Uti = {
+    sort_val_of_obj: function (wdfrobj) {
+        var sortable = [];
+        for (var wd in wdfrobj) {
+            sortable.push([wd, wdfrobj[wd]]);
+        }
 
+        sortable.sort(function (a, b) {
+            return b[1] - a[1];
+        });
 
-var EngTxt2WordFrq = function () {
+        var WordFrq = {}
+        for (var i = 0; i < sortable.length; i++) {
+            WordFrq[sortable[i][0]] = sortable[i][1]
+        }
+        return WordFrq
+    },
+}
+
+function EngTxt2WordFrq() {
 }
 EngTxt2WordFrq.prototype.merge_regular_word = function (WdFrObj) {
     ////////////
@@ -42,7 +60,7 @@ EngTxt2WordFrq.prototype.merge_regular_word = function (WdFrObj) {
             })
         }
     }
-    ["s", "es", "ing", "d", "ed", "er", "r", "or", "ers", "ors", "rs", "ly", "y", "ity", "est", "ion", "ions", "able", "ous","ously", "ic","ation","ations","cation","cations","ant","ent","ary","ence","ences","ive","iveness",,"itive"].forEach(function (sufix) {
+    ["s", "es", "ing", "d", "ed", "er", "r", "or", "ers", "ors", "rs", "ly", "y", "ity", "est", "ion", "ions", "able", "ous", "ously", "ic", "ation", "ations", "cation", "cations", "ant", "ent", "ary", "ence", "ences", "ive", "iveness", , "itive"].forEach(function (sufix) {
         restore_by(WdFrObj, sufix)
     })
     return WdFrObj
@@ -69,23 +87,6 @@ EngTxt2WordFrq.prototype.get_WordGrpFrqObj = function (wdfrobj, wdsynOb) {
     }
     return wdgrpObj
 }
-EngTxt2WordFrq.prototype.sort_by_frq = function (wdfrobj) {
-    var sortable = [];
-    for (var wd in wdfrobj) {
-        sortable.push([wd, wdfrobj[wd]]);
-    }
-
-    sortable.sort(function (a, b) {
-        return b[1] - a[1];
-    });
-
-    var WordFrq = {}
-    for (var i = 0; i < sortable.length; i++) {
-        WordFrq[sortable[i][0]] = sortable[i][1]
-    }
-
-    return WordFrq
-}
 EngTxt2WordFrq.prototype.Run = function (txfile, outdir) {
     var ignore_word = fs.readFileSync(`${txfile}.lib.ignore.json`, "utf8")
     var IgnoreWords = JSON.parse(ignore_word)
@@ -96,7 +97,7 @@ EngTxt2WordFrq.prototype.Run = function (txfile, outdir) {
     //var arr = txt.split(/[0-9\s\,\.\;\-\=\[\]\{\}\(\)\!\@\#\$\%\^\&\*\~\`\|\\\"\'\?\<\>\?\/\:\—\’\“\”\‘\'\æ\ë]/g);
     var arr = txt.match(/([a-zA-Z]+)/g)
     console.log("tot words count=", arr.length)
-    fs.writeFileSync(`${outdir}/${txfile}.out.wordlist.json`, JSON.stringify(arr, null, 4), 'utf8')
+    fs.writeFileSync(`${outdir}/${txfile}.out.1.wordlist.json`, JSON.stringify(arr, null, 4), 'utf8')
 
     var WdFrqObj = {}
     for (var i = 0; i < arr.length; i++) {
@@ -109,13 +110,13 @@ EngTxt2WordFrq.prototype.Run = function (txfile, outdir) {
         WdFrqObj[word]++
         //if (word.indexOf("construct") >= 0) console.log(word, WdFrqObj[word])
     }
-    fs.writeFileSync(`${outdir}/${txfile}.out.wordfrqRaw.json`, JSON.stringify(WdFrqObj, null, 4), 'utf8')
+    fs.writeFileSync(`${outdir}/${txfile}.out.2.wordfrqRaw.json`, JSON.stringify(WdFrqObj, null, 4), 'utf8')
 
 
     var synotxt = fs.readFileSync(`${txfile}.lib.group.json`, "utf8")
     var grpObj = JSON.parse(synotxt)
     var wdg = this.get_WordGrpFrqObj(WdFrqObj, grpObj)
-    fs.writeFileSync(`${outdir}/${txfile}.out.wordgrp.json`, JSON.stringify(wdg, null, 4), 'utf8')
+    fs.writeFileSync(`${outdir}/${txfile}.out.3.wordgrp.json`, JSON.stringify(wdg, null, 4), 'utf8')
 
 
 
@@ -124,18 +125,19 @@ EngTxt2WordFrq.prototype.Run = function (txfile, outdir) {
     var distar = Object.keys(WdFrqObj)
     console.log("tot distinct count=", distar.length)
 
-    var sortedWFObj = this.sort_by_frq(WdFrqObj)
+    var sortedWFObj = Uti.sort_val_of_obj(WdFrqObj)
+    var out = `${outdir}/${txfile}.out.wordfrqMerged.json`
     fs.writeFileSync(`${outdir}/${txfile}.out.wordfrqMerged.json`, JSON.stringify(sortedWFObj, null, 4), 'utf8')
     //console.log(sortedWFObj)
-    console.log("end")
+    console.log("out", out)
 }
 
 ///////////////////////////////////////////
 var myArgs = process.argv.slice(2);
 var ps = new EngTxt2WordFrq();
 
-var outdir="/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/jslibs/data/txt/darwin_species"
-ps.Run("EngTxt2FrqTable",outdir);
+var outdir = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/jslibs/data/txt/darwin_species"
+ps.Run("EngTxt2FrqTable", "./");
 
 return;
 
