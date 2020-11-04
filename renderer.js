@@ -29,8 +29,7 @@
 
 
 const ipcRenderer = require('electron').ipcRenderer;
-const { Web2Main_IDs } = require('../main_console_tray_win.mod');
-console.log("Web2Main_IDs:",Web2Main_IDs)
+
 const Main2Web_func = {
     connectionStatus: function (arg) {
         // <b style="color: ${colr};">${str}</b>

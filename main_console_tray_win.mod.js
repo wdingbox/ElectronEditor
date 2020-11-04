@@ -7,7 +7,7 @@ const { app, BrowserWindow, Tray, Menu, ipcMain, globalShortcut, dialog, screen,
 
 const Store = require('electron-store');
 const store_auto_launch = new Store();
-const electronStore = new Store();
+const electronStore_findInPage = new Store();
 
 const { AutoLauncher } = require("./my_modules/AutoLauncher.mod")
 
@@ -27,15 +27,17 @@ var g_Menu = null
 
 function Main_Window() {
   this.mainWindow = null
+  this.m_findInPageWin = null
 }
-Main_Window.prototype.createWindow = function () {
+Main_Window.prototype.createWindow = function (arg) {
+  console.log("preload:", path.join(__dirname, 'preload.js'))
   // Create a browser window.
-  var win = new BrowserWindow({
+  var parm = {
     width: 1050,
     height: 750,
     //x: -1, //centered
     //y: -1, //centered
-    show: false,
+    show: true,
     frame: true, //not dragable.
     fullscreenable: true,
     alwaysOnTop: false,
@@ -43,7 +45,8 @@ Main_Window.prototype.createWindow = function () {
     resizable: true,
     closable: true, //disable close button.
     maximizable: true,
-    frame: true,
+    minimizable: true,
+
     webPreferences: {
       enablePreferredSizeMode: true,
       //minimumFontSize: 12,
@@ -52,21 +55,31 @@ Main_Window.prototype.createWindow = function () {
 
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true, //allow client js and nodejs work together in nodeIntegration.js
-      //nodeIntegrationInWorker: true
+      nodeIntegrationInWorker: true
     }
-  })
+  }
+  if (arg) {
+    Object.keys(parm).forEach(function (key) {
+      if (undefined !== arg[key]) {
+        parm[key] = arg[key]
+        console.log(key, arg[key])
+      }
+    })
+  }
+  console.log(parm)
+  var win = new BrowserWindow(parm)
 
   win.on("blur", () => {
-    if (win.m_isAnimation) {
-      return;
-    }
     if (!win.webContents.isDevToolsOpened()) {
       // win_tray_uti.mainWindow.hide();
     }
   });
   win.on("close", () => {
-    console.log("win close")
-    win = null
+    console.log("win close", arg)
+    console.log("win arg.onclose", arg.onclose)
+    if (undefined !== arg.onclose) {
+      arg.onclose()
+    }
   });
 
   //win_tray_uti.win.documentEdited(true)
@@ -80,7 +93,7 @@ Main_Window.prototype.createWindow = function () {
   return win;
 }
 
-Main_Window.prototype.openWindow = function (filename, bforceReload) {
+Main_Window.prototype.openMainWindow = function (filename, bforceReload) {
   if (bforceReload) this.m_loadfile = bforceReload
   if (this.mainWindow) {
     if (this.m_loadfile !== filename) {
@@ -90,10 +103,51 @@ Main_Window.prototype.openWindow = function (filename, bforceReload) {
     this.mainWindow.show()
     return
   }
-  this.mainWindow = this.createWindow()
+  var _THIS = this
+  this.mainWindow = this.createWindow({
+    onclose: function () {
+      _THIS.mainWindow = null
+      if (_THIS.m_findInPageWin) {
+        _THIS.m_findInPageWin.close()
+        delete _THIS.m_findInPageWin
+        _THIS.m_findInPageWin = null
+      }
+    }
+  })
   this.mainWindow.loadFile(filename)
   this.m_loadfile = filename
   this.mainWindow.show()
+}
+Main_Window.prototype.openFindInPageDialog = function () {
+  if (this.m_findInPageWin) return
+
+  var _THIS = this
+  var arg = {
+    width: 300, height: 200,
+    show: true,
+    frame: true, //not dragable.
+    fullscreenable: false,
+    alwaysOnTop: true,
+    transparent: false, //frame opacity
+    resizable: false,
+    closable: true, //disable close button.
+    maximizable: false,
+    minimizable: false,
+    onclose: function () {
+      console.log("close findinpage.")
+      if (_THIS.mainWindow && _THIS.mainWindow.webContents) {
+        console.log("stopFindInPage")
+        _THIS.mainWindow.webContents.stopFindInPage('clearSelection')
+      }
+      _THIS.m_findInPageWin = null
+    }
+  }
+
+  this.m_findInPageWin = this.createWindow(arg);
+  this.m_findInPageWin.loadFile("./pages/find_in_page_dialog.html")
+
+  this.m_findInPageWin.webContents.openDevTools({ mode: 'detach', "defaultFontSize": 28 })
+  return this.m_findInPageWin
 }
 
 
@@ -118,6 +172,7 @@ function Main_Tray() {
 
     g_Menu.set_enabled_by_id("OpenDevTool", !!g_Window.mainWindow)
     g_Menu.set_enabled_by_id("SubMenuBroswer", !!g_Window.mainWindow)
+    g_Menu.set_enabled_by_id("MenuItem_findInPage", !!g_Window.mainWindow)
   })
 }
 Main_Tray.prototype.setMenu = function (menu) {
@@ -136,11 +191,21 @@ function Main_Menu() {
         click: (itm) => {
           console.log(itm)
           var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
-          g_Window.openWindow(filename)
+          g_Window.openMainWindow(filename)
           if (g_Window) {
             //g_Window.webContents.openDevTools({ mode: 'detach' })
           }
 
+        },
+      },
+
+
+      { type: "separator" },
+
+      {
+        id: "MenuItem_findInPage", label: 'Find In Page', toolTip: 'find text in page', accelerator: 'CmdOrCtrl+F',
+        click: () => {
+          var win = g_Window.openFindInPageDialog()
         },
       },
 
@@ -149,7 +214,7 @@ function Main_Menu() {
         accelerator: 'Shift+CmdOrCtrl+C',
         click: (itm) => {
           console.log("DevTool")
-          //win_tray_uti.openWindow("./_ckeditor/_app/index.html")
+          //win_tray_uti.openMainWindow("./_ckeditor/_app/index.html")
           if (g_Window.mainWindow && g_Window.mainWindow.webContents) {
             console.log("to open DevTool")
             g_Window.mainWindow.webContents.openDevTools({ mode: 'detach', "defaultFontSize": 28 })
@@ -160,8 +225,6 @@ function Main_Menu() {
           //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
         },
       },
-
-      { type: "separator" },
 
       {
         id: "SubMenuBroswer", label: 'Broswer', toolTip: 'Broswer',
@@ -199,14 +262,6 @@ function Main_Menu() {
 
           { type: "separator" },
 
-          {
-            id: "submenu_findInPage", label: 'find next in page', toolTip: 'find next in page', accelerator: 'CmdOrCtrl+F',
-            click: () => {
-              console.log('Electron loves global shortcuts! CommandOrControl+F: findInPage')
-              var arg = electronStore.get("findInPage_opt")
-              Webcontent2MainConsole.Web2Main_func.webContents_findInPage(null, arg)
-            },
-          },
 
           {
             id: "webContents_printToPDF", label: 'printToPDF', toolTip: 'webContents_printToPDF',
@@ -218,7 +273,7 @@ function Main_Menu() {
         ]
       },
 
-
+      { type: "separator" },
 
       {
         id: "Autolaunch", label: 'Autolaunch', toolTip: 'Autolaunch after reboot', type: 'checkbox', checked: true,
@@ -241,10 +296,7 @@ function Main_Menu() {
       {
         id: "MenuItem_Help", label: 'Help', toolTip: 'Help',
         click: () => {
-          var filename = "./pages/config_electron_broswer.html"
-          var win = g_Window.createWindow()
-          win.loadFile(filename)
-          win.show()
+          g_Window.createWindow().loadFile("./pages/config_electron_broswer.html")
         },
       },
 
@@ -403,6 +455,15 @@ var Webcontent2MainConsole = {
       if (!g_Window.mainWindow) return
       console.log("val=", arg.val)
       g_Window.mainWindow.webContents.findInPage(arg.val, arg.opt)
+      if(undefined !== g_Window.mainWindow.webContents.m_output) return
+      g_Window.mainWindow.webContents.on('found-in-page', (event, result) => {
+        console.log("find result:", result)
+        var output = { input: arg, result: result }
+        electronStore_findInPage.set("findInPage_output", output)
+        g_Window.mainWindow.webContents.m_output = output
+        g_Window.m_findInPageWin.webContents.send('webContents_findInPage', output);
+        //if (result.finalUpdate) webContents.stopFindInPage('clearSelection')
+      })
     },
 
 
@@ -470,7 +531,7 @@ var win_tray_uti = {
 
       globalShortcut.register('Alt+CommandOrControl+F', () => {
         console.log('Electron loves global shortcuts! Alt+CommandOrControl+F: webContents_findInPage')
-        var arg = electronStore.get("findInPage_opt")
+        var arg = electronStore_findInPage.get("findInPage_input")
         var ret = Webcontent2MainConsole.Web2Main_func.webContents_findInPage(null, arg)
         console.log("findinpage ret:", ret)
       })

@@ -41,7 +41,7 @@ $("body").keydown(function (evt) {
 
 
 
-  ckeditor_save2disk()
+  //ckeditor_save2disk()
 
 });
 //////////////////////////////////

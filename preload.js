@@ -15,3 +15,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 })
 
+const { Web2Main_IDs } = require('./main_console_tray_win.mod');
+console.log("pre-load Web2Main_IDs:",Web2Main_IDs)
+

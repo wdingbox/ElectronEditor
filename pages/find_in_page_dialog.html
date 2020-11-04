@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2003-2020, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Find-In-Page</title>
+
+
+    <!-- Insert this line above script imports to prevent confliction with jq  -->
+    <script>
+        if (typeof module === 'object') { window.module = module; module = undefined; }
+    </script>
+    <!-- JAVASCRIPT BEGIN ================================================== -->
+    <script src="http://localhost:7878/assets/ckeditor/adapters/jq/jquery-2_1_3.min.js" note="selfseversite"></script>
+
+    <!-- JAVASCRIPT================================================== -->
+    <!-------------- ckeditor only--------------------->
+    <!-- =================     App   JAVASCRIPT START  ======================== -->
+    <script xxxxsrc="../../.js"></script>
+    <script xxxxsrc="../../.js"></script>
+    <link xxxhref="../../.css" rel="stylesheet">
+
+    <!-- =================     App   JAVASCRIPT END  ======================== -->
+    <!-- Insert this line after script imports to prevent confliction with jq -->
+    <!-------------------------------------------------------------------------->
+    <script>
+        if (window.module) module = window.module;
+    </script>
+
+
+
+    <meta name="ckeditor-sample-required-plugins" content="sourcearea">
+    <meta name="ckeditor-sample-name" content="Full page support">
+    <meta name="ckeditor-sample-group" content="Plugins">
+    <meta name="ckeditor-sample-description"
+        content="CKEditor inserted with a JavaScript call and used to edit the whole page from &lt;html&gt; to &lt;/html&gt;.">
+    <meta name="description"
+        content="Try the latest sample of CKEditor 4 and learn more about customizing your WYSIWYG editor with endless possibilities.">
+    <!-------------------------------------------->
+    <script xxxxsrc="../../assets/libs/jquery/dist/jquery-2_1_3.min.js"></script>
+
+
+    <style>
+        td {
+            white-space: nowrap;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <button id="Btn_findInPage">Find-In-Page</button><a id="output">..</a><br>
+
+    <input list="browsers" type="text" value="A" style="width:200px;" id="SearchString">
+    <datalist id="browsers">
+        <option value="Internet Explorer">
+        <option value="Firefox">
+        <option value="Chrome">
+        <option value="Opera">
+        <option value="Safari">
+    </datalist>
+    </input><br>
+    <input type="checkbox" id="findInPage_forward">forward</input>.<br>
+    <input type="checkbox" id="findInPage_findNext">findNext</input>.<br>
+    <input type="checkbox" id="findInPage_matchCase">matchCase</input>.<br>
+    <input type="checkbox" id="findInPage_wordStart">wordStart</input>.<br>
+    <input type="checkbox" id="findInPage_medialCapitalAsWordStart">medialCapitalAsWordStart.</input><br>
+    <select size="3">
+        <option>1</option>
+        <option>1</option>
+        <option>1</option>
+
+    </select>
+
+
+    <!-- Test ndjs -->
+</body>
+
+</html>
+<script>
+    const ipcRenderer = require('electron').ipcRenderer;
+    const { Web2Main_IDs } = require('../main_console_tray_win.mod');
+    const Store = require('electron-store');
+    const electronStore_findInPage = new Store();
+    ////////////////////////////////////////////////
+    console.log(Web2Main_IDs)
+
+    ipcRenderer.on(Web2Main_IDs.webContents_findInPage, (event, arg) => {
+        //FROM: win_tray_uti.mainWindow.webContents.send('Main2Web', obj);
+        var str = `matches:${arg.result.activeMatchOrdinal}/${arg.result.matches}`
+        $("#output").text(str)
+        console.log("web rcv signal fr main:", arg) // prints "pong"
+    })
+    $(() => {
+        $("#Btn_findInPage").click(function () {
+            var obj = { val: "", opt: {} }
+            obj.val = $("#SearchString").val()
+            obj.opt.forward = document.getElementById("findInPage_forward").checked
+            obj.opt.findNext = document.getElementById("findInPage_findNext").checked
+            obj.opt.matchCase = document.getElementById("findInPage_matchCase").checked
+            obj.opt.wordStart = document.getElementById("findInPage_wordStart").checked
+            obj.opt.medialCapitalAsWordStart = document.getElementById("findInPage_medialCapitalAsWordStart").checked
+            console.log(obj)
+            
+            ipcRenderer.send(Web2Main_IDs.webContents_findInPage, obj) // send to main.
+            electronStore_findInPage.set("findInPage_input", obj)
+        })
+
+    })
+
+</script>
