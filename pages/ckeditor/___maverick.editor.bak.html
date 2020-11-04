@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2003-2020, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Full Page Onsite HTML Visual Editing</title>
+
+    <meta name="ckeditor-sample-required-plugins" content="sourcearea">
+    </meta>
+    <meta name="ckeditor-sample-name" content="Full page support">
+    </meta>
+    <meta name="ckeditor-sample-group" content="Plugins">
+    </meta>
+    <meta name="ckeditor-sample-description"
+        content="CKEditor inserted with a JavaScript call and used to edit the whole page from &lt;html&gt; to &lt;/html&gt;.">
+    </meta>
+    <meta name="description"
+        content="Try the latest sample of CKEditor 4 and learn more about customizing your WYSIWYG editor with endless possibilities.">
+    </meta>
+    <!-------------------------------------------->
+    <!---- Insert this before scripts import; then restor back later -->
+    <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+
+    <!-------------- jq --------------------->
+    <script ____src="./doc_files/jquery-2_1_3.min.js"></script>
+    <script ____src="https://wdingbox.github.io/ham12/jq/jquery-2_1_3.min.js"></script>
+    <script src="http://localhost:7878/assets/ckeditor/adapters/jq/jquery-2_1_3.min.js" note="selfseversite"></script>
+    <!-------------- ckeditor only--------------------->
+    <script ___src="https://cdn.ckeditor.com/4.15.0/standard/ckeditor.js"></script>
+    <script ___src="https://wdingbox.github.io/ham12/assets/ckeditor/ckeditor.js"></script>
+
+    <script src="http://localhost:7878/assets/ckeditor/ckeditor.js" note="selfseversite"></script>
+    <script src="http://localhost:7878/assets/ckeditor/samples/old/sample.js"></script>
+    <link href="http://localhost:7878/assets/ckeditor/samples/old/sample.css" rel="stylesheet">
+    <!-------------------------------------------->
+    <!----- Insert this line after script imports -->
+    <script>if (window.module) module = window.module;</script>
+    <!-------------------------------------------->
+    <style>
+        .editor_state_max {
+            z-index: 999999;
+            position: absolute;
+            right: 20px;
+            background-color: antiquewhite;
+        }
+
+        #input,
+        #output,
+        #idbtn_exec_cmd {
+            background-color: black;
+            color: white;
+            overflow: auto
+        }
+
+        .white_space_nowrap {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+    <form action="http://localhost:7878/save" method="post">
+        <label for="editor1">
+            CKEditor output the entire page including content outside of
+            <code>&lt;body&gt;</code> element, so content like meta and title can be changed:
+        </label>
+        <textarea cols="80" id="editor1" name="editor1" rows="10">
+			loading insite file ...
+		</textarea>
+    </form>
+    <div style="float: left; margin-right: 20px">
+        When <em>Enter</em> is pressed:<br>
+        <select id="xEnter" onchange="changeEnter();">
+            <option value="1">Create a new &lt;P&gt; (recommended)</option>
+            <option selected="selected" value="3">Create a new &lt;DIV&gt;</option>
+            <option value="2">Break the line with a &lt;BR&gt;</option>
+        </select>
+    </div>
+    <div style="float: left">
+        When <em>Shift+Enter</em> is pressed:<br>
+        <select id="xShiftEnter" onchange="changeEnter();">
+            <option value="1">Create a new &lt;P&gt;</option>
+            <option value="3">Create a new &lt;DIV&gt;</option>
+            <option selected="selected" value="2">Break the line with a &lt;BR&gt; (recommended)</option>
+        </select>
+    </div>
+
+    <br><br>
+    <p>
+        <select id="histlog" size="10"></select>
+    </p>
+
+
+
+    <p>
+        <textarea id="input" cols="165" rows="10"
+            title="shell cmd"><div><span style="color:#e74c3c;">cmd</span></div></textarea><br>
+        <button id="idbtn_exec_cmd" onclick="__exec_ui_cmd();">exec cmd</button>
+        <select id="gen_sh_cmd" onchange="gen_ui_sh_cmd();">
+            <option>default</option>
+            <optgroup label="git">
+                <option>git branch</option>
+                <option>git log</option>
+                <option>git pull</option>
+                <option>git push</option>
+                <option>git status</option>
+                <option>git diff</option>
+                <option>git diff --ignore-space-at-eol -b -w --ignore-blank-lines --color-words=.</option>
+            </optgroup>
+            <optgroup label="cmd">
+                <option>ls</option>
+                <option>pwd</option>
+                <option>open ___maverick.editor.html</option>
+                <option>open -a Terminal ~/Documents</option>
+                <option>open -a Terminal .</option>
+            </optgroup>
+        </select>
+        <button id="idbtn_exec_cmd" title="white-space: nowrap;"
+            onclick="$('#output').toggleClass('white_space_nowrap');">toggle wrap</button><br>
+        <textarea id="output" cols="165" rows="50"
+            title="output of shell cmd.">&lt;span style="color:#e74c3c;"&gt;output&lt;/span&gt;</textarea>
+    </p>
+
+
+
+
+
+    <div id="footer">
+        <hr>
+        <p>
+            CKEditor - The text editor for the Internet - <a class="samples"
+                href="https://ckeditor.com/">https://ckeditor.com</a>
+        </p>
+        <p id="copy">
+            Copyright &copy; 2003-2020, <a class="samples" href="https://cksource.com/">CKSource</a> - Frederico
+            Knabben. All rights reserved.
+        </p>
+
+    </div>
+
+
+
+
+
+    <script>
+        var ckEditor;
+        function init_CKEditor() {
+            ckEditor = CKEDITOR.replace('editor1', {
+                fullPage: true,
+                allowedContent: true,
+                extraPlugins: 'wysiwygarea',
+                width: '100%',
+
+                enterMode: CKEDITOR.ENTER_DIV, //default mode. 
+
+                wordcount: {//not working.
+                    'showWordCount': true,
+                    'showParagraphs': true,
+                    'showCharCount': true,
+                    'maxCharCount': 10000000
+                },
+
+                extraPlugins: 'enterkey',
+                enterMode: Number(document.getElementById('xEnter').value),
+                shiftEnterMode: Number(document.getElementById('xShiftEnter').value),
+
+                on: {
+                    focus: function () { },
+                    blur: function () { },
+
+                    // Check for availability of corresponding plugins.
+                    pluginsLoaded: function (evt) {
+                        var doc = CKEDITOR.document, ed = evt.editor;
+                        if (!ed.getCommand('bold'))
+                            doc.getById('exec-bold').hide();
+                        if (!ed.getCommand('link'))
+                            doc.getById('exec-link').hide();
+                    }
+                }
+
+            });
+
+
+
+            // wait until the editor has done initializing
+            ckEditor.on("instanceReady", function (evt) {
+
+                // overwrite the default save function
+                evt.editor.addCommand("save", {
+                    modes: { wysiwyg: 1, source: 1 },
+                    exec: function () {
+                        __save()
+                    }
+                });
+
+                // maximize / mainimize
+                evt.editor.on("maximize", function (e) {
+                    console.log("maximize", e)
+                    switch (e.data) {
+                        case 1: //convert to max
+                            ckEditor.showNotification('maximize');
+                            break;
+                        case 2: //turn to norm
+                            ckEditor.showNotification('mainimize');
+                            break;
+                        default: alert("maximize data?")
+                    }
+                });
+
+                // open chrome broswer.
+                evt.editor.addCommand("preview", {
+                    modes: { wysiwyg: 1, source: 1 },
+                    exec: function () {
+                        var ret = get_custom_pathname()
+                        gen_insite_sh_cmd("open " + ret.name)
+                        __exec_ui_cmd()
+                        return false //disable popup.
+                    }
+                });
+
+
+            });
+        }
+        function changeEnter() {
+            // If we already have an editor, let's destroy it first.
+            var imod = Number(document.getElementById('xEnter').value);
+            ckEditor.setActiveEnterMode(imod);
+            console.log("xEnter Mode:", imod)
+            return;
+        }
+        ////////window.onload = changeEnter;
+
+        function _MSG() {
+            this.m_len = 0
+            this.m_sChangeLen = ""
+        }
+        _MSG.prototype.dlt = function (len) {
+            var dlt = len - this.m_len
+            this.m_sChangeLen = `len change: ${len}-${this.m_len}=${dlt}`
+            this.m_len = len
+            return this
+        }
+        _MSG.prototype.pop = function (s, styp) {
+            if (!styp) styp = "info"
+            s = `[${(new Date()).toISOString()}] ${s} ${this.m_sChangeLen} `
+            $("#histlog").prepend(`<option>${s}</option>`)
+            if (ckEditor) ckEditor.showNotification(s, styp);//
+            this.m_sChangeLen = ""
+            return this
+        }
+        var g_msg = new _MSG()
+
+
+
+        function gen_git_cmd_default() {
+            var ret = get_custom_pathname()
+            var git_cmd_txt = `#!/bin/bash
+######################
+# goto customer folder.
+cd ${ret.root}
+git add ${ret.name}
+git commit -m "changed."
+git status
+######################`;
+            $("#input").val(git_cmd_txt)
+            return git_cmd_txt;
+        }
+        function gen_insite_sh_cmd(scmd) {
+            var ret = get_custom_pathname()
+            var cmd_txt = `#!/bin/bash
+######################
+# goto customer folder.
+cd ${ret.root}
+#
+echo ${scmd}
+${scmd}
+######################`;
+            $("#input").val(cmd_txt)
+            return cmd_txt;
+        }
+        function gen_ui_sh_cmd() {
+            var val = $("#gen_sh_cmd").val()
+            switch (val) {
+                case "default": return gen_git_cmd_default();
+                default: return gen_insite_sh_cmd(val)
+            }
+
+        }
+
+
+        function __exec_ui_cmd() {
+            //alert(theData);
+            var shcmd = $("#input").val()
+            console.log("git cmd:", shcmd)
+            $.post("http://localhost:7878/git_cmd",
+                {
+                    "pathname": get_custom_pathname().root,
+                    "sh_script": shcmd
+                },
+                function (result) {
+                    console.log("git cmd result:", result);
+                    g_msg.pop(`Cmd for git.`);
+                    $("#output").val(result.output)
+                }).fail(function (er) {
+                    g_msg.pop(`*** saved failed:${er}`, "warning")
+                }).done(function (ret) {
+                    console.log("done:", ret)
+                });
+        }
+        function __save() {
+            // get the editor content
+            var theData = ckEditor.getData();
+            if (false === ckEditor.checkDirty()) {
+                console.log("checkDirty : false")
+                g_msg.pop(` no change; no saving; len:${theData.length}`);
+                return
+            }
+            if (undefined !== require) {
+                const fs = require('fs');
+                fs.writeFileSync(get_custom_pathname().pathname, theData, "utf8")
+                g_msg.pop(`Save OK by fs.writeFileSync. ${theData.length}`);
+                return
+            }
+
+            g_msg.dlt(theData.length).pop(` to save.`);
+            //alert(theData);
+            $.post("http://localhost:7878/save",
+                {
+                    "pathname": get_custom_pathname().pathname,
+                    "htm": theData
+                },
+                function (result) {
+                    var dataloss = theData.length - result.len
+                    var ms = `data loss:${theData.length}-${result.len}=${theData.length - result.len}`
+                    if (dataloss != 0) {
+                        alert(ms)
+                        return g_msg.pop('ERROR:' + ms, 'warning');
+                    }
+                    console.log("ret:", result.len);
+                    g_msg.pop(`Save OK by ajx. ${ms}`);
+                    ckEditor.resetDirty()
+                }).fail(function (er) {
+                    g_msg.pop(`*** saved failed:${er}`, "warning")
+                }).done(function (ret) {
+                    console.log("done:", ret)
+                });
+        }
+        function get_custom_pathname() {
+            var regex = new RegExp("/___maverick.editor.html$")
+            var root = window.location.pathname.replace(regex, "")
+            var name = window.location.search.replace("?fname=", "")
+            var pathname = root + "/" + name
+            return { name: name, pathname: pathname, root: root }
+        }
+        function load_page_by_parse_window_location() {
+            console.log(window.location)
+            var ret = get_custom_pathname()
+            $("title").text(ret.pathname)
+            gen_git_cmd_default()
+            $("#gen_sh_cmd").append(`<option>open ${ret.name}</option>`)
+            $("#gen_sh_cmd").append(`<option>open file://${ret.root}/___maverick.editor.html?fname=${ret.name}</option>`)
+            console.log(ret.name)
+            $.get(ret.name, function (data) {
+                //alert(data);
+                setTimeout(() => {
+                    CKEDITOR.instances.editor1.setData(data)
+                    g_msg.pop(`initial load file: ${ret.name}, size:${data.length}(B)`).m_len = data.length
+                }, 1000)
+            });
+        }
+    </script>
+</body>
+
+</html>
+<script>
+    if (undefined !== require) {
+        // broswer is electron.
+        const electron = require('electron');
+        const path = require('path');
+        const fs = require('fs');
+
+        const exec = require('child_process').exec;
+        const child_process = require('child_process');
+        const { assert } = require('console');
+
+
+
+        //const Store = require('electron-store');
+        //const electronStore_edited_files_history = new Store();
+    }
+</script>
+<script>
+    $(function () {
+        init_CKEditor()
+        load_page_by_parse_window_location()
+
+
+    })
+</script>
