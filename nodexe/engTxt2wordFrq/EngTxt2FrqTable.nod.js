@@ -92,6 +92,7 @@ EngTxt2WordFrq.prototype.Run = function (txfile, outdir) {
 
 
     var txt = fs.readFileSync(`${txfile}.txt`, "utf8")
+    txt = txt.toLowerCase()
     //var arr = txt.split(/[0-9\s\,\.\;\-\=\[\]\{\}\(\)\!\@\#\$\%\^\&\*\~\`\|\\\"\'\?\<\>\?\/\:\—\’\“\”\‘\'\æ\ë]/g);
     var arr = txt.match(/([a-zA-Z]+)/g)
     console.log("tot words count=", arr.length)
@@ -99,7 +100,7 @@ EngTxt2WordFrq.prototype.Run = function (txfile, outdir) {
 
     var WdFrqObj = {}
     for (var i = 0; i < arr.length; i++) {
-        var word = arr[i].toLowerCase().trim();
+        var word = arr[i].trim();
         if (!!IgnoreWords[word]) continue
         if (word.length <= 2) continue
         if (!WdFrqObj[word]) {
