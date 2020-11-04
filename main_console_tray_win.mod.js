@@ -146,10 +146,20 @@ Main_Window.prototype.openFindInPageDialog = function () {
   this.m_findInPageWin = this.createWindow(arg);
   this.m_findInPageWin.loadFile("./pages/find_in_page_dialog.html")
 
-  this.m_findInPageWin.webContents.openDevTools({ mode: 'detach', "defaultFontSize": 28 })
+  //this.m_findInPageWin.webContents.openDevTools({ mode: 'detach', "defaultFontSize": 28 })
   return this.m_findInPageWin
 }
-
+Main_Window.prototype.openFocusedWindowDevTool = function () {
+  const window = require('electron').BrowserWindow;
+  let focusedWindow = window.getFocusedWindow();
+  if (focusedWindow && focusedWindow.webContents) {
+    focusedWindow.webContents.openDevTools({ mode: 'detach' })
+  }
+  else {
+    console.log("cannot open devtool.")
+  }
+  return
+}
 
 
 ////////////////////////
@@ -211,18 +221,10 @@ function Main_Menu() {
 
       {
         id: "OpenDevTool", label: 'Open DevTool', toolTip: 'open DevTool.', enabled: false,
-        accelerator: 'Shift+CmdOrCtrl+C',
+        accelerator: 'Alt+CmdOrCtrl+C',
         click: (itm) => {
-          console.log("DevTool")
-          //win_tray_uti.openMainWindow("./_ckeditor/_app/index.html")
-          if (g_Window.mainWindow && g_Window.mainWindow.webContents) {
-            console.log("to open DevTool")
-            g_Window.mainWindow.webContents.openDevTools({ mode: 'detach', "defaultFontSize": 28 })
-          } else {
-            console.log("DevTool cannot opne: no window")
-          }
-          ////////
-          //win_tray_uti.signal2web({ id: "ssh_status", msg: out })
+          console.log("open DevTool for current window")
+          g_Window.openFocusedWindowDevTool()
         },
       },
 
@@ -455,7 +457,7 @@ var Webcontent2MainConsole = {
       if (!g_Window.mainWindow) return
       console.log("val=", arg.val)
       g_Window.mainWindow.webContents.findInPage(arg.val, arg.opt)
-      if(undefined !== g_Window.mainWindow.webContents.m_output) return
+      if (undefined !== g_Window.mainWindow.webContents.m_output) return
       g_Window.mainWindow.webContents.on('found-in-page', (event, result) => {
         console.log("find result:", result)
         var output = { input: arg, result: result }
@@ -529,11 +531,9 @@ var win_tray_uti = {
         Webcontent2MainConsole.Web2Main_func.webContents_ZoomFactor(null, { val: -0.1 })
       })
 
-      globalShortcut.register('Alt+CommandOrControl+F', () => {
-        console.log('Electron loves global shortcuts! Alt+CommandOrControl+F: webContents_findInPage')
-        var arg = electronStore_findInPage.get("findInPage_input")
-        var ret = Webcontent2MainConsole.Web2Main_func.webContents_findInPage(null, arg)
-        console.log("findinpage ret:", ret)
+      globalShortcut.register('Alt+CommandOrControl+C', () => {
+        console.log('Electron loves global shortcuts! Alt+CommandOrControl+C: open devtool')
+        g_Window.openFocusedWindowDevTool()
       })
     })
 

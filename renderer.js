@@ -28,50 +28,5 @@
 
 
 
-const ipcRenderer = require('electron').ipcRenderer;
-
-const Main2Web_func = {
-    connectionStatus: function (arg) {
-        // <b style="color: ${colr};">${str}</b>
-        if (arg.obj) {
-            $("#testinfo").text(JSON.stringify(arg, null, 4))
-        }
-
-        if (arg.val === "running") {
-            var str = ". . . . . . . . . . . . . ."
-            arg.val += " " + str.substr(0, 2 * (arg.obj._svr.idx % 4))
-            $("#checkPeriod").val(arg.obj._cln.iCheckPeriod)
-        }
-        
-        var str = `<b style="color:${arg.clr}">${arg.val}</b>`
-        $("#connectionStatus").html(str)
-        
-    },
-    ssh_status: function (arg) {
-        var str = JSON.stringify(arg)
-        var out = arg.msg.replace(/\n/g, "<br><br>")
-        $("#ssh_status").html(out)
-    }
-}
-ipcRenderer.on("Main2Web", (event, arg) => {
-    //FROM: win_tray_uti.mainWindow.webContents.send('Main2Web', obj);
-    console.log("web rcv signal fr main:") // prints "pong"
-    if (Main2Web_func[arg.id]) {
-        Main2Web_func[arg.id](arg)
-    } else {
-        console.error("Error id:", arg)
-    }
-})
-
-
-
-
-
-//for testing only
-ipcRenderer.on('asynchronous-reply', (event, arg) => {
-    console.log(arg) // prints "pong"
-})
-
-
 
 
