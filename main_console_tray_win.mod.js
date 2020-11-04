@@ -324,7 +324,7 @@ function Main_Menu() {
       {
         id: "MenuItem_Help", label: 'Help', toolTip: 'Help',
         click: () => {
-          g_Window.createWindow().loadFile("./pages/config_electron_broswer.html")
+          g_Window.createWindow().loadFile("./pages/help_info.html")
         },
       },
 
