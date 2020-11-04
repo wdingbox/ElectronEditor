@@ -199,10 +199,10 @@ function Main_Menu() {
   this.template =
     [
       {
-        id: "EditCustomHtmlFileOnsite", label: 'Select a Html File', toolTip: 'Select a HTML File to edit.', accelerator: 'CmdOrCtrl+S',
+        id: "EditCustomHtmlFileOnsite", label: 'Find Html File To Edit', toolTip: 'Select a HTML File to edit.', accelerator: 'CmdOrCtrl+S',
         click: (itm) => {
           console.log(itm)
-          var filename = "./pages/ckeditor/setup_custom_ckeditor.html"
+          var filename = "./pages/find_htm_file_to_edit.html"
           g_Window.openMainWindow(filename)
           if (g_Window) {
             //g_Window.webContents.openDevTools({ mode: 'detach' })
