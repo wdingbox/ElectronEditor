@@ -70,11 +70,15 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     <input type="checkbox" id="findInPage_matchCase">matchCase</input>.<br>
     <input type="checkbox" id="findInPage_wordStart">wordStart</input>.<br>
     <input type="checkbox" id="findInPage_medialCapitalAsWordStart">medialCapitalAsWordStart.</input><br>
-    <select size="3">
-        <option>1</option>
-        <option>1</option>
-        <option>1</option>
-
+    <select id="stopFindInPage_action" size="3">
+        <option selected title="">clearSelection</option>
+        <option title="Translate the selection into a normal selection.">keepSelection</option>
+        <option title="Focus and click the selection node.">activateSelection</option>
+    </select><br>
+    <select id="search_history" size="3">
+        <option selected title="">clearSelection</option>
+        <option title="Translate the selection into a normal selection.">keepSelection</option>
+        <option title="Focus and click the selection node.">activateSelection</option>
     </select>
 
 
@@ -90,25 +94,53 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     ////////////////////////////////////////////////
     console.log(Web2Main_IDs)
 
+    function set_search_history_list(searchString) {
+        var searches = electronStore_findInPage.get("findInPage_search_history")
+        if (undefined === searches) {
+            searches = {}
+        }
+        if (searchString) {
+            searches[searchString] = (new Date()).toISOString()
+            electronStore_findInPage.set("findInPage_search_history", searches)
+        }
+
+        var opts = ""
+        Object.keys(searches).forEach(function (key) {
+            opts += `<option>${key}</option>`
+        })
+        $("#browsers").html(opts)
+        $("#search_history").html(opts).bind("click",function(){
+            $("#SearchString").val( $(this).val() )
+        })
+    }
     ipcRenderer.on(Web2Main_IDs.webContents_findInPage, (event, arg) => {
         //FROM: win_tray_uti.mainWindow.webContents.send('Main2Web', obj);
         var str = `matches:${arg.result.activeMatchOrdinal}/${arg.result.matches}`
         $("#output").text(str)
         console.log("web rcv signal fr main:", arg) // prints "pong"
     })
+    function gen_findInPage_data() {
+        var action = $("#stopFindInPage_action").val()
+        var obj = { val: "", opt: {}, stopFindInPage_action: action }
+        obj.val = $("#SearchString").val()
+        obj.opt.forward = document.getElementById("findInPage_forward").checked
+        obj.opt.findNext = document.getElementById("findInPage_findNext").checked
+        obj.opt.matchCase = document.getElementById("findInPage_matchCase").checked
+        obj.opt.wordStart = document.getElementById("findInPage_wordStart").checked
+        obj.opt.medialCapitalAsWordStart = document.getElementById("findInPage_medialCapitalAsWordStart").checked
+        console.log(obj)
+        electronStore_findInPage.set("findInPage_input", obj)
+        return obj
+    }
     $(() => {
+        set_search_history_list()
         $("#Btn_findInPage").click(function () {
-            var obj = { val: "", opt: {} }
-            obj.val = $("#SearchString").val()
-            obj.opt.forward = document.getElementById("findInPage_forward").checked
-            obj.opt.findNext = document.getElementById("findInPage_findNext").checked
-            obj.opt.matchCase = document.getElementById("findInPage_matchCase").checked
-            obj.opt.wordStart = document.getElementById("findInPage_wordStart").checked
-            obj.opt.medialCapitalAsWordStart = document.getElementById("findInPage_medialCapitalAsWordStart").checked
-            console.log(obj)
-            
-            ipcRenderer.send(Web2Main_IDs.webContents_findInPage, obj) // send to main.
-            electronStore_findInPage.set("findInPage_input", obj)
+            var obj = gen_findInPage_data()
+            ipcRenderer.send(Web2Main_IDs.webContents_findInPage, obj) // send to main.           
+            set_search_history_list(obj.val)
+        })
+        $("#stopFindInPage_action").click(function () {
+            gen_findInPage_data()
         })
 
     })
