@@ -131,6 +131,7 @@ EngTxt2WordFrq.prototype.calcfrq = function (txt) {
     var distar = Object.keys(WdFrqObj)
     console.log("tot distinct count=", distar.length)
     outObj.info.word_distinct = distar.length
+    outObj.info.calc_ISO_time = (new Date()).toISOString()
 
     var sortedWFObj = Uti.sort_val_of_obj(WdFrqObj)
     outObj.wfo = sortedWFObj
