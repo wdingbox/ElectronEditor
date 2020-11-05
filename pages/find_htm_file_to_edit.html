@@ -43,9 +43,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 
     <style>
-        body{
+        body {
             background-color: rgb(170, 222, 247);
         }
+
         td {
             white-space: nowrap;
         }
@@ -94,7 +95,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     const fs = require('fs');
 
     const exec = require('child_process').exec;
-    const child_process = require('child_process');
+    
     const { assert } = require('console');
 
 
@@ -118,6 +119,18 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         var dat = CKEDITOR.instances.editor1.getData()
         fs.writeFileSync(fname, dat, "utf8")
         console.log("save2disk:", fname)
+    }
+    function run_wordFreq(pathfilename) {
+        var command=`node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js ${pathfilename}`
+        exec(command, (err, stdout, stderr) => {
+            if (err) {
+                //some err occurred
+                console.error(err);
+            } else {
+                // the *entire* stdout and stderr (buffered)
+                console.log('cmd output ', stdout)
+            }
+        });
     }
 
     ////////////////////////////////////
@@ -168,6 +181,12 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             $("#destpath").text(url).attr("href", url)
             $("#form1").attr("action", url)
             $("input[type='submit']").css("visibility", "visible")
+
+            ////////////////
+            var files = {}
+            files.path = destfname
+            files.name = destfname.substr(ipos)
+            setup_maverick_editor(files)
         })
         return trs;
     }
@@ -203,9 +222,9 @@ ls -al
 `}
 
 
-    function setup_maverick_editor() {
+    function setup_maverick_editor(files) {
         //alert($(this).val());
-        var files = document.getElementById("fname").files[0];//.name; 
+        //var files = document.getElementById("fname").files[0];//.name; 
         console.log("files", files)
 
         editorHistory.set(files.path)
@@ -250,16 +269,18 @@ ls -al
         $("#form1").attr("action", url)
         $("input[type='submit']").css("visibility", "visible")
 
+        run_wordFreq(files.path)
     }
 
 
     $(function () {
 
-        $("input[type=file]").click(function () {
+        $("#fname").click(function () {
             $(this).val("");
         }).change(function () {
             //setup_editor_config()
-            setup_maverick_editor()
+            var files = document.getElementById("fname").files[0];//.name; 
+            setup_maverick_editor(files)
         });
     })
 
