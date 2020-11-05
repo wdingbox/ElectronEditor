@@ -130,22 +130,32 @@ EngTxt2WordFrq.prototype.calcfrq = function (txt) {
 
     var distar = Object.keys(WdFrqObj)
     console.log("tot distinct count=", distar.length)
-    outObj.info.word_distint = distar.length
+    outObj.info.word_distinct = distar.length
 
     var sortedWFObj = Uti.sort_val_of_obj(WdFrqObj)
-    outObj.wfqObj = sortedWFObj
+    outObj.wfo = sortedWFObj
     return outObj
 }
 EngTxt2WordFrq.prototype.save = function (outObj) {
-    var txt = "var wfiObj=\n" + JSON.stringify(outObj, null, 4)
-    console.log("outfile", this.m_outfname)
-    fs.writeFileSync(this.m_outfname, txt, 'utf8')
-    //console.log(sortedWFObj)
+    var KWORD="___wordfreq"
+    var ppfilename = path.parse(this.m_inputfname)
+    var jsonf = `${ppfilename.dir}/${ppfilename.name}${KWORD}.json`
+    var txt = JSON.stringify(outObj, null, 4)
+    fs.writeFileSync(jsonf, txt, 'utf8')
+    console.log("outfile", jsonf)
+
+    var jsf = `${ppfilename.dir}/${ppfilename.name}${KWORD}.js`
+    txt = "var wordfreqObj=\n" + txt
+    fs.writeFileSync(jsf, txt, 'utf8')
+
+    const tab_tmplate=__dirname+"/template_table__wordfreq.htm"
+    var htmf = `${ppfilename.dir}/${ppfilename.name}${KWORD}.htm`
+    var htm = fs.readFileSync(tab_tmplate,'utf8')
+    htm = htm.replace("${src}", `src='./${ppfilename.name}${KWORD}.js'`)
+    fs.writeFileSync(htmf, htm, 'utf8')
 }
 EngTxt2WordFrq.prototype.Load = function (inputfname) {
-    var ppfilename = path.parse(inputfname)
-    this.m_outfname = `${ppfilename.dir}/${ppfilename.name}.js`
-
+    this.m_inputfname = inputfname
     var txt = fs.readFileSync(inputfname, "utf8")
     return txt
 }
@@ -156,6 +166,7 @@ EngTxt2WordFrq.prototype.Run = function (inputfname) {
 }
 ///////////////////////////////////////////
 var myArgs = process.argv.slice(2);
+if (myArgs.length === 0) return console.log("need inputfilename")
 var inputfile = myArgs[0];//"./EngTxt2FrqTable.txt"
 
 var wfq = new EngTxt2WordFrq();

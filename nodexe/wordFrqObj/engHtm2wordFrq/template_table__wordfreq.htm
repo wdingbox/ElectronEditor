@@ -15,6 +15,7 @@
     <script language="javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!--------->
     <script language="javascript" xxsrc="./tmp/EngTxt2FrqTable.out.wordfrqMerged.json"></script>
+    <script type='application/javascript' ${src}></script>>
     <style>
     </style>
 
@@ -32,34 +33,32 @@
             return tbs;
         }
 
-        function ajx_load() {
-            var fname = "./tmp/EngTxt2FrqTable.out.wordfrqMerged.json"
-            $.getJSON(fname, function (data) {
+        function get_jsf() {
+            var fname = "" + window.location.pathname
+            var fnam = fname.substring(1 + fname.lastIndexOf("/"), fname.lastIndexOf("."))
+            console.log("jsfname:", fnam)
+            return { jsf: fnam + ".js", jsonf: fnam + ".json" }
+        }
+
+        function ajx_load_json() {
+            var fn = get_jsf()
+            console.log(fn.jsonf);
+            $.getJSON(fn.jsonf, function (data) {
                 console.log(data);
-                $("body").prepend(`<pre>${JSON.stringify(data, null, 4)}</pre>`).append(gen_table(data))
+                $("body").prepend(`<pre>${JSON.stringify(data.info, null, 4)}</pre>`).append(gen_table(data.wfo))
                 table_sort();
             });
         }
-        function ajx_load_js() {
-            var fname = ""+window.location.href
-            fname = fname.substr(0, fname.lastIndexOf(".")) + ".js"
-            console.log(fname)
-            $("head").append(`<script src='${fname}'>`)
-                if(undefined === wf){
-                    return alert("file not found:",fname)
-                }
 
 
-
-            //$("body").prepend(`<pre>${JSON.stringify(wf, null, 4)}</pre>`).append(gen_table(wf))
-            //table_sort();
-
+        function load_data() {
+            $("body").prepend(`<pre>${JSON.stringify(wordfreqObj.info, null, 4)}</pre>`).append(gen_table(wordfreqObj.wfo))
+            table_sort();
         }
 
         $(document).ready(function () {
-
-            ajx_load_js()
-
+            //ajx_load_json()
+            load_data()
 
         });/////////////
 
