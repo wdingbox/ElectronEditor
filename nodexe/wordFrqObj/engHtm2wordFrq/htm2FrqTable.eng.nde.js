@@ -90,8 +90,12 @@ function EngTxt2WordFrq() {
 
 
 EngTxt2WordFrq.prototype.Run = function (txfile, txt) {
-    const outdir="./tmp", lib="./lib"
-    var ignore_word = fs.readFileSync(`${lib}/ignore.json`, "utf8")
+    const outdir=".", lib= __dirname +"/lib/ignore.json"
+    var pplib = path.parse(lib)
+    console.log(pplib)
+    //var ppout = path.parse(outdir)
+
+    var ignore_word = fs.readFileSync(lib, "utf8")
     var IgnoreWords = JSON.parse(ignore_word)
 
 
@@ -115,7 +119,7 @@ EngTxt2WordFrq.prototype.Run = function (txfile, txt) {
     fs.writeFileSync(`${outdir}/${txfile}.out.2.wordfrqRaw.json`, JSON.stringify(WdFrqObj, null, 4), 'utf8')
 
 
-    var group = fs.readFileSync(`${lib}/group.json`, "utf8")
+    var group = fs.readFileSync(`${pplib.dir}/group.json`, "utf8")
     var grpObj = JSON.parse(group)
     var wdg = Uti.get_WordGrpFrqObj(WdFrqObj, grpObj)
     //fs.writeFileSync(`${outdir}/${txfile}.out.3.wordgrp.json`, JSON.stringify(wdg, null, 4), 'utf8')
@@ -138,7 +142,7 @@ var wfq = new EngTxt2WordFrq();
 
 var outdir = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/jslibs/data/txt/darwin_species"
 var txfile = "EngTxt2FrqTable"
-var txt = fs.readFileSync(`${txfile}.txt`, "utf8")
+var txt = fs.readFileSync(`${__dirname}/${txfile}.txt`, "utf8")
 wfq.Run(txfile, txt);
 
 return;
