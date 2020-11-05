@@ -49,11 +49,15 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         }
 
         #input,
-        #output,
-        #idbtn_exec_cmd {
+        #output{
             background-color: black;
             color: white;
             overflow: auto
+        }
+
+
+        #idbtn_exec_cmd {
+            background-color: grey;
         }
 
         .white_space_nowrap {
@@ -100,7 +104,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     <p>
         <textarea id="input" cols="165" rows="10"
             title="shell cmd"><div><span style="color:#e74c3c;">cmd</span></div></textarea><br>
-        <button id="idbtn_exec_cmd" onclick="__exec_ui_cmd();">exec cmd</button>
+        
         <select id="gen_sh_cmd" onchange="gen_ui_sh_cmd();">
             <optgroup label="svr cmd">
                <option value="WordFreq">[WordFreq] node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js f.htm</option>
@@ -124,10 +128,11 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 <option>open -a Terminal .</option>
             </optgroup>
         </select>
-        <button id="idbtn_exec_cmd" title="white-space: nowrap;"
+        <button id="idbtn_exec_cmd" onclick="__exec_ui_cmd();">exec cmd</button>
+        <button id="toggle_wrap" title="white-space: nowrap;"
             onclick="$('#output').toggleClass('white_space_nowrap');">toggle wrap</button><br>
         <textarea id="output" cols="165" rows="50"
-            title="output of shell cmd.">&lt;span style="color:#e74c3c;"&gt;output&lt;/span&gt;</textarea>
+            title="output of shell cmd.">output &gt;</textarea>
     </p>
 
 
