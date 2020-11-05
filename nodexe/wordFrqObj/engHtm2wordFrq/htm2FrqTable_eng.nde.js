@@ -31,19 +31,19 @@ var Uti = {
         }
         return WordFrq
     },
-    get_WordGrpFrqObj : function (wdfrobj, wdsynOb) {
+    get_WordGrpFrqObj: function (wdfrobj, wdsynOb) {
         ////////////
         var wdgrpObj = {}
         for (var wd in wdsynOb) {
             var ar = wdsynOb[wd]
             if (typeof (ar) === 'number') continue
-    
+
             ar.unshift(wd)
             //console.log(wd, ar, ar.length, typeof (ar))
             if (!wdgrpObj[wd]) {
                 wdgrpObj[wd] = { "tot": 0 }
             }
-    
+
             for (var i = 0; i < ar.length; i++) {
                 var kwd = ar[i]
                 //console.log(wdfrobj, wdfrobj[kwd])
@@ -53,12 +53,12 @@ var Uti = {
         }
         return wdgrpObj
     },
-    merge_regular_word_to_root : function (WdFrObj) {
+    merge_regular_word_to_root: function (WdFrObj) {
         ////////////
         function restore_by(wdfrobj, suffix) {
             function wsufx_ar(wd) {
                 var wsfxary = [], lacha = wd.substr(wd.length - 1), firstpart = wd.substr(0, wd.length - 1)
-    
+
                 wsfxary.push(`${wd}${suffix}`)
                 wsfxary.push(`${wd}${lacha}${suffix}`) //getting
                 switch (lacha) {
@@ -89,8 +89,9 @@ function EngTxt2WordFrq() {
 }
 
 
-EngTxt2WordFrq.prototype.Run = function (txfile, txt) {
-    const outdir=".", lib= __dirname +"/lib/ignore.json"
+EngTxt2WordFrq.prototype.calcfrq = function (txt) {
+    var outObj = { info: {} }
+    const outdir = ".", lib = __dirname + "/lib/ignore.json"
     var pplib = path.parse(lib)
     console.log(pplib)
     //var ppout = path.parse(outdir)
@@ -103,7 +104,8 @@ EngTxt2WordFrq.prototype.Run = function (txfile, txt) {
     txt = txt.toLowerCase()
     var warr = txt.match(/([a-zA-Z]+)/g)
     console.log("tot words count=", warr.length)
-    fs.writeFileSync(`${outdir}/${txfile}.out.1.wordlist.json`, JSON.stringify(warr, null, 4), 'utf8')
+    outObj.info.word_count = warr.length
+    //fs.writeFileSync(`${txfile}_out.1.wordlist.json`, JSON.stringify(warr, null, 4), 'utf8')
 
     var WdFrqObj = {}
     for (var i = 0; i < warr.length; i++) {
@@ -116,7 +118,7 @@ EngTxt2WordFrq.prototype.Run = function (txfile, txt) {
         WdFrqObj[word]++
         //if (word.indexOf("construct") >= 0) console.log(word, WdFrqObj[word])
     }
-    fs.writeFileSync(`${outdir}/${txfile}.out.2.wordfrqRaw.json`, JSON.stringify(WdFrqObj, null, 4), 'utf8')
+    //fs.writeFileSync(`${txfile}_out.2.wordfrqRaw.json`, JSON.stringify(WdFrqObj, null, 4), 'utf8')
 
 
     var group = fs.readFileSync(`${pplib.dir}/group.json`, "utf8")
@@ -128,23 +130,37 @@ EngTxt2WordFrq.prototype.Run = function (txfile, txt) {
 
     var distar = Object.keys(WdFrqObj)
     console.log("tot distinct count=", distar.length)
+    outObj.info.word_distint = distar.length
 
     var sortedWFObj = Uti.sort_val_of_obj(WdFrqObj)
-    var out = `${outdir}/${txfile}.out.wordfrqMerged.json`
-    fs.writeFileSync(`${outdir}/${txfile}.out.wordfrqMerged.json`, JSON.stringify(sortedWFObj, null, 4), 'utf8')
-    //console.log(sortedWFObj)
-    console.log("out", out)
+    outObj.wfqObj = sortedWFObj
+    return outObj
 }
+EngTxt2WordFrq.prototype.save = function (outObj) {
+    var txt = "var wfiObj=\n" + JSON.stringify(outObj, null, 4)
+    console.log("outfile", this.m_outfname)
+    fs.writeFileSync(this.m_outfname, txt, 'utf8')
+    //console.log(sortedWFObj)
+}
+EngTxt2WordFrq.prototype.Load = function (inputfname) {
+    var ppfilename = path.parse(inputfname)
+    this.m_outfname = `${ppfilename.dir}/${ppfilename.name}.js`
 
+    var txt = fs.readFileSync(inputfname, "utf8")
+    return txt
+}
+EngTxt2WordFrq.prototype.Run = function (inputfname) {
+    var txt = this.Load(inputfname)
+    var obj = this.calcfrq(txt)
+    this.save(obj)
+}
 ///////////////////////////////////////////
 var myArgs = process.argv.slice(2);
+var inputfile = myArgs[0];//"./EngTxt2FrqTable.txt"
+
 var wfq = new EngTxt2WordFrq();
+console.log(inputfile)
+wfq.Run(inputfile);
 
-var outdir = "/Users/weiding/Sites/weidroot/weidroot_2017-01-06/app/github/wdingbox/jslibs/data/txt/darwin_species"
-var txfile = "EngTxt2FrqTable"
-var txt = fs.readFileSync(`${__dirname}/${txfile}.txt`, "utf8")
-wfq.Run(txfile, txt);
-
-return;
 
 

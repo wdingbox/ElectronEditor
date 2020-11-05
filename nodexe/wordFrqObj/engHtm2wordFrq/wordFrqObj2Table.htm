@@ -1,37 +1,26 @@
 <!DOCTYPE html>
-<HTML manifest___xxx="BiblePad-2015.appcache">
+<HTML>
 
 <HEAD>
-    <TITLE>Bii</TITLE>
+    <TITLE>wfq</TITLE>
     <base target="_blank" />
     <META http-equiv="Content-Type" content="text/html;" charset="UTF-8">
     <META name="viewport" content="width=device-witdh, initial-scale=1, maximum-scale=1, user-scale=0">
 
 
-    <link rel="stylesheet" xhref="./BibleInputMethod.css?v=1">
-    </link>
-
-
-    <script>
-        var gStartDate = (new Date()).getTime();
-    </script>
-
-
-
-    <script language="javascript" xxxxxxxxsrc="https://wdingbox.github.io/ham12/jq/jquery-2_1_3.min.js"></script>
     <script src='https://wdingbox.github.io/assetjs/libs/jq/jquery-2_1_3.min.js'></script>
     <script src='https://wdingbox.github.io/assetjs/libs/table/table_indexer.js'></script>
     <script src='https://wdingbox.github.io/assetjs/libs/table/table_sorter.js'></script>
-
+    <!--------->
     <script language="javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!--------->
-    <script language="javascript" src="./tmp/EngTxt2FrqTable.out.wordfrqMerged.json"></script>
+    <script language="javascript" xxsrc="./tmp/EngTxt2FrqTable.out.wordfrqMerged.json"></script>
     <style>
     </style>
 
 
     <script language="javascript">
-       
+
         console.log(window.location);
 
         function gen_table(wdfrq) {
@@ -47,14 +36,29 @@
             var fname = "./tmp/EngTxt2FrqTable.out.wordfrqMerged.json"
             $.getJSON(fname, function (data) {
                 console.log(data);
-                $("body").append(gen_table(data))
+                $("body").prepend(`<pre>${JSON.stringify(data, null, 4)}</pre>`).append(gen_table(data))
                 table_sort();
             });
+        }
+        function ajx_load_js() {
+            var fname = ""+window.location.href
+            fname = fname.substr(0, fname.lastIndexOf(".")) + ".js"
+            console.log(fname)
+            $("head").append(`<script src='${fname}'>`)
+                if(undefined === wf){
+                    return alert("file not found:",fname)
+                }
+
+
+
+            //$("body").prepend(`<pre>${JSON.stringify(wf, null, 4)}</pre>`).append(gen_table(wf))
+            //table_sort();
+
         }
 
         $(document).ready(function () {
 
-            ajx_load()
+            ajx_load_js()
 
 
         });/////////////
