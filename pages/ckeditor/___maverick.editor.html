@@ -102,8 +102,11 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             title="shell cmd"><div><span style="color:#e74c3c;">cmd</span></div></textarea><br>
         <button id="idbtn_exec_cmd" onclick="__exec_ui_cmd();">exec cmd</button>
         <select id="gen_sh_cmd" onchange="gen_ui_sh_cmd();">
-            <option>default</option>
-            <optgroup label="git">
+            <optgroup label="svr cmd">
+               <option value="wordfreq">node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js -</option>
+                </optgroup>
+            <optgroup label="insite git">
+                <option value="git_batch">git batch...</option>
                 <option>git branch</option>
                 <option>git log</option>
                 <option>git pull</option>
@@ -113,7 +116,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 <option>git diff</option>
                 <option>git diff --ignore-space-at-eol -b -w --ignore-blank-lines --color-words=.</option>
             </optgroup>
-            <optgroup label="cmd">
+            <optgroup label="insite cmd">
                 <option>ls</option>
                 <option>pwd</option>
                 <option>open ___maverick.editor.html</option>
@@ -258,6 +261,16 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 
 
+        function gen_wordfreq_cmd() {
+            var ret = get_custom_pathname()
+            var git_cmd_txt = `#!/bin/bash
+######################
+# svr side cmd
+node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js ${ret.root}/${ret.name}
+######################`;
+            $("#input").val(git_cmd_txt)
+            return git_cmd_txt;
+        }
         function gen_git_cmd_default() {
             var ret = get_custom_pathname()
             var git_cmd_txt = `#!/bin/bash
@@ -287,7 +300,8 @@ ${scmd}
         function gen_ui_sh_cmd() {
             var val = $("#gen_sh_cmd").val()
             switch (val) {
-                case "default": return gen_git_cmd_default();
+                case "git_batch": return gen_git_cmd_default();
+                case "wordfreq": return gen_wordfreq_cmd()
                 default: return gen_insite_sh_cmd(val)
             }
 
@@ -365,6 +379,7 @@ ${scmd}
             gen_git_cmd_default()
             $("#gen_sh_cmd").append(`<option>open ${ret.name}</option>`)
             $("#gen_sh_cmd").append(`<option>open file://${ret.root}/___maverick.editor.html?fname=${ret.name}</option>`)
+            $("#gen_sh_cmd").append(`<option>open ./${ret.name}___wordfreq.htm</option>`)
             console.log(ret.name)
             $.get(ret.name, function (data) {
                 //alert(data);
