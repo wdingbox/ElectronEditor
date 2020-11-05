@@ -137,26 +137,29 @@ EngTxt2WordFrq.prototype.calcfrq = function (txt) {
     return outObj
 }
 EngTxt2WordFrq.prototype.save = function (outObj) {
-    var KWORD="___wordfreq"
+    var KWORD = "___wordfreq"
     var ppfilename = path.parse(this.m_inputfname)
-    var jsonf = `${ppfilename.dir}/${ppfilename.name}${KWORD}.json`
+    var jsonf = `${this.m_inputfname}${KWORD}.json`
     var txt = JSON.stringify(outObj, null, 4)
     fs.writeFileSync(jsonf, txt, 'utf8')
     console.log("outfile", jsonf)
 
-    var jsf = `${ppfilename.dir}/${ppfilename.name}${KWORD}.js`
+    var jsf = `${this.m_inputfname}${KWORD}.js`
     txt = "var wordfreqObj=\n" + txt
     fs.writeFileSync(jsf, txt, 'utf8')
 
-    const tab_tmplate=__dirname+"/template_table__wordfreq.htm"
-    var htmf = `${ppfilename.dir}/${ppfilename.name}${KWORD}.htm`
-    var htm = fs.readFileSync(tab_tmplate,'utf8')
-    htm = htm.replace("${src}", `src='./${ppfilename.name}${KWORD}.js'`)
+    const tab_tmplate = __dirname + "/template_table__wordfreq.htm"
+    var htmf = `${this.m_inputfname}${KWORD}.htm`
+    var htm = fs.readFileSync(tab_tmplate, 'utf8')
+    htm = htm.replace("${src}", `src='${jsf}'`)
     fs.writeFileSync(htmf, htm, 'utf8')
 }
 EngTxt2WordFrq.prototype.Load = function (inputfname) {
     this.m_inputfname = inputfname
     var txt = fs.readFileSync(inputfname, "utf8")
+    const $ = cheerio.load(txt)
+    txt = $.text()
+    //fs.writeFileSync("__.txt", txt, 'utf8')
     return txt
 }
 EngTxt2WordFrq.prototype.Run = function (inputfname) {
