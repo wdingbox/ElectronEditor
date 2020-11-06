@@ -95,7 +95,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     const fs = require('fs');
 
     const exec = require('child_process').exec;
-    
+
     const { assert } = require('console');
 
 
@@ -121,7 +121,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         console.log("save2disk:", fname)
     }
     function run_wordFreq(pathfilename) {
-        var command=`node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js ${pathfilename}`
+        var command = `node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js ${pathfilename}`
         exec(command, (err, stdout, stderr) => {
             if (err) {
                 //some err occurred
@@ -187,6 +187,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             files.path = destfname
             files.name = destfname.substr(ipos)
             setup_maverick_editor(files)
+
         })
         return trs;
     }
@@ -226,9 +227,6 @@ ls -al
         //alert($(this).val());
         //var files = document.getElementById("fname").files[0];//.name; 
         console.log("files", files)
-
-        editorHistory.set(files.path)
-
 
         const maverick_htm = "___maverick.editor.html"
         const maverick_sh = "___maverick.git_cmd.sh"
@@ -280,6 +278,7 @@ ls -al
         }).change(function () {
             //setup_editor_config()
             var files = document.getElementById("fname").files[0];//.name; 
+            editorHistory.set(files.path)
             setup_maverick_editor(files)
         });
     })
