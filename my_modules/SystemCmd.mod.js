@@ -8,7 +8,7 @@ var SystemCmd = {
     run_git_cmd: async function (command, res) {
         return new Promise(async (resolve, reject) => {
             try {
-                //command = "../tmp/___maverick.git_cmd.sh"
+                //command = "ls"
                 console.log('cmd:', command)
                 exec(command, (err, stdout, stderr) => {
                     if (err) {

@@ -247,20 +247,15 @@ ls -al
 
 
     async function setup_maverick_editor(files) {
-        //alert($(this).val());
-        //var files = document.getElementById("fname").files[0];//.name; 
         console.log("files", files)
 
-
         const maverick_htm = "___maverick.editor.html"
-        //const maverick_sh = "___maverick.git_cmd.sh"
-        //var suffix = "___fullpage_ckeditor.htm"
+       
         var svr_bkup = `/tmp/backupfile.html`
         var src = `./pages/ckeditor/${maverick_htm}`
         var regx = new RegExp(`/${files.name}$`)
         var destpath = files.path.replace(regx, "")
         var destfname = `${destpath}/${maverick_htm}`
-        //var destcshname = `./tmp/${maverick_sh}`
 
         var iofilesAry = [files.path, src, svr_bkup, destfname]
 
@@ -274,13 +269,6 @@ ls -al
             if (err) throw err;
             console.log(files.path, ' was copied to', svr_bkup);
         });
-
-        // var txt = get_custom_cmd_sh(destpath)
-        // fs.writeFileSync(destcshname, txt, "utf8", function (er) {
-        //     if (er) console.log("sh cmd:", er)
-        //     console.log("sh cmd:", destcshname, "\n", txt)
-        // })
-
 
         var url = `${destfname}?fname=${files.name}`
         $("#destpath").text(url).attr("href", url)

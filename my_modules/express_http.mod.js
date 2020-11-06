@@ -270,7 +270,7 @@ var express_http = {
         })
 
 
-        expr.get('/git_cmd', cors(issue2options), async (req, res) => {
+        expr.get('/shell_cmd', cors(issue2options), async (req, res) => {
             console.log('[get] resp save :', req.query)
             //console.log('resp save :', req)
             //res.send(data); 
@@ -278,16 +278,12 @@ var express_http = {
             res.status(200).send(req.query)
             res.end()
         })
-        expr.post('/git_cmd', cors(issue2options), async (req, res) => {
+        expr.post('/shell_cmd', cors(issue2options), async (req, res) => {
             console.log('[post] resp save :', req.body)
             req.body.method_type = "post"
-            
-            //req.body.cmd = "./tmp/___maverick.git_cmd.sh"
-            //fs.writeFileSync(req.body.cmd, req.body.sh_script, "utf8")
 
             req.body.output = await SystemCmd.run_git_cmd(req.body.sh_script)
 
-            //console.log("git cmd is done.",req.body.cmd)
             console.log("git cmd output.",req.body.output)
             res.status(200).send(req.body)
             res.end()

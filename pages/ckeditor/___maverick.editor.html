@@ -317,9 +317,8 @@ ${scmd}
             //alert(theData);
             var shcmd = $("#input").val()
             console.log("git cmd:", shcmd)
-            $.post("http://localhost:7878/git_cmd",
+            $.post("http://localhost:7878/shell_cmd",
                 {
-                    "pathname": get_custom_pathname().root,
                     "sh_script": shcmd
                 },
                 function (result) {
