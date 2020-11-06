@@ -4,3 +4,4 @@ node_modules
 BungeeMiningAppPkg-darwin-x64/
 ElectronCkEditorAppPkg-darwin-x64/
 ___maverick.git_cmd.sh
+tmp/___maverick.git_cmd.sh
