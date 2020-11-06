@@ -50,8 +50,17 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         td {
             white-space: nowrap;
         }
-        .iofiles{
+
+        .iofiles {
             white-space: nowrap;
+        }
+
+        .deletefile {
+            text-decoration: line-through;
+        }
+
+        .choosenfile {
+            background-color: lightgray;
         }
     </style>
 
@@ -173,29 +182,45 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     });
     //////////////////////////////////
     function EditorHistory() {
-        this.m_key = "EditingHistory"
-        var obj = electronStore_edited_files_history.get(this.m_key)
+        this.UUID = "EditingHistory"
+        var obj = electronStore_edited_files_history.get(this.UUID)
         if (!obj) {
-            electronStore_edited_files_history.set(this.m_key, {})
+            electronStore_edited_files_history.set(this.UUID, {})
         }
         this.popTRs()
     }
-    EditorHistory.prototype.set = function (key) {
-        var obj = electronStore_edited_files_history.get(this.m_key)
+    EditorHistory.prototype.getObj = function (){
+        var obj = electronStore_edited_files_history.get(this.UUID)
+        if (!obj) {
+            electronStore_edited_files_history.set(this.UUID, {})
+        }
+        return obj
+    }
+    EditorHistory.prototype.setKey = function (key){
+        var obj = this.getObj()
         obj[key] = (new Date()).toISOString()
-        electronStore_edited_files_history.set(this.m_key, obj)
+        electronStore_edited_files_history.set(this.UUID, obj)
+        return obj
+    }
+    EditorHistory.prototype.delKey = function (key) {
+        var obj = this.getObj()
+        delete obj[key]
+        electronStore_edited_files_history.set(this.UUID, obj)
+    }
+    EditorHistory.prototype.set = function (key) {
+        var obj = this.setKey(key)
         this.popTRs()
     }
     EditorHistory.prototype.popTRs = function () {
-        var obj = electronStore_edited_files_history.get(this.m_key)
+        var obj = this.getObj()
         console.log("histore", obj)
         var trs = ""
         Object.keys(obj).forEach(function (key, i) {
-            trs += `<tr><td>${i}</td><td class='pfname'>${key}</td><td>${obj[key]}</td></tr>`
+            trs += `<tr><td>${i}</td><td class='pfname'>${key}</td><td class='datetime'>${obj[key]}</td></tr>`
         })
         $("#histbody").html(trs).find(".pfname").bind("click", function () {
-            $("#histbody").find(".pfname").css("background-color", "")
-            var destfname = $(this).css("background-color", "grey").text()
+            $("#histbody").find(".pfname").removeClass("choosenfile")
+            var destfname = $(this).addClass("choosenfile").removeClass("deletefile").text()
             var ipos = 1 + destfname.lastIndexOf("/")
             const editor_url = "___maverick.editor.html?fname="
             var url = destfname.substr(0, ipos) + editor_url + destfname.substr(ipos)
@@ -209,8 +234,16 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             var files = {}
             files.path = destfname
             files.name = destfname.substr(ipos)
-            setup_maverick_editor(files)
+            g_maverick.setup(files)
 
+        });
+        $("#histbody").find(".datetime").bind("click", function () {
+            console.log("delete file.")
+            var filepath = $(this).prev().addClass("deletefile").removeClass("choosenfile").text()
+            $("#destpath").text("").attr("href", "")
+            $("input[type='submit']").css("visibility", "hidden")
+            g_maverick.cleanup()
+            editorHistory.delKey(filepath)
         })
         return trs;
     }
@@ -246,18 +279,21 @@ ls -al
 `}
 
 
-    async function setup_maverick_editor(files) {
+    function Maverick() {
+        this.m_createdFilesAry = []
+    }
+    Maverick.prototype.setup = async function (files) {
         console.log("files", files)
 
         const maverick_htm = "___maverick.editor.html"
-       
+
         var svr_bkup = `/tmp/backupfile.html`
         var src = `./pages/ckeditor/${maverick_htm}`
         var regx = new RegExp(`/${files.name}$`)
         var destpath = files.path.replace(regx, "")
         var destfname = `${destpath}/${maverick_htm}`
 
-        var iofilesAry = [files.path, src, svr_bkup, destfname]
+        this.m_createdFilesAry = [destfname]
 
         console.log("copyFile:\n", src, '\n', destfname)
         fs.copyFile(src, destfname, (err) => {
@@ -276,15 +312,32 @@ ls -al
         $("input[type='submit']").css("visibility", "visible")
 
         var retar = await run_wordFreq(files.path)
-        var n = iofilesAry.push(...retar)
+        var n = this.m_createdFilesAry.push(...retar)
         console.log("ret:", retar.length)
-        console.log("iofilesAry:", iofilesAry)
+        console.log("iofilesAry:", this.m_createdFilesAry)
         $("#input_output_files").empty()
-        iofilesAry.forEach(function (fnam,i) {
+        this.m_createdFilesAry.forEach(function (fnam, i) {
             $("#input_output_files").append(`<br>(${i})<a class='iofiles' href='${fnam}'>${fnam}</a>`)
         })
     }
-
+    Maverick.prototype.cleanup = async function (files) {
+        
+        this.m_createdFilesAry.forEach(function (file) {
+            fs.unlinkSync(file)
+            fs.exists(file, function (exists) {
+                if (exists) {
+                    //Show in green
+                    console.log('File exists. Deleting now ...');
+                    fs.unlinkSync(file)
+                } else {
+                    //Show in red
+                    console.log(('File not found, so not deleting.'));
+                }
+            });
+        })
+        this.m_createdFilesAry = []
+    }
+    var g_maverick = new Maverick()
 
     $(function () {
 
@@ -294,7 +347,7 @@ ls -al
             //setup_editor_config()
             var files = document.getElementById("fname").files[0];//.name; 
             editorHistory.set(files.path)
-            setup_maverick_editor(files)
+            g_maverick.setup(files)
         });
     })
 
