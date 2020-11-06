@@ -50,6 +50,9 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         td {
             white-space: nowrap;
         }
+        .iofiles{
+            white-space: nowrap;
+        }
     </style>
 
 </head>
@@ -80,10 +83,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         </tbody>
     </table>
 
-    <p>
-        <select id="fname_histoory" size="5" style="width:100%;overflow-x:auto;">
-        </select>
+
+    <p id="fname_histoory" size="5" style="width:100%;overflow-x:auto;">
     </p>
+
 
     <!-- Test ndjs -->
 </body>
@@ -120,17 +123,34 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         fs.writeFileSync(fname, dat, "utf8")
         console.log("save2disk:", fname)
     }
-    function run_wordFreq(pathfilename) {
-        var command = `node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js ${pathfilename}`
-        exec(command, (err, stdout, stderr) => {
-            if (err) {
-                //some err occurred
-                console.error(err);
-            } else {
-                // the *entire* stdout and stderr (buffered)
-                console.log('cmd output ', stdout)
-            }
+    async function run_wordFreq(pathfilename) {
+        return new Promise(async (resolve, reject) => {
+            var outary = []
+            var command = `node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js ${pathfilename}`
+            exec(command, (err, stdout, stderr) => {
+                if (err) {
+                    //some err occurred
+                    console.error(err);
+                    reject(err)
+                } else {
+                    // the *entire* stdout and stderr (buffered)
+                    console.log('cmd output ', stdout)
+                    var lines = stdout.split("\n")
+                    console.log(lines)
+
+                    lines.forEach(function (line) {
+                        const keyword = "outfile:"
+                        if (line.lastIndexOf(keyword) === 0) {
+                            var str = line.substr(keyword.length).trim()
+                            outary.push(str)
+                        }
+                    });
+                    console.log(outary)
+                    resolve(outary)
+                }
+            });
         });
+        //return outary
     }
 
     ////////////////////////////////////
@@ -223,10 +243,11 @@ ls -al
 `}
 
 
-    function setup_maverick_editor(files) {
+    async function setup_maverick_editor(files) {
         //alert($(this).val());
         //var files = document.getElementById("fname").files[0];//.name; 
         console.log("files", files)
+
 
         const maverick_htm = "___maverick.editor.html"
         const maverick_sh = "___maverick.git_cmd.sh"
@@ -238,11 +259,7 @@ ls -al
         var destfname = `${destpath}/${maverick_htm}`
         var destcshname = `./tmp/${maverick_sh}`
 
-
-        $("#fname_histoory").append(`<option>${files.path}</option>`)
-        $("#fname_histoory").append(`<option>${src}</option>`)
-        $("#fname_histoory").append(`<option>${destfname}</option>`)
-        $("#fname_histoory").append(`<option>${svr_bkup}</option>`)
+        var iofilesAry = [files.path, src, svr_bkup, destfname]
 
         console.log("copyFile:\n", src, '\n', destfname)
         fs.copyFile(src, destfname, (err) => {
@@ -267,7 +284,14 @@ ls -al
         $("#form1").attr("action", url)
         $("input[type='submit']").css("visibility", "visible")
 
-        run_wordFreq(files.path)
+        var retar = await run_wordFreq(files.path)
+        var n = iofilesAry.push(...retar)
+        console.log("ret:", retar.length)
+        console.log("iofilesAry:", iofilesAry)
+        $("#fname_histoory").empty()
+        iofilesAry.forEach(function (fnam,i) {
+            $("#fname_histoory").append(`<br>(${i})<a class='iofiles' href='${fnam}'>${fnam}</a>`)
+        })
     }
 
 

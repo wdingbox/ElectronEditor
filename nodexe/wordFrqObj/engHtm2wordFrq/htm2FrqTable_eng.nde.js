@@ -143,17 +143,19 @@ EngTxt2WordFrq.prototype.save = function (outObj) {
     var jsonf = `${this.m_inputfname}${KWORD}.json`
     var txt = JSON.stringify(outObj, null, 4)
     fs.writeFileSync(jsonf, txt, 'utf8')
-    console.log("outfile", jsonf)
+    console.log("outfile:", jsonf)
 
     var jsf = `${this.m_inputfname}${KWORD}.js`
     txt = "var wordfreqObj=\n" + txt
     fs.writeFileSync(jsf, txt, 'utf8')
+    console.log("outfile:", jsf)
 
     const tab_tmplate = __dirname + "/template_table__wordfreq.htm"
     var htmf = `${this.m_inputfname}${KWORD}.htm`
     var htm = fs.readFileSync(tab_tmplate, 'utf8')
     htm = htm.replace("${src}", `src='${jsf}'`)
     fs.writeFileSync(htmf, htm, 'utf8')
+    console.log("outfile:", htmf)
 }
 EngTxt2WordFrq.prototype.Load = function (inputfname) {
     this.m_inputfname = inputfname
