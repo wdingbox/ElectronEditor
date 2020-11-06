@@ -84,7 +84,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     </table>
 
 
-    <p id="fname_histoory" size="5" style="width:100%;overflow-x:auto;">
+    <p id="input_output_files" size="5" style="width:100%;overflow-x:auto;">
     </p>
 
 
@@ -126,7 +126,10 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     async function run_wordFreq(pathfilename) {
         return new Promise(async (resolve, reject) => {
             var outary = []
-            var command = `node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js ${pathfilename}`
+            var command = `ls 
+            pwd
+            ls -al
+            node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js ${pathfilename}`
             exec(command, (err, stdout, stderr) => {
                 if (err) {
                     //some err occurred
@@ -250,14 +253,14 @@ ls -al
 
 
         const maverick_htm = "___maverick.editor.html"
-        const maverick_sh = "___maverick.git_cmd.sh"
+        //const maverick_sh = "___maverick.git_cmd.sh"
         //var suffix = "___fullpage_ckeditor.htm"
         var svr_bkup = `/tmp/backupfile.html`
         var src = `./pages/ckeditor/${maverick_htm}`
         var regx = new RegExp(`/${files.name}$`)
         var destpath = files.path.replace(regx, "")
         var destfname = `${destpath}/${maverick_htm}`
-        var destcshname = `./tmp/${maverick_sh}`
+        //var destcshname = `./tmp/${maverick_sh}`
 
         var iofilesAry = [files.path, src, svr_bkup, destfname]
 
@@ -272,11 +275,11 @@ ls -al
             console.log(files.path, ' was copied to', svr_bkup);
         });
 
-        var txt = get_custom_cmd_sh(destpath)
-        fs.writeFileSync(destcshname, txt, "utf8", function (er) {
-            if (er) console.log("sh cmd:", er)
-            console.log("sh cmd:", destcshname, "\n", txt)
-        })
+        // var txt = get_custom_cmd_sh(destpath)
+        // fs.writeFileSync(destcshname, txt, "utf8", function (er) {
+        //     if (er) console.log("sh cmd:", er)
+        //     console.log("sh cmd:", destcshname, "\n", txt)
+        // })
 
 
         var url = `${destfname}?fname=${files.name}`
@@ -288,9 +291,9 @@ ls -al
         var n = iofilesAry.push(...retar)
         console.log("ret:", retar.length)
         console.log("iofilesAry:", iofilesAry)
-        $("#fname_histoory").empty()
+        $("#input_output_files").empty()
         iofilesAry.forEach(function (fnam,i) {
-            $("#fname_histoory").append(`<br>(${i})<a class='iofiles' href='${fnam}'>${fnam}</a>`)
+            $("#input_output_files").append(`<br>(${i})<a class='iofiles' href='${fnam}'>${fnam}</a>`)
         })
     }
 

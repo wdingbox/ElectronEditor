@@ -282,12 +282,12 @@ var express_http = {
             console.log('[post] resp save :', req.body)
             req.body.method_type = "post"
             
-            req.body.cmd = "./tmp/___maverick.git_cmd.sh"
-            fs.writeFileSync(req.body.cmd, req.body.sh_script, "utf8")
+            //req.body.cmd = "./tmp/___maverick.git_cmd.sh"
+            //fs.writeFileSync(req.body.cmd, req.body.sh_script, "utf8")
 
-            req.body.output = await SystemCmd.run_git_cmd(req.body.cmd)
+            req.body.output = await SystemCmd.run_git_cmd(req.body.sh_script)
 
-            console.log("git cmd is done.",req.body.cmd)
+            //console.log("git cmd is done.",req.body.cmd)
             console.log("git cmd output.",req.body.output)
             res.status(200).send(req.body)
             res.end()
