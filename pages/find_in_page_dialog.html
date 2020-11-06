@@ -45,14 +45,16 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 
     <style>
-        body{
+        body {
             background-color: rgb(170, 222, 247);
         }
+
         td {
             white-space: nowrap;
         }
-        #search_history{
-            width:100px;
+
+        #search_history {
+            width: 100px;
         }
     </style>
 
@@ -85,7 +87,9 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         <option selected title="">clearSelection</option>
         <option title="Translate the selection into a normal selection.">keepSelection</option>
         <option title="Focus and click the selection node.">activateSelection</option>
-    </select>
+    </select><br>
+    <button id="deleteKeyword">Del</button>
+    <button id="clearHistory">clearHistory</button>
 
 
     <!-- Test ndjs -->
@@ -100,23 +104,46 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     ////////////////////////////////////////////////
     console.log(Web2Main_IDs)
 
-    function set_search_history_list(searchString) {
-        var searches = electronStore_findInPage.get("findInPage_search_history")
-        if (undefined === searches) {
-            searches = {}
+    function SearchStore() {
+    }
+    SearchStore.prototype.clearup = function () {
+        electronStore_findInPage.set("findInPage_search_history", {})
+        return {}
+    }
+    SearchStore.prototype.getStore = function () {
+        var obj = electronStore_findInPage.get("findInPage_search_history")
+        if (undefined === obj) {
+            obj = {}
         }
-        if (searchString) {
-            searches[searchString] = (new Date()).toISOString()
-            electronStore_findInPage.set("findInPage_search_history", searches)
-        }
+        return obj
+    }
+    SearchStore.prototype.addKey = function (str) {
+        if(!str) str=""
+        str = str.replace(/^\s*|\s*$/g, '');
+        var obj = this.getStore()
+        if (str.length === 0) return obj
+        obj[str] = (new Date()).toISOString()
+        electronStore_findInPage.set("findInPage_search_history", obj)
+        return obj
+    }
+    SearchStore.prototype.delKey = function (str) {
+        if (str.length === 0) return
+        var obj = this.getStore()
+        delete obj[str]
+        electronStore_findInPage.set("findInPage_search_history", obj)
+        return obj
+    }
+    var g_searchStore = new SearchStore()
 
+    function set_search_history_list(searchString) {
+        var obj = g_searchStore.addKey(searchString)
         var opts = ""
-        Object.keys(searches).forEach(function (key) {
+        Object.keys(obj).forEach(function (key) {
             opts += `<option>${key}</option>`
         })
         $("#browsers").html(opts)
-        $("#search_history").html(opts).bind("click",function(){
-            $("#SearchString").val( $(this).val() )
+        $("#search_history").html(opts).bind("click", function () {
+            $("#SearchString").val($(this).val())
         })
     }
     ipcRenderer.on(Web2Main_IDs.webContents_findInPage, (event, arg) => {
@@ -147,6 +174,17 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         })
         $("#stopFindInPage_action").click(function () {
             gen_findInPage_data()
+        })
+
+        $("#deleteKeyword").click(function(){
+            var key = $("#search_history").val()
+            g_searchStore.delKey(key)
+            set_search_history_list()
+        })
+
+        $("#clearHistory").click(function(){
+            g_searchStore.clearup()
+            set_search_history_list()
         })
 
     })
