@@ -154,8 +154,8 @@ Main_Window.prototype.openFindInPageDialog = function () {
   return this.m_findInPageWin
 }
 Main_Window.prototype.openFocusedWindowDevTool = function () {
-  const window = require('electron').BrowserWindow;
-  let focusedWindow = window.getFocusedWindow();
+  
+  let focusedWindow = BrowserWindow.getFocusedWindow();
   if (focusedWindow && focusedWindow.webContents) {
     focusedWindow.webContents.openDevTools({ mode: 'detach' })
   }
@@ -165,8 +165,8 @@ Main_Window.prototype.openFocusedWindowDevTool = function () {
   return
 }
 Main_Window.prototype.IncFocusedWindowZoomFactor = function (dlt) {
-  const window = require('electron').BrowserWindow;
-  let focusedWindow = window.getFocusedWindow();
+  
+  let focusedWindow = BrowserWindow.getFocusedWindow();
   if (focusedWindow && focusedWindow.webContents) {
     var dlt = focusedWindow.webContents.getZoomFactor() + dlt
     focusedWindow.webContents.setZoomFactor(dlt)
@@ -177,8 +177,8 @@ Main_Window.prototype.IncFocusedWindowZoomFactor = function (dlt) {
   return
 }
 Main_Window.prototype.GoBackFocusedWindow = function () {
-  const window = require('electron').BrowserWindow;
-  let focusedWindow = window.getFocusedWindow();
+  
+  let focusedWindow = BrowserWindow.getFocusedWindow();
   if (focusedWindow && focusedWindow.webContents) {
     focusedWindow.webContents.goBack()
   }
@@ -187,8 +187,8 @@ Main_Window.prototype.GoBackFocusedWindow = function () {
   }
 }
 Main_Window.prototype.GoForwardFocusedWindow = function () {
-  const window = require('electron').BrowserWindow;
-  let focusedWindow = window.getFocusedWindow();
+  
+  let focusedWindow = BrowserWindow.getFocusedWindow();
   if (focusedWindow && focusedWindow.webContents) {
     focusedWindow.webContents.goForward()
   }
@@ -237,7 +237,8 @@ function Main_Menu() {
         click: (itm) => {
           console.log(itm)
           var filename = "./pages/find_htm_file_to_edit.html"
-          g_Window.openMainWindow(filename)
+          //g_Window.createWindow().loadFile(filename)
+          g_Window.openMainWindow(filename, true)
           if (g_Window) {
             //g_Window.webContents.openDevTools({ mode: 'detach' })
           }
