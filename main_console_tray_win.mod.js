@@ -118,7 +118,10 @@ Main_Window.prototype.openMainWindow = function (filename, bforceReload) {
   this.mainWindow.show()
 }
 Main_Window.prototype.openFindInPageDialog = function () {
-  if (this.m_findInPageWin) return
+  if (this.m_findInPageWin) {
+    this.m_findInPageWin.show()
+    return
+  }
 
   var _THIS = this
   var arg = {
@@ -128,7 +131,7 @@ Main_Window.prototype.openFindInPageDialog = function () {
     fullscreenable: false,
     alwaysOnTop: true,
     transparent: false, //frame opacity
-    resizable: false,
+    resizable: true,
     closable: true, //disable close button.
     maximizable: false,
     minimizable: false,
@@ -246,7 +249,7 @@ function Main_Menu() {
       { type: "separator" },
 
       {
-        id: "MenuItem_findInPage", label: 'Search String', toolTip: 'find text in page', accelerator: 'CmdOrCtrl+F',
+        id: "MenuItem_findInPage", label: 'Search', toolTip: 'Search string in page', accelerator: 'CmdOrCtrl+F',
         click: () => {
           var win = g_Window.openFindInPageDialog()
         },

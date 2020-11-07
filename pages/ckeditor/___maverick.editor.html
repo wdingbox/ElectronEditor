@@ -344,6 +344,7 @@ ${scmd}
                 const fs = require('fs');
                 fs.writeFileSync(get_custom_pathname().pathname, theData, "utf8")
                 g_msg.pop(`Save OK by fs.writeFileSync. ${theData.length}`);
+                ckEditor.resetDirty()
                 return
             }
 

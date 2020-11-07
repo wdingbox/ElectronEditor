@@ -53,8 +53,9 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             white-space: nowrap;
         }
 
-        #search_history {
-            width: 100px;
+        #search_history,
+        #SearchString {
+            width: 100%;
         }
     </style>
 
@@ -64,7 +65,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
     <button id="Btn_findInPage">Find-In-Page</button><a id="output">..</a><br>
 
-    <input list="browsers" type="text" value="A" style="width:200px;" id="SearchString">
+    <input list="browsers" type="text" value="" placeholder="search string" id="SearchString">
     <datalist id="browsers">
         <option value="Internet Explorer">
         <option value="Firefox">
@@ -83,13 +84,14 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         <option title="Translate the selection into a normal selection.">keepSelection</option>
         <option title="Focus and click the selection node.">activateSelection</option>
     </select><br>
-    <select id="search_history" size="3">
+    <select id="search_history" size="5">
         <option selected title="">clearSelection</option>
         <option title="Translate the selection into a normal selection.">keepSelection</option>
         <option title="Focus and click the selection node.">activateSelection</option>
     </select><br>
     <button id="deleteKeyword">Del</button>
     <button id="clearHistory">clearHistory</button>
+    <button id="match_whole_word">match whole word</button>
 
 
     <!-- Test ndjs -->
@@ -118,7 +120,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         return obj
     }
     SearchStore.prototype.addKey = function (str) {
-        if(!str) str=""
+        if (!str) str = ""
         str = str.replace(/^\s*|\s*$/g, '');
         var obj = this.getStore()
         if (str.length === 0) return obj
@@ -169,6 +171,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         set_search_history_list()
         $("#Btn_findInPage").click(function () {
             var obj = gen_findInPage_data()
+            if (obj.val.trim().length === 0) return
             ipcRenderer.send(Web2Main_IDs.webContents_findInPage, obj) // send to main.           
             set_search_history_list(obj.val)
         })
@@ -176,15 +179,20 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             gen_findInPage_data()
         })
 
-        $("#deleteKeyword").click(function(){
+        $("#deleteKeyword").click(function () {
             var key = $("#search_history").val()
             g_searchStore.delKey(key)
             set_search_history_list()
         })
 
-        $("#clearHistory").click(function(){
+        $("#clearHistory").click(function () {
             g_searchStore.clearup()
             set_search_history_list()
+        })
+
+        $("#match_whole_word").click(function () {
+            var val = $("#SearchString").val().trim()
+            $("#SearchString").val(" " + val + " ")
         })
 
     })
