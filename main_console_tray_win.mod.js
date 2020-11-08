@@ -175,7 +175,7 @@ Main_Window.prototype.openFocusedWindowDevTool = function () {
     focusedWindow.webContents.openDevTools({ mode: 'detach' })
   }
   else {
-    console.log("cannot open devtool.")
+    console.log("no focused win to open devtool.")
   }
   return
 }
@@ -187,7 +187,7 @@ Main_Window.prototype.IncFocusedWindowZoomFactor = function (dlt) {
     focusedWindow.webContents.setZoomFactor(dlt)
   }
   else {
-    console.log("cannot zoom.", dlt)
+    console.log("no focused win to zoom factor.", dlt)
   }
   return
 }
@@ -198,7 +198,7 @@ Main_Window.prototype.GoBackFocusedWindow = function () {
     focusedWindow.webContents.goBack()
   }
   else {
-    console.log("cannot.", dlt)
+    console.log("no focused win to go back .")
   }
 }
 Main_Window.prototype.GoForwardFocusedWindow = function () {
@@ -208,7 +208,7 @@ Main_Window.prototype.GoForwardFocusedWindow = function () {
     focusedWindow.webContents.goForward()
   }
   else {
-    console.log("cannot.", dlt)
+    console.log("no focused win to go forward .")
   }
 }
 
