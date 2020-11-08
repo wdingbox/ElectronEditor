@@ -28,8 +28,9 @@ var g_Menu = null
 function Main_Window() {
   this.mainWindow = null
   this.m_findInPageWin = null
+  this.m_winAry = []
 }
-Main_Window.prototype.createWindow = function (arg) {
+Main_Window.prototype.createNewWindow = function (arg) {
   console.log("preload:", path.join(__dirname, 'preload.js'))
   // Create a browser window.
   var parm = {
@@ -70,56 +71,68 @@ Main_Window.prototype.createWindow = function (arg) {
   var win = new BrowserWindow(parm)
 
   win.on("blur", () => {
+    console.log("win on blur")
     if (!win.webContents.isDevToolsOpened()) {
       // win_tray_uti.mainWindow.hide();
     }
   });
+  win.on("focus", function () {
+    console.log("win on focus ")
+  });
   win.on("close", () => {
-    console.log("win close", arg)
+    console.log("win on close", arg)
     if (arg && undefined !== arg.onclose) {
       arg.onclose()
     }
+    win.getChildWindows().forEach(function(childwin){
+      childwin.close()
+      console.log("win on close, allchildwindows")
+    })
   });
 
-  //win_tray_uti.win.documentEdited(true)
+ 
 
   win.webContents.on('did-finish-load', () => {
-    console.log("main window did-finish-load.")
+    console.log("webContents on  did-finish-load.")
     if (!win.webContents) return "webConents null"
     //ipcRenderer.send("test","msg")
     win.send('test', __dirname + '\\')
   })
+  win.webContents.on('before-input-event', (event, input) => {
+    console.log("webContents on  before-input-event.")
+    if (input.control && input.key.toLowerCase() === 'i') {
+      console.log('Pressed Control+I')
+      event.preventDefault()
+    }
+  })
+  ////////////////////////////////////////////////////////////
+  win.webContents.on('found-in-page', (event, result) => {
+    console.log("find result:", result)
+    var output = { input: arg, result: result }
+    electronStore_findInPage.set("findInPage_output", output)
+    win.webContents.m_output = output
+    win.getChildWindows().forEach(function(childwin){
+      childwin.webContents.send('webContents_findInPage', output);
+    })
+    //if (result.finalUpdate) webContents.stopFindInPage('clearSelection')
+  })
+
+  win.m_parm = arg
+  if (arg.loadfile) {
+    win.loadFile(arg.loadfile)
+    win.show()
+  }
+  //console.log("crreated win:",win)
+
+
   return win;
 }
 
-Main_Window.prototype.openMainWindow = function (filename, bforceReload) {
-  if (bforceReload) this.m_loadfile = bforceReload
-  if (this.mainWindow) {
-    if (this.m_loadfile !== filename) {
-      this.mainWindow.loadFile(filename)
-      this.m_loadfile = filename
-    }
-    this.mainWindow.show()
-    return
-  }
-  var _THIS = this
-  this.mainWindow = this.createWindow({
-    onclose: function () {
-      _THIS.mainWindow = null
-      if (_THIS.m_findInPageWin) {
-        _THIS.m_findInPageWin.close()
-        delete _THIS.m_findInPageWin
-        _THIS.m_findInPageWin = null
-      }
-    }
-  })
-  this.mainWindow.loadFile(filename)
-  this.m_loadfile = filename
-  this.mainWindow.show()
-}
-Main_Window.prototype.openFindInPageDialog = function () {
-  if (this.m_findInPageWin) {
-    this.m_findInPageWin.show()
+
+Main_Window.prototype.openFocusedWindowFindInPageDialog = function () {
+  let focusedWindow = BrowserWindow.getFocusedWindow();
+  if (!focusedWindow) {
+    console.log("no foucsed window.")
     return
   }
 
@@ -134,27 +147,29 @@ Main_Window.prototype.openFindInPageDialog = function () {
     resizable: true,
     closable: true, //disable close button.
     maximizable: false,
-    minimizable: false,
-    onclose: function () {
-      console.log("close findinpage.")
-      if (_THIS.mainWindow && _THIS.mainWindow.webContents) {
-        var obj = electronStore_findInPage.get("findInPage_input")
-        var action = obj.stopFindInPage_action
-        console.log("stopFindInPage", obj)
-        _THIS.mainWindow.webContents.stopFindInPage(action); //'clearSelection')
-      }
-      _THIS.m_findInPageWin = null
-    }
+    minimizable: false
   }
 
-  this.m_findInPageWin = this.createWindow(arg);
-  this.m_findInPageWin.loadFile("./pages/find_in_page_dialog.html")
+  var findInPageWin = this.createNewWindow(arg);
+  findInPageWin.setParentWindow(focusedWindow)
+  findInPageWin.on("close", function () {
+    console.log("on close findinpage.")
+    var parentWin = findInPageWin.getParentWindow()
+    if (parentWin && parentWin.webContents) {
+      var obj = electronStore_findInPage.get("findInPage_input")
+      var action = obj.stopFindInPage_action
+      console.log("stopFindInPage", obj)
+      parentWin.webContents.stopFindInPage(action); //'clearSelection')
+    }
+  })
 
-  //this.m_findInPageWin.webContents.openDevTools({ mode: 'detach', "defaultFontSize": 28 })
-  return this.m_findInPageWin
+  findInPageWin.loadFile("./pages/find_in_page_dialog.html")
+  return findInPageWin
 }
+
+
 Main_Window.prototype.openFocusedWindowDevTool = function () {
-  
+
   let focusedWindow = BrowserWindow.getFocusedWindow();
   if (focusedWindow && focusedWindow.webContents) {
     focusedWindow.webContents.openDevTools({ mode: 'detach' })
@@ -165,7 +180,7 @@ Main_Window.prototype.openFocusedWindowDevTool = function () {
   return
 }
 Main_Window.prototype.IncFocusedWindowZoomFactor = function (dlt) {
-  
+
   let focusedWindow = BrowserWindow.getFocusedWindow();
   if (focusedWindow && focusedWindow.webContents) {
     var dlt = focusedWindow.webContents.getZoomFactor() + dlt
@@ -177,7 +192,7 @@ Main_Window.prototype.IncFocusedWindowZoomFactor = function (dlt) {
   return
 }
 Main_Window.prototype.GoBackFocusedWindow = function () {
-  
+
   let focusedWindow = BrowserWindow.getFocusedWindow();
   if (focusedWindow && focusedWindow.webContents) {
     focusedWindow.webContents.goBack()
@@ -187,7 +202,7 @@ Main_Window.prototype.GoBackFocusedWindow = function () {
   }
 }
 Main_Window.prototype.GoForwardFocusedWindow = function () {
-  
+
   let focusedWindow = BrowserWindow.getFocusedWindow();
   if (focusedWindow && focusedWindow.webContents) {
     focusedWindow.webContents.goForward()
@@ -196,6 +211,12 @@ Main_Window.prototype.GoForwardFocusedWindow = function () {
     console.log("cannot.", dlt)
   }
 }
+
+
+
+
+
+
 
 
 ////////////////////////
@@ -216,9 +237,11 @@ function Main_Tray() {
   this.tray.on("click", () => {
     console.log('HI, tray click, check menu item enabled');
 
-    g_Menu.set_enabled_by_id("OpenDevTool", !!g_Window.mainWindow)
-    g_Menu.set_enabled_by_id("SubMenuBroswer", !!g_Window.mainWindow)
-    g_Menu.set_enabled_by_id("MenuItem_findInPage", !!g_Window.mainWindow)
+    var winary = BrowserWindow.getAllWindows()
+
+    g_Menu.set_enabled_by_id("OpenDevTool", !!winary.length)
+    g_Menu.set_enabled_by_id("SubMenuBroswer", !!winary.length)
+    g_Menu.set_enabled_by_id("MenuItem_findInPage", !!winary.length)
   })
 }
 Main_Tray.prototype.setMenu = function (menu) {
@@ -237,11 +260,8 @@ function Main_Menu() {
         click: (itm) => {
           console.log(itm)
           var filename = "./pages/find_htm_file_to_edit.html"
-          //g_Window.createWindow().loadFile(filename)
-          g_Window.openMainWindow(filename, true)
-          if (g_Window) {
-            //g_Window.webContents.openDevTools({ mode: 'detach' })
-          }
+          g_Window.createNewWindow({ loadfile: filename })
+    
 
         },
       },
@@ -252,7 +272,7 @@ function Main_Menu() {
       {
         id: "MenuItem_findInPage", label: 'Search', toolTip: 'Search string in page', accelerator: 'CmdOrCtrl+F',
         click: () => {
-          var win = g_Window.openFindInPageDialog()
+          g_Window.openFocusedWindowFindInPageDialog()
         },
       },
 
@@ -328,7 +348,7 @@ function Main_Menu() {
       {
         id: "MenuItem_Help", label: 'Help', toolTip: 'Help',
         click: () => {
-          g_Window.createWindow().loadFile("./pages/help_info.html")
+          g_Window.createNewWindow({loadfile:"./pages/help_info.html"})
         },
       },
 
@@ -481,19 +501,13 @@ var Webcontent2MainConsole = {
       })
     },
     webContents_findInPage: (evt, arg) => {
-      console.log(arg)
-      if (!g_Window.mainWindow) return
+      console.log("msg from webContent:",arg)
+      var focusedwin = BrowserWindow.getFocusedWindow();
+      if(!focusedwin) return console.log("no focused win.")
+      var parentwin = focusedwin.getParentWindow()
+      if(!parentwin) return console.log("no focused parentwin.")
       console.log("val=", arg.val)
-      g_Window.mainWindow.webContents.findInPage(arg.val, arg.opt)
-      if (undefined !== g_Window.mainWindow.webContents.m_output) return
-      g_Window.mainWindow.webContents.on('found-in-page', (event, result) => {
-        console.log("find result:", result)
-        var output = { input: arg, result: result }
-        electronStore_findInPage.set("findInPage_output", output)
-        g_Window.mainWindow.webContents.m_output = output
-        g_Window.m_findInPageWin.webContents.send('webContents_findInPage', output);
-        //if (result.finalUpdate) webContents.stopFindInPage('clearSelection')
-      })
+      parentwin.webContents.findInPage(arg.val, arg.opt)
     },
   }
 }
@@ -512,6 +526,7 @@ var win_tray_uti = {
     g_Menu = new Main_Menu()
     g_Window = new Main_Window()
     g_Tray = new Main_Tray()
+    
 
 
 
@@ -541,7 +556,6 @@ var win_tray_uti = {
     })
 
     g_Tray.setMenu(g_Menu.genMenu());
-    //g_Window.createWindow();
 
 
   }

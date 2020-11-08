@@ -45,6 +45,14 @@ app.on('window-all-closed', function () {
   //if (process.platform !== 'darwin') app.quit()
 })
 
+app.on('browser-window-focus', (event, win) => {
+  ///win_tray_uti.m_Window.set_foused_win()
+  console.log('app browser-window-focus', win.webContents.id)
+})
+app.on('browser-window-blur', (event, win) => {
+  console.log('app browser-window-blur', win.webContents.id)
+})
+
 app.on('activate', function () {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
