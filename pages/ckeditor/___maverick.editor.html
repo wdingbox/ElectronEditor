@@ -233,6 +233,16 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     }
                 });
 
+                // flash is used for git commit and push.
+                evt.editor.addCommand("flash", {
+                    modes: { wysiwyg: 1, source: 1 },
+                    exec: function () {
+                        gen_git_cmd_batch()
+                        __exec_ui_cmd()
+                        return false //disable popup.
+                    }
+                });
+
 
             });
         }
@@ -324,7 +334,7 @@ ${scmd}
                 },
                 function (result) {
                     console.log("git cmd result:", result);
-                    g_msg.pop(`Cmd for git.`);
+                    g_msg.pop(`Cmd for git.`+result.output.replace(/\n/g,"<br>"));
                     $("#output").val(result.output)
                 }).fail(function (er) {
                     g_msg.pop(`*** saved failed:${er}`, "warning")
