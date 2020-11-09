@@ -260,10 +260,14 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             this.m_sChangeLen = ""
         }
         _MSG.prototype.dlt = function (len) {
+            if(undefined === len || !len){
+                this.m_sChangeLen = ""
+                return ""
+            }
             var dlt = len - this.m_len
             this.m_sChangeLen = `len change: ${len}-${this.m_len}=${dlt}`
             this.m_len = len
-            return this
+            return this.m_sChangeLen
         }
         _MSG.prototype.pop = function (s, styp) {
             if (!styp) styp = "info"
@@ -350,15 +354,17 @@ ${scmd}
                 g_msg.pop(` no change; no saving; len:${theData.length}`);
                 return
             }
+
+            
             if (undefined !== require) {
                 const fs = require('fs');
                 fs.writeFileSync(get_custom_pathname().pathname, theData, "utf8")
-                g_msg.pop(`Save OK by fs.writeFileSync. ${theData.length}`);
+                g_msg.pop(`Save OK by fs.writeFileSync:`+ g_msg.dlt(theData.length));
                 ckEditor.resetDirty()
                 return
             }
 
-            g_msg.dlt(theData.length).pop(` to save.`);
+            g_msg.pop(` to save.`+ g_msg.dlt(theData.length));
             //alert(theData);
             $.post("http://localhost:7878/save",
                 {
