@@ -17,6 +17,15 @@
     <script language="javascript" xxsrc="./tmp/EngTxt2FrqTable.out.wordfrqMerged.json"></script>
     <script type='application/javascript' ${src}></script>>
     <style>
+        .hili {
+            background-color: lightgray;
+        }
+
+        #txtarea {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+        }
     </style>
 
 
@@ -55,10 +64,22 @@
             $("body").prepend(`<pre>${JSON.stringify(wordfreqObj.info, null, 4)}</pre>`).append(gen_table(wordfreqObj.wfo))
             table_sort();
         }
+        function get_hili_text() {
+            var obj = {}
+            $(".hili").each(function () {
+                obj[$(this).text()] = 1
+            })
+            $("#txtarea").val(JSON.stringify(obj, null, 4))
+        }
 
         $(document).ready(function () {
             //ajx_load_json()
             load_data()
+            $("td").click(function () {
+                $(this).toggleClass("hili")
+                get_hili_text()
+            })
+
 
         });/////////////
 
@@ -67,6 +88,7 @@
 </HEAD>
 
 <BODY>
+    <textarea id="txtarea"></textarea>
     <a id='indxer'>indxer</a>
 </BODY>
 
