@@ -84,13 +84,13 @@ Main_Window.prototype.createNewWindow = function (arg) {
     if (arg && undefined !== arg.onclose) {
       arg.onclose()
     }
-    win.getChildWindows().forEach(function(childwin){
+    win.getChildWindows().forEach(function (childwin) {
       childwin.close()
       console.log("win on close, allchildwindows")
     })
   });
 
- 
+
 
   win.webContents.on('did-finish-load', () => {
     console.log("webContents on  did-finish-load.")
@@ -99,7 +99,7 @@ Main_Window.prototype.createNewWindow = function (arg) {
     win.send('test', __dirname + '\\')
   })
   win.webContents.on('before-input-event', (event, input) => {
-    console.log("webContents on  before-input-event.")
+    //console.log("webContents on  before-input-event.")
     if (input.control && input.key.toLowerCase() === 'i') {
       console.log('Pressed Control+I')
       event.preventDefault()
@@ -111,7 +111,7 @@ Main_Window.prototype.createNewWindow = function (arg) {
     var output = { input: arg, result: result }
     electronStore_findInPage.set("findInPage_output", output)
     win.webContents.m_output = output
-    win.getChildWindows().forEach(function(childwin){
+    win.getChildWindows().forEach(function (childwin) {
       childwin.webContents.send('webContents_findInPage', output);
     })
     //if (result.finalUpdate) webContents.stopFindInPage('clearSelection')
@@ -131,8 +131,23 @@ Main_Window.prototype.createNewWindow = function (arg) {
 
 Main_Window.prototype.openFocusedWindowFindInPageDialog = function () {
   let focusedWindow = BrowserWindow.getFocusedWindow();
+
   if (!focusedWindow) {
     console.log("no foucsed window.")
+    var winary = BrowserWindow.getAllWindows()
+    winary[0].show()
+    dialog.showMessageBox(winary[0], { title: "note", message: "no focused window." })
+    return
+  }
+  var childwins = focusedWindow.getChildWindows()
+  console.log("dlg find-in-page win allchildwindows=", childwins.length)
+  if (childwins && childwins.length > 0) {
+    childwins[0].show()
+    return
+  }
+  var stitle = focusedWindow.getTitle().toLowerCase()
+  console.log("stitle=", stitle)
+  if (stitle.indexOf("find") >= 0) {
     return
   }
 
@@ -258,10 +273,10 @@ function Main_Menu() {
       {
         id: "EditCustomHtmlFileOnsite", label: 'Open HTML File', toolTip: 'Select a HTML File to edit.', accelerator: 'CmdOrCtrl+S',
         click: (itm) => {
-          console.log(itm)
+          //console.log(itm)
           var filename = "./pages/find_htm_file_to_edit.html"
           g_Window.createNewWindow({ loadfile: filename })
-    
+
 
         },
       },
@@ -348,7 +363,7 @@ function Main_Menu() {
       {
         id: "MenuItem_Help", label: 'Help', toolTip: 'Help',
         click: () => {
-          g_Window.createNewWindow({loadfile:"./pages/help_info.html"})
+          g_Window.createNewWindow({ loadfile: "./pages/help_info.html" })
         },
       },
 
@@ -373,8 +388,8 @@ function Main_Menu() {
 }
 Main_Menu.prototype.set_enabled_by_id = function (id, bEnabled, cbf) {
   console.log("set_enabled_by_id: id, bEnabled:", id, bEnabled)
-  var tmpitm = this.get_template_item_by_id(id, function (pItem) {
-    console.log("found item before clicked:", pItem)
+  this.get_template_item_by_id(id, function (pItem) {
+    //console.log("found item before clicked:", pItem)
     pItem.enabled = bEnabled
     if (cbf) cbf(pItem)
   })
@@ -501,11 +516,11 @@ var Webcontent2MainConsole = {
       })
     },
     webContents_findInPage: (evt, arg) => {
-      console.log("msg from webContent:",arg)
+      console.log("msg from webContent:", arg)
       var focusedwin = BrowserWindow.getFocusedWindow();
-      if(!focusedwin) return console.log("no focused win.")
+      if (!focusedwin) return console.log("no focused win.")
       var parentwin = focusedwin.getParentWindow()
-      if(!parentwin) return console.log("no focused parentwin.")
+      if (!parentwin) return console.log("no focused parentwin.")
       console.log("val=", arg.val)
       parentwin.webContents.findInPage(arg.val, arg.opt)
     },
@@ -526,7 +541,7 @@ var win_tray_uti = {
     g_Menu = new Main_Menu()
     g_Window = new Main_Window()
     g_Tray = new Main_Tray()
-    
+
 
 
 
