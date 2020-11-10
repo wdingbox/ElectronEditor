@@ -92,9 +92,13 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         </tbody>
     </table>
 
+    <hr>
 
-    <p id="input_output_files" size="5" style="width:100%;overflow-x:auto;">
-    </p>
+    <table>
+        <caption>Output:</caption>
+        <tbody id="input_output_files" style="width:100%;overflow-x:auto;">
+        </tbody>
+    </table>
 
 
     <!-- Test ndjs -->
@@ -189,14 +193,14 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         }
         this.popTRs()
     }
-    EditorHistory.prototype.getObj = function (){
+    EditorHistory.prototype.getObj = function () {
         var obj = electronStore_edited_files_history.get(this.UUID)
         if (!obj) {
             electronStore_edited_files_history.set(this.UUID, {})
         }
         return obj
     }
-    EditorHistory.prototype.setKey = function (key){
+    EditorHistory.prototype.setKey = function (key) {
         var obj = this.getObj()
         obj[key] = (new Date()).toISOString()
         electronStore_edited_files_history.set(this.UUID, obj)
@@ -317,11 +321,11 @@ ls -al
         console.log("iofilesAry:", this.m_createdFilesAry)
         $("#input_output_files").empty()
         this.m_createdFilesAry.forEach(function (fnam, i) {
-            $("#input_output_files").append(`<br>(${i})<a class='iofiles' href='${fnam}'>${fnam}</a>`)
+            $("#input_output_files").append(`<tr><td>${i}</td><td><a class='iofiles' href='${fnam}'>${fnam}</a></td></tr>`)
         })
     }
     Maverick.prototype.cleanup = async function (files) {
-        
+
         this.m_createdFilesAry.forEach(function (file) {
             fs.unlinkSync(file)
             fs.exists(file, function (exists) {
