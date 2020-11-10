@@ -31,7 +31,18 @@ function Main_Window() {
   this.m_winAry = []
 }
 Main_Window.prototype.createNewWindow = function (arg) {
-  console.log("preload:", path.join(__dirname, 'preload.js'))
+  //console.log("preload:", path.join(__dirname, 'preload.js'))
+  var loadfile = (!!arg.loadfile) ? (__dirname + "/" + arg.loadfile) : "default"
+  var winAry = BrowserWindow.getAllWindows()
+  var titleAry = []
+  for (var i = 0; winAry && i < winAry.length; i++) {
+    var winDup = winAry[i]
+    var tit = winDup.getTitle()
+    if (tit.indexOf("Find") === 0) continue
+    titleAry.push(tit)
+  }
+
+
   // Create a browser window.
   var parm = {
     width: 1050,
@@ -47,6 +58,8 @@ Main_Window.prototype.createNewWindow = function (arg) {
     closable: true, //disable close button.
     maximizable: true,
     minimizable: true,
+
+    title: loadfile,
 
     webPreferences: {
       enablePreferredSizeMode: true,
@@ -67,7 +80,7 @@ Main_Window.prototype.createNewWindow = function (arg) {
       }
     })
   }
-  console.log(parm)
+  //console.log("parm",parm)
   var win = new BrowserWindow(parm)
 
   win.on("blur", () => {
@@ -92,8 +105,22 @@ Main_Window.prototype.createNewWindow = function (arg) {
 
 
 
-  win.webContents.on('did-finish-load', () => {
-    console.log("webContents on  did-finish-load.")
+  win.webContents.on('did-finish-load', async () => {
+    var title = win.getTitle()
+    console.log("webContents on  did-finish-load.", title)
+    if (titleAry.indexOf(title) >= 0) {
+      var ret = await dialog.showMessageBox(win, { title: "warn", type: "question", buttons: ["OK", "Cancel"], message: "duplicated:\n" + title })
+      console.log("dlg ret=", ret)
+      switch (ret.response) {
+        case 0: //"OK" 
+          break
+        case 1: //"Cancel"
+          win.close()
+        default:
+          break;
+      }
+    }
+
     if (!win.webContents) return "webConents null"
     //ipcRenderer.send("test","msg")
     win.send('test', __dirname + '\\')
@@ -125,9 +152,6 @@ Main_Window.prototype.createNewWindow = function (arg) {
     win.loadFile(arg.loadfile)
     win.show()
   }
-  //console.log("crreated win:",win)
-
-
   return win;
 }
 
