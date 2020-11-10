@@ -63,7 +63,9 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 <body>
 
-    <button id="Btn_findInPage">Find-In-Page</button><a id="output">..</a><br>
+    <button id="Btn_find_backward" title="search backward...">&lt;</button>
+    <button id="Btn_find_forward" title="search forward...">&gt;</button>
+    <a id="output">search ...</a><br>
 
     <input list="browsers" type="text" value="" placeholder="search string" id="SearchString">
     <datalist id="browsers">
@@ -143,6 +145,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         Object.keys(obj).forEach(function (key) {
             opts += `<option>${key}</option>`
         })
+        opts += "<option selected></option>"
         $("#browsers").html(opts)
         $("#search_history").html(opts).bind("click", function () {
             $("#SearchString").val($(this).val())
@@ -156,25 +159,48 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     })
     function gen_findInPage_data() {
         var action = $("#stopFindInPage_action").val()
-        var obj = { val: "", opt: {}, stopFindInPage_action: action }
+        var obj = { val: "", opt: {}, stopFindInPage_action: action, win: { id: window.m_id } }
         obj.val = $("#SearchString").val()
         obj.opt.forward = document.getElementById("findInPage_forward").checked
         obj.opt.findNext = document.getElementById("findInPage_findNext").checked
         obj.opt.matchCase = document.getElementById("findInPage_matchCase").checked
         obj.opt.wordStart = document.getElementById("findInPage_wordStart").checked
         obj.opt.medialCapitalAsWordStart = document.getElementById("findInPage_medialCapitalAsWordStart").checked
-        console.log(obj)
+        console.log("findInPage_data:",obj)
         electronStore_findInPage.set("findInPage_input", obj)
         return obj
     }
+
+    function get_window_id_from_url() {
+        var url = "" + window.location.href
+        var pos = 1 + url.lastIndexOf("=")
+        var id = url.substr(pos)
+        console.log("?winID=", id)
+        window.m_id = id
+        var str = "search result in window.id="+id
+        $("#output").attr("title", str).text(str)
+    }
+
+
     $(() => {
         set_search_history_list()
-        $("#Btn_findInPage").click(function () {
+        get_window_id_from_url()
+
+        $("#Btn_find_forward").click(function () {
+            document.getElementById("findInPage_forward").checked = true
             var obj = gen_findInPage_data()
             if (obj.val.trim().length === 0) return
             ipcRenderer.send(Web2Main_IDs.webContents_findInPage, obj) // send to main.           
             set_search_history_list(obj.val)
         })
+        $("#Btn_find_backward").click(function () {
+            document.getElementById("findInPage_forward").checked = false
+            var obj = gen_findInPage_data()
+            if (obj.val.trim().length === 0) return
+            ipcRenderer.send(Web2Main_IDs.webContents_findInPage, obj) // send to main.           
+            set_search_history_list(obj.val)
+        })
+
         $("#stopFindInPage_action").click(function () {
             gen_findInPage_data()
         })

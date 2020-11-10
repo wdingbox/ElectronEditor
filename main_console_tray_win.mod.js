@@ -110,10 +110,13 @@ Main_Window.prototype.createNewWindow = function (arg) {
     console.log("find result:", result)
     var output = { input: arg, result: result }
     electronStore_findInPage.set("findInPage_output", output)
+    var input = electronStore_findInPage.get("findInPage_input")
     win.webContents.m_output = output
-    win.getChildWindows().forEach(function (childwin) {
-      childwin.webContents.send('webContents_findInPage', output);
-    })
+    console.log("input.win.id:", input.win.id)
+    var winfinder = BrowserWindow.fromId(parseInt(input.win.id))
+    if (winfinder) {
+      winfinder.webContents.send('webContents_findInPage', output);
+    }
     //if (result.finalUpdate) webContents.stopFindInPage('clearSelection')
   })
 
@@ -139,21 +142,23 @@ Main_Window.prototype.openFocusedWindowFindInPageDialog = function () {
     dialog.showMessageBox(winary[0], { title: "note", message: "no focused window." })
     return
   }
-  var childwins = focusedWindow.getChildWindows()
-  console.log("dlg find-in-page win allchildwindows=", childwins.length)
-  if (childwins && childwins.length > 0) {
-    childwins[0].show()
-    return
-  }
   var stitle = focusedWindow.getTitle().toLowerCase()
   console.log("stitle=", stitle)
-  if (stitle.indexOf("find") >= 0) {
-    return
+  if (stitle === "find-in-page") {
+    focusedWindow = focusedWindow.getParentWindow()
   }
+
+  var childwins = focusedWindow.getChildWindows()
+  //console.log("dlg find-in-page win allchildwindows=", childwins.length)
+  //if (childwins && childwins.length > 0) {
+  //childwins[0].show()
+  //return
+  //}
+
 
   var _THIS = this
   var arg = {
-    width: 300, height: 300,
+    width: 300, height: 320,
     show: true,
     frame: true, //not dragable.
     fullscreenable: false,
@@ -178,7 +183,9 @@ Main_Window.prototype.openFocusedWindowFindInPageDialog = function () {
     }
   })
 
-  findInPageWin.loadFile("./pages/find_in_page_dialog.html")
+  var loadfile = "pages/find_in_page_dialog.html"
+  console.log("winID:", findInPageWin.id)
+  findInPageWin.loadURL(`file://${__dirname}/${loadfile}?winID=${findInPageWin.id}`)
   return findInPageWin
 }
 
