@@ -243,6 +243,21 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     }
                 });
 
+                // language is used for .
+                evt.editor.addCommand("language", {
+                    modes: { wysiwyg: 1, source: 1 },
+                    exec: function (evt, lancode) {
+                        console.log("langauge-code:", lancode)
+                        switch(lancode){
+                            case "ar":
+                            case "fr":
+                            case "es":
+                        }
+
+                        return false //disable popup.
+                    }
+                });
+
 
             });
         }
