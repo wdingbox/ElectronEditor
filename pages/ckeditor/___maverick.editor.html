@@ -49,7 +49,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         }
 
         #input,
-        #output{
+        #output {
             background-color: black;
             color: white;
             overflow: auto
@@ -104,11 +104,12 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
     <p>
         <textarea id="input" cols="165" rows="10"
             title="shell cmd"><div><span style="color:#e74c3c;">cmd</span></div></textarea><br>
-        
+
         <select id="gen_sh_cmd" onchange="gen_ui_sh_cmd();">
             <optgroup label="svr cmd">
-               <option value="WordFreq">[WordFreq] node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js f.htm</option>
-                </optgroup>
+                <option value="WordFreq">[WordFreq] node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js
+                    f.htm</option>
+            </optgroup>
             <optgroup label="insite git">
                 <option value="git_batch">[git batch cmds]</option>
                 <option>git branch</option>
@@ -132,8 +133,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
         <button id="idbtn_exec_cmd" onclick="__exec_ui_cmd();">exec cmd</button>
         <button id="toggle_wrap" title="white-space: nowrap;"
             onclick="$('#output').toggleClass('white_space_nowrap');">toggle wrap</button><br>
-        <textarea id="output" cols="165" rows="50"
-            title="output of shell cmd.">output &gt;</textarea>
+        <textarea id="output" cols="165" rows="50" title="output of shell cmd.">output &gt;</textarea>
     </p>
 
 
@@ -226,7 +226,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 evt.editor.addCommand("preview", {
                     modes: { wysiwyg: 1, source: 1 },
                     exec: function () {
-                        var ret = get_custom_pathname()
+                        var ret = get_pathname_fr_window_location()
                         gen_insite_sh_cmd("open " + ret.name)
                         __exec_ui_cmd()
                         return false //disable popup.
@@ -247,9 +247,20 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                 evt.editor.addCommand("language", {
                     modes: { wysiwyg: 1, source: 1 },
                     exec: function (evt, lancode) {
+
+                        if (true === ckEditor.checkDirty()) {
+                            var ret = confirm("It was changed. Continue to load?")
+                            console.log("checkDirty : true", ret)
+                            if(ret === false){
+                                g_msg.pop(`no op`);
+                                return
+                            }
+                            g_msg.pop(`reload.`);
+                        }
+
                         console.log("langauge-code:", lancode)
-                        switch(lancode){
-                            case "ar":
+                        switch (lancode) {
+                            case "ar": return load_page_by_parse_window_location()
                             case "fr":
                             case "es":
                         }
@@ -275,7 +286,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
             this.m_sChangeLen = ""
         }
         _MSG.prototype.dlt = function (len) {
-            if(undefined === len || !len){
+            if (undefined === len || !len) {
                 this.m_sChangeLen = ""
                 return ""
             }
@@ -297,7 +308,7 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 
         function gen_wordfreq_cmd() {
-            var ret = get_custom_pathname()
+            var ret = get_pathname_fr_window_location()
             var git_cmd_txt = `#!/bin/bash
 ######################
 # svr side cmd
@@ -307,7 +318,7 @@ node ./nodexe/wordFrqObj/engHtm2wordFrq/htm2FrqTable_eng.nde.js ${ret.root}/${re
             return git_cmd_txt;
         }
         function gen_git_cmd_batch() {
-            var ret = get_custom_pathname()
+            var ret = get_pathname_fr_window_location()
             var git_cmd_txt = `#!/bin/bash
 ######################
 # goto customer folder.
@@ -320,7 +331,7 @@ git status
             return git_cmd_txt;
         }
         function gen_insite_sh_cmd(scmd) {
-            var ret = get_custom_pathname()
+            var ret = get_pathname_fr_window_location()
             var cmd_txt = `#!/bin/bash
 ######################
 # goto customer folder.
@@ -353,7 +364,7 @@ ${scmd}
                 },
                 function (result) {
                     console.log("git cmd result:", result);
-                    g_msg.pop(`Cmd for git.`+result.output.replace(/\n/g,"<br>"));
+                    g_msg.pop(`Cmd for git.` + result.output.replace(/\n/g, "<br>"));
                     $("#output").val(result.output)
                 }).fail(function (er) {
                     g_msg.pop(`*** saved failed:${er}`, "warning")
@@ -370,20 +381,20 @@ ${scmd}
                 return
             }
 
-            
+
             if (undefined !== require) {
                 const fs = require('fs');
-                fs.writeFileSync(get_custom_pathname().pathname, theData, "utf8")
-                g_msg.pop(`Save OK by fs.writeFileSync:`+ g_msg.dlt(theData.length));
+                fs.writeFileSync(get_pathname_fr_window_location().pathname, theData, "utf8")
+                g_msg.pop(`Save OK by fs.writeFileSync:` + g_msg.dlt(theData.length));
                 ckEditor.resetDirty()
                 return
             }
 
-            g_msg.pop(` to save.`+ g_msg.dlt(theData.length));
+            g_msg.pop(` to save.` + g_msg.dlt(theData.length));
             //alert(theData);
             $.post("http://localhost:7878/save",
                 {
-                    "pathname": get_custom_pathname().pathname,
+                    "pathname": get_pathname_fr_window_location().pathname,
                     "htm": theData
                 },
                 function (result) {
@@ -402,22 +413,26 @@ ${scmd}
                     console.log("done:", ret)
                 });
         }
-        function get_custom_pathname() {
+        function get_pathname_fr_window_location() {
             var regex = new RegExp("/___maverick.editor.html$")
             var root = window.location.pathname.replace(regex, "")
             var name = window.location.search.replace("?fname=", "")
             var pathname = root + "/" + name
             return { name: name, pathname: pathname, root: root }
         }
-        function load_page_by_parse_window_location() {
+        function init_ui_cmd() {
             console.log(window.location)
-            var ret = get_custom_pathname()
+            var ret = get_pathname_fr_window_location()
             $("title").text(ret.pathname)
             gen_git_cmd_batch()
             $("#gen_sh_cmd").append(`<option>open ${ret.name}</option>`)
             $("#gen_sh_cmd").append(`<option>open file://${ret.root}/___maverick.editor.html?fname=${ret.name}</option>`)
             $("#gen_sh_cmd").append(`<option>open ./${ret.name}___wordfreq.htm</option>`)
             console.log(ret.name)
+        }
+        function load_page_by_parse_window_location() {
+            console.log(window.location)
+            var ret = get_pathname_fr_window_location()
             $.get(ret.name, function (data) {
                 //alert(data);
                 setTimeout(() => {
@@ -425,6 +440,7 @@ ${scmd}
                     g_msg.pop(`initial load file: ${ret.name}, size:${data.length}(B)`).m_len = data.length
                 }, 1000)
             });
+            return false;
         }
     </script>
 </body>
@@ -450,6 +466,7 @@ ${scmd}
 <script>
     $(function () {
         init_CKEditor()
+        init_ui_cmd()
         load_page_by_parse_window_location()
 
 
