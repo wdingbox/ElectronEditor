@@ -208,6 +208,20 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
                     }
                 });
 
+                // overwrite the default new-page function
+                evt.editor.addCommand("newpage", {
+                    modes: { wysiwyg: 1, source: 1 },
+                    exec: function () {
+                        alert("newpage. false: noop")
+                        console.log("newpage")
+                        return false;//disable
+                    }
+                });
+     
+
+
+
+
                 // maximize / mainimize
                 evt.editor.on("maximize", function (e) {
                     console.log("maximize", e)
